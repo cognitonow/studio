@@ -8,7 +8,7 @@ const userRole = 'client'; // 'provider' | 'guest'
 
 const CommonLinks = () => (
   <>
-    <Link href="/discover" className="transition-colors hover:text-foreground/80 text-foreground">Discover</Link>
+    <Link href="/" className="transition-colors hover:text-foreground/80 text-foreground">Discover</Link>
     <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">About Us</Link>
     <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Blog</Link>
   </>
@@ -43,7 +43,7 @@ const ProviderLinks = () => (
 
 const MobileCommonLinks = () => (
     <>
-      <Link href="/discover" className="text-foreground transition-colors hover:text-foreground/80">Discover</Link>
+      <Link href="/" className="text-foreground transition-colors hover:text-foreground/80">Discover</Link>
       <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">About Us</Link>
       <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">Blog</Link>
     </>
