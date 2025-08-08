@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getFeaturedProviders, playlists } from '@/lib/data';
+import { playlists } from '@/lib/data';
 import { ArrowRight, Bot, CalendarCheck, ShieldCheck, Sparkles } from 'lucide-react';
-import { ProviderCard } from '@/components/provider-card';
+import { Testimonials } from '@/components/testimonials';
 
 const features = [
     {
@@ -30,8 +30,6 @@ const features = [
 
 
 export default function LandingPage() {
-  const featuredProviders = getFeaturedProviders();
-
   return (
     <div className="container mx-auto py-12 px-4 space-y-24">
       {/* Hero Section */}
@@ -121,15 +119,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Featured Providers Section */}
-      <section>
-        <h3 className="text-3xl font-bold font-headline mb-6">Featured Providers</h3>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProviders.map(provider => (
-            <ProviderCard key={provider.id} provider={provider} />
-          ))}
-        </div>
-      </section>
+      {/* Testimonials Section */}
+      <Testimonials />
     </div>
   );
 }

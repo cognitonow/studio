@@ -31,6 +31,7 @@ export type Review = {
   dataAiHint?: string;
   rating: number;
   comment: string;
+  title?: string;
 };
 
 export type Playlist = {

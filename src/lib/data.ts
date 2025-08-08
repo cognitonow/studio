@@ -11,10 +11,10 @@ export const services: Service[] = [
 ];
 
 export const reviews: Review[] = [
-  { id: '1', author: 'Jane D.', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'woman portrait', rating: 5, comment: 'Olivia is a true artist! My nails have never looked better.' },
-  { id: '2', author: 'Sarah K.', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'person smiling', rating: 5, comment: 'The most relaxing facial I have ever had. My skin is glowing!' },
-  { id: '3', author: 'Mike P.', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'man face', rating: 4, comment: 'Great haircut, very professional and clean salon.' },
-  { id: '4', author: 'Emily R.', avatarUrl: 'https://placehold.co/40x40.png', dataAiHint: 'woman face', rating: 5, comment: 'I am so in love with my new hair color. Chloe is a genius!' },
+  { id: '1', author: 'Jane D.', title: 'CEO, Acme Inc.', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman portrait', rating: 5, comment: 'Olivia is a true artist! My nails have never looked better. The attention to detail and relaxing atmosphere made it a perfect experience.' },
+  { id: '2', author: 'Sarah K.', title: 'Marketing Manager', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person smiling', rating: 5, comment: 'The most relaxing facial I have ever had. My skin is glowing! I felt so refreshed and rejuvenated afterwards. Highly recommend!' },
+  { id: '3', author: 'Mike P.', title: 'Software Engineer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'man face', rating: 4, comment: 'Great haircut, very professional and clean salon. The stylist listened to what I wanted and gave me a great new look.' },
+  { id: '4', author: 'Emily R.', title: 'Graphic Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman face', rating: 5, comment: 'I am so in love with my new hair color. Chloe is a genius! She perfectly captured the look I was going for.' },
 ];
 
 export const providers: Provider[] = [
