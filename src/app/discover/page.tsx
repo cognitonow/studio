@@ -59,7 +59,7 @@ export default function DiscoverPage() {
               Select a category to start exploring expert providers.
             </p>
           </div>
-          <div className="relative flex justify-center items-center min-h-[400px]">
+          <div className="relative flex justify-center items-center min-h-[450px]">
             <div className="absolute w-[300px] h-[450px] rounded-[150px] overflow-hidden">
                 <Image src="https://placehold.co/400x600.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
                  <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
@@ -70,8 +70,9 @@ export default function DiscoverPage() {
             </div>
             {serviceCategories.map((category, index) => {
               const angle = (index / serviceCategories.length) * 2 * Math.PI - Math.PI / 2;
-              const x = 50 + 40 * Math.cos(angle);
-              const y = 50 + 45 * Math.sin(angle);
+              const radius = 40; // Use a single radius for a perfect circle
+              const x = 50 + radius * Math.cos(angle);
+              const y = 50 + radius * Math.sin(angle) * (9/16 * 1.5); // Adjust for aspect ratio of container
               const textAlign = x > 50 ? 'left' : 'right';
               
               return (
