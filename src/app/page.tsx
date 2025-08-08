@@ -1,12 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { ProviderCard } from '@/components/provider-card';
 import { getFeaturedProviders, getProvidersByPlaylist, playlists, providers } from '@/lib/data';
 import { ArrowRight } from 'lucide-react';
+import { ProviderCard } from '@/components/provider-card';
 
 export default function LandingPage() {
   const featuredProviders = getFeaturedProviders();
