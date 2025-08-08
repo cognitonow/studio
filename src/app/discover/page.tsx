@@ -20,7 +20,7 @@ export default function DiscoverPage() {
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
       {/* Hero Section */}
-      <section className="relative bg-primary/10 rounded-3xl p-8 md:p-12 lg:p-16 overflow-hidden">
+      <section className="relative">
         <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
                 <p className="font-semibold text-primary">FIND & BOOK YOUR PERFECT MATCH</p>
