@@ -62,7 +62,7 @@ export default function DiscoverPage() {
           <div className="flex justify-center items-center">
             <div className="relative w-[600px] h-[600px]">
                 {/* Dotted Circle */}
-                <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
+                <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full z-10"></div>
 
                 {/* Central Image */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
@@ -86,7 +86,7 @@ export default function DiscoverPage() {
                     <div key={category.name} className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
                        {/* Dot */}
                        <div
-                          className="absolute w-3 h-3 bg-primary rounded-full"
+                          className="absolute w-5 h-5 bg-primary rounded-full z-20"
                           style={{
                             transform: `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`,
                           }}
@@ -94,7 +94,7 @@ export default function DiscoverPage() {
                         {/* Label */}
                         <Link href="#" passHref>
                           <span
-                            className="absolute bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors"
+                            className="absolute bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
                             style={{
                               left: `${labelX}px`,
                               top: `${labelY}px`,
