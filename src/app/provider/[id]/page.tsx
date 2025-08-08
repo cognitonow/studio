@@ -70,7 +70,9 @@ export default function ProviderDetailPage({ params }: { params: { id: string } 
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {provider.badges.map(badge => (
-                  <Badge key={badge} variant="secondary">{badge}</Badge>
+                  <Link href={`/?search=${encodeURIComponent(badge)}`} key={badge}>
+                    <Badge variant="secondary" className="transition-colors hover:bg-secondary/80">{badge}</Badge>
+                  </Link>
                 ))}
               </div>
             </div>
