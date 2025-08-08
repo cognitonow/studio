@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -20,26 +19,25 @@ export default function DiscoverPage() {
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
       {/* Hero Section */}
-      <section className="relative">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-                <p className="font-semibold text-primary">FIND & BOOK YOUR PERFECT MATCH</p>
-                <h1 className="text-4xl md:text-6xl font-bold font-headline">Elevate Your Beauty Routine</h1>
+      <section className="relative h-[450px] rounded-2xl overflow-hidden flex items-center">
+        <Image 
+            src="https://placehold.co/1200x450.png"
+            alt="Woman with beautiful makeup"
+            fill
+            className="object-cover"
+            data-ai-hint="woman face makeup"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-white/0" />
+        <div className="relative grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
+            <div className="bg-background/80 backdrop-blur-sm p-8 rounded-2xl space-y-6 max-w-lg">
+                <h1 className="text-4xl md:text-5xl font-bold font-headline">Elevate Your Beauty Routine</h1>
                 <p className="text-muted-foreground">Discover top-rated salons and spas near you. Read reviews, browse services, and book your next appointment with confidence.</p>
-                <div className="relative max-w-md">
+                <div className="relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input placeholder="Search for services, e.g. 'manicure'" className="pl-12 h-12 rounded-full" />
                 </div>
             </div>
-            <div className="relative h-64 md:h-96">
-                <Image 
-                    src="https://placehold.co/600x600.png"
-                    alt="Woman with beautiful makeup"
-                    fill
-                    className="object-cover rounded-2xl"
-                    data-ai-hint="woman face makeup"
-                />
-            </div>
+            <div></div>
         </div>
       </section>
 
