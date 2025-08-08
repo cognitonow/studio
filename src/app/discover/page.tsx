@@ -71,26 +71,40 @@ export default function DiscoverPage() {
 
                 {/* Menu Items */}
                 {serviceCategories.map((category, index) => {
-                  const angle = (index / serviceCategories.length) * 2 * Math.PI - Math.PI / 2;
-                  const radius = 260; // radius in pixels
-                  const x = radius * Math.cos(angle);
-                  const y = radius * Math.sin(angle);
-                  const textAlign = x > 0 ? 'left' : 'right';
+                  const angle = (index / serviceCategories.length) * 2 * Math.PI;
+                  const radius = 280; // radius in pixels for the dot
+                  const dotX = radius * Math.cos(angle);
+                  const dotY = radius * Math.sin(angle);
+
+                  const labelRadius = 340; // radius for text to be outside
+                  const labelX = labelRadius * Math.cos(angle);
+                  const labelY = labelRadius * Math.sin(angle);
+                  
+                  const isLeft = Math.cos(angle) < 0;
 
                   return (
-                    <div
-                      key={category.name}
-                      className="absolute group"
-                      style={{
-                        left: `calc(50% + ${x}px)`,
-                        top: `calc(50% + ${y}px)`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    >
-                      <div className={`flex items-center gap-3 ${textAlign === 'right' ? 'flex-row-reverse' : ''}`}>
-                        <Link href="#" className="font-semibold text-lg hover:text-primary transition-colors">{category.name}</Link>
-                        <div className="w-3 h-3 bg-primary rounded-full group-hover:scale-125 transition-transform" />
-                      </div>
+                    <div key={category.name} className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                       {/* Dot */}
+                       <div
+                          className="absolute w-3 h-3 bg-primary rounded-full"
+                          style={{
+                            transform: `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`,
+                          }}
+                        />
+                        {/* Label */}
+                        <Link href="#" passHref>
+                          <span
+                            className="absolute bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors"
+                            style={{
+                              left: `${labelX}px`,
+                              top: `${labelY}px`,
+                              transform: `translate(${isLeft ? '-100%' : '0%'}, -50%)`,
+                              margin: `${isLeft ? '0 -10px 0 0' : '0 0 0 10px'}`
+                            }}
+                          >
+                          {category.name}
+                          </span>
+                        </Link>
                     </div>
                   );
                 })}
