@@ -194,7 +194,7 @@ export default function DiscoverPage() {
                     const dotX = radius * Math.cos(angle);
                     const dotY = radius * Math.sin(angle);
 
-                    const labelRadius = 340;
+                    const labelRadius = 300;
                     const labelX = labelRadius * Math.cos(angle);
                     const labelY = labelRadius * Math.sin(angle);
                     
@@ -203,15 +203,15 @@ export default function DiscoverPage() {
 
                     let transform = 'translate(-50%, -50%)';
                     if (isLeft) {
-                      transform += ' translateX(-100%) translateX(-20px)';
+                      transform += ' translateX(-100%) translateX(-15px)';
                     } else if (isRight) {
-                      transform += ' translateX(20px)';
+                      transform += ' translateX(15px)';
                     } else { 
                       transform += ' translateX(-50%)';
                       if(Math.sin(angle) > 0) {
-                        transform += ' translateY(20px)';
+                        transform += ' translateY(15px)';
                       } else {
-                        transform += ' translateY(-20px)';
+                        transform += ' translateY(-15px)';
                       }
                     }
 
