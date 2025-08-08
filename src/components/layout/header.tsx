@@ -3,6 +3,69 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, Sprout } from 'lucide-react';
 
+// TODO: Replace with actual authentication logic
+const userRole = 'client'; // 'provider' | 'guest'
+
+const CommonLinks = () => (
+  <>
+    <Link href="/discover" className="transition-colors hover:text-foreground/80 text-foreground">Discover</Link>
+    <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">About Us</Link>
+    <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Blog</Link>
+  </>
+)
+
+const GuestLinks = () => (
+  <>
+    <Button asChild>
+      <Link href="/signup">Sign Up</Link>
+    </Button>
+  </>
+);
+
+const ClientLinks = () => (
+    <>
+      <Link href="/bookings" className="transition-colors hover:text-foreground/80 text-foreground/60">My Bookings</Link>
+      <Button asChild>
+        <Link href="/account">Account</Link>
+      </Button>
+    </>
+  );
+
+const ProviderLinks = () => (
+  <>
+    <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">Dashboard</Link>
+    <Button asChild>
+      <Link href="/account">Account</Link>
+    </Button>
+  </>
+);
+
+
+const MobileCommonLinks = () => (
+    <>
+      <Link href="/discover" className="text-foreground transition-colors hover:text-foreground/80">Discover</Link>
+      <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">About Us</Link>
+      <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">Blog</Link>
+    </>
+  )
+
+const MobileGuestLinks = () => (
+    <div className="mt-4">
+        <Button asChild className="w-full">
+            <Link href="/signup">Sign Up</Link>
+        </Button>
+    </div>
+);
+
+const MobileClientLinks = () => (
+    <Link href="/bookings" className="text-foreground/60 transition-colors hover:text-foreground/80">My Bookings</Link>
+  );
+
+const MobileProviderLinks = () => (
+  <Link href="/dashboard" className="text-foreground/60 transition-colors hover:text-foreground/80">Dashboard</Link>
+);
+
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -13,10 +76,9 @@ export function Header() {
             <span className="font-bold text-lg">Beauty Book</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link href="/discover" className="transition-colors hover:text-foreground/80 text-foreground">Discover</Link>
-            <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">About Us</Link>
-            <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Blog</Link>
-            <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">Dashboard</Link>
+            <CommonLinks />
+            {userRole === 'client' && <ClientLinks />}
+            {userRole === 'provider' && <ProviderLinks />}
           </nav>
         </div>
 
@@ -36,10 +98,10 @@ export function Header() {
                 </Link>
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
                   <div className="flex flex-col space-y-3">
-                    <Link href="/discover" className="text-foreground transition-colors hover:text-foreground/80">Discover</Link>
-                    <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">About Us</Link>
-                    <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">Blog</Link>
-                    <Link href="/dashboard" className="text-foreground/60 transition-colors hover:text-foreground/80">Dashboard</Link>
+                    <MobileCommonLinks />
+                    {userRole === 'guest' && <MobileGuestLinks />}
+                    {userRole === 'client' && <MobileClientLinks />}
+                    {userRole === 'provider' && <MobileProviderLinks />}
                   </div>
                 </div>
               </SheetContent>
@@ -47,9 +109,9 @@ export function Header() {
           </div>
         
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+            {userRole === 'guest' && <GuestLinks />}
+            {userRole === 'client' && <ClientLinks />}
+            {userRole === 'provider' && <ProviderLinks />}
         </div>
       </div>
     </header>
