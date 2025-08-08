@@ -3,11 +3,13 @@ import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistri
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
+    { id: 'facials', name: 'Facials' },
     { id: 'nails', name: 'Nails' },
-    { id: 'skin', name: 'Skin' },
-    { id: 'feet', name: 'Feet' },
-    { id: 'hands', name: 'Hands' },
+    { id: 'brows-lashes', name: 'Brows & Lashes' },
+    { id: 'hair-removal', name: 'Hair Removal' },
     { id: 'body', name: 'Body' },
+    { id: 'makeup', name: 'Makeup' },
+    { id: 'medi-spa', name: 'Aesthetic / Medi-Spa' },
 ];
 
 export const dublinDistricts: DublinDistrict[] = [
@@ -36,26 +38,85 @@ export const dublinDistricts: DublinDistrict[] = [
 ];
 
 export const services: Service[] = [
-  // Nails
-  { id: '1', categoryId: 'nails', name: 'Classic Manicure', description: 'A classic manicure with nail shaping, cuticle care, and polish.', price: 35, duration: 45 },
-  { id: '2', categoryId: 'nails', name: 'Gel Manicure', description: 'A long-lasting gel manicure.', price: 50, duration: 60 },
-  // Feet
-  { id: 's-feet-1', categoryId: 'feet', name: 'Gel Pedicure', description: 'A long-lasting gel pedicure with exfoliation and massage.', price: 55, duration: 60 },
-  { id: 's-feet-2', categoryId: 'feet', name: 'Spa Pedicure', description: 'A luxurious pedicure with a foot soak, exfoliation, mask, and massage.', price: 70, duration: 75 },
-  // Skin
-  { id: '3', categoryId: 'skin', name: 'Signature Facial', description: 'A customized facial to address your specific skin concerns.', price: 85, duration: 60 },
-  { id: '5', categoryId: 'skin', name: 'Lash Lift & Tint', description: 'A perm for your lashes that lifts and curls them from the base.', price: 75, duration: 60 },
-  { id: 's-skin-1', categoryId: 'skin', name: 'Dermaplaning', description: 'Exfoliation treatment that removes dead skin and vellus hair.', price: 65, duration: 45 },
   // Hair
-  { id: '4', categoryId: 'hair', name: 'Balayage Hair Color', description: 'Hand-painted highlights for a natural, sun-kissed look.', price: 180, duration: 180 },
-  { id: '6', categoryId: 'hair', name: 'Bridal Makeup', description: 'Full-face makeup application for your special day.', price: 150, duration: 90 },
-  { id: 's-hair-1', categoryId: 'hair', name: 'Haircut & Style', description: 'A professional haircut and blowout.', price: 60, duration: 60 },
+  { id: 'hair-1', categoryId: 'hair', name: 'Haircut', description: 'Professional haircut service.', price: 50, duration: 45 },
+  { id: 'hair-2', categoryId: 'hair', name: 'Blowout', description: 'Professional blowout service.', price: 40, duration: 30 },
+  { id: 'hair-3', categoryId: 'hair', name: 'Updo', description: 'Elegant updo for special occasions.', price: 75, duration: 60 },
+  { id: 'hair-4', categoryId: 'hair', name: 'Silk Press', description: 'Straightening treatment for curly or textured hair.', price: 80, duration: 90 },
+  { id: 'hair-5', categoryId: 'hair', name: 'Wash and Go / Coil Definition', description: 'Defining natural coils.', price: 60, duration: 60 },
+  { id: 'hair-6', categoryId: 'hair', name: 'Twist Out / Braid Out', description: 'Styling for natural hair.', price: 65, duration: 75 },
+  { id: 'hair-7', categoryId: 'hair', name: 'Deep Conditioning / Protein Treatment', description: 'Nourishing hair treatment.', price: 45, duration: 45 },
+  { id: 'hair-8', categoryId: 'hair', name: 'Box Braids', description: 'Protective hairstyle with box braids.', price: 150, duration: 240 },
+  { id: 'hair-9', categoryId: 'hair', name: 'Knotless Braids', description: 'Lighter and more flexible braids.', price: 180, duration: 260 },
+  { id: 'hair-10', categoryId: 'hair', name: 'Cornrows', description: 'Traditional cornrow styling.', price: 70, duration: 90 },
+  { id: 'hair-11', categoryId: 'hair', name: 'Goddess / Fulani Braids', description: 'Stylish and intricate braiding.', price: 160, duration: 240 },
+  { id: 'hair-12', categoryId: 'hair', name: 'Senegalese / Marley / Passion Twists', description: 'Variety of twist styles.', price: 170, duration: 240 },
+  { id: 'hair-13', categoryId: 'hair', name: 'Crochet Braids / Styles', description: 'Versatile crochet styling.', price: 120, duration: 150 },
+  { id: 'hair-14', categoryId: 'hair', name: 'Braid Takedown', description: 'Safe removal of braids.', price: 50, duration: 60 },
+  { id: 'hair-15', categoryId: 'hair', name: 'Starter Locs', description: 'Beginning the journey to locs.', price: 85, duration: 120 },
+  { id: 'hair-16', categoryId: 'hair', name: 'Loc Retwist / Maintenance', description: 'Maintenance for existing locs.', price: 65, duration: 90 },
+  { id: 'hair-17', categoryId: 'hair', name: 'Loc Styling', description: 'Creative styling for locs.', price: 45, duration: 45 },
+  { id: 'hair-18', categoryId: 'hair', name: 'Faux Locs / Butterfly Locs', description: 'Temporary loc styles.', price: 200, duration: 300 },
+  { id: 'hair-19', categoryId: 'hair', name: 'Sew-in Weave', description: 'Adding length and volume with a weave.', price: 250, duration: 180 },
+  { id: 'hair-20', categoryId: 'hair', name: 'Wig Installation & Styling', description: 'Professional wig fitting and styling.', price: 150, duration: 120 },
+  { id: 'hair-21', categoryId: 'hair', name: 'Hair Extensions (Tape-in, Micro-link)', description: 'Adding length and volume with extensions.', price: 300, duration: 180 },
+  { id: 'hair-22', categoryId: 'hair', name: 'Colour, Highlights, Balayage', description: 'Hair coloring services.', price: 180, duration: 180 },
+  { id: 'hair-23', categoryId: 'hair', name: 'Relaxer', description: 'Chemical straightening treatment.', price: 90, duration: 90 },
+  { id: 'hair-24', categoryId: 'hair', name: 'Perm / Texturizer', description: 'Adding curls or waves to hair.', price: 100, duration: 120 },
+
+  // Facials
+  { id: 'facials-1', categoryId: 'facials', name: 'Classic Facial', description: 'A relaxing and cleansing facial.', price: 80, duration: 60 },
+  { id: 'facials-2', categoryId: 'facials', name: 'Chemical Peel', description: 'Exfoliating treatment for smoother skin.', price: 120, duration: 60 },
+  { id: 'facials-3', categoryId: 'facials', name: 'Microdermabrasion', description: 'Mechanical exfoliation for skin renewal.', price: 110, duration: 60 },
+  { id: 'facials-4', categoryId: 'facials', name: 'Dermaplaning', description: 'Removes dead skin and peach fuzz.', price: 90, duration: 45 },
+  { id: 'facials-5', categoryId: 'facials', name: 'Microneedling', description: 'Collagen-inducing therapy.', price: 250, duration: 75 },
+  { id: 'facials-6', categoryId: 'facials', name: 'LED Therapy', description: 'Light therapy for various skin concerns.', price: 60, duration: 30 },
+  { id: 'facials-7', categoryId: 'facials', name: 'Lymphatic Drainage', description: 'Facial massage to reduce puffiness.', price: 70, duration: 45 },
+  { id: 'facials-8', categoryId: 'facials', name: 'Gua Sha Facial', description: 'Toning and sculpting facial massage.', price: 75, duration: 50 },
+
+  // Nails
+  { id: 'nails-1', categoryId: 'nails', name: 'Manicure', description: 'Classic manicure service.', price: 30, duration: 45 },
+  { id: 'nails-2', categoryId: 'nails', name: 'Pedicure', description: 'Classic pedicure service.', price: 45, duration: 60 },
+  { id: 'nails-3', categoryId: 'nails', name: 'Gel / Shellac', description: 'Long-lasting gel polish.', price: 45, duration: 60 },
+  { id: 'nails-4', categoryId: 'nails', name: 'Builder Gel (BIAB)', description: 'Strengthening gel for natural nails.', price: 55, duration: 75 },
+  { id: 'nails-5', categoryId: 'nails', name: 'Dip Powder / SNS', description: 'Durable dip powder nails.', price: 50, duration: 60 },
+  { id: 'nails-6', categoryId: 'nails', name: 'Acrylics / Hard Gel', description: 'Nail extensions with acrylic or hard gel.', price: 65, duration: 90 },
+  { id: 'nails-7', categoryId: 'nails', name: 'Apres Gel-X / Soft Gel Extensions', description: 'Pre-shaped soft gel extensions.', price: 70, duration: 90 },
+  { id: 'nails-8', categoryId: 'nails', name: 'Nail Art', description: 'Custom nail art designs.', price: 20, duration: 30 },
+
+  // Brows & Lashes
+  { id: 'brows-1', categoryId: 'brows-lashes', name: 'Brow Shaping, Tinting, Lamination', description: 'Complete brow makeover.', price: 60, duration: 45 },
+  { id: 'brows-2', categoryId: 'brows-lashes', name: 'Microblading / Microshading', description: 'Semi-permanent eyebrow tattooing.', price: 450, duration: 180 },
+  { id: 'brows-3', categoryId: 'brows-lashes', name: 'Lash Lift, Tinting', description: 'Curl and color your natural lashes.', price: 75, duration: 60 },
+  { id: 'brows-4', categoryId: 'brows-lashes', name: 'Eyelash Extensions (Classic, Hybrid, Volume)', description: 'Adding length and volume to lashes.', price: 150, duration: 120 },
+
+  // Hair Removal
+  { id: 'removal-1', categoryId: 'hair-removal', name: 'Waxing', description: 'Body and facial waxing.', price: 50, duration: 30 },
+  { id: 'removal-2', categoryId: 'hair-removal', name: 'Threading', description: 'Facial hair removal with thread.', price: 25, duration: 20 },
+  { id: 'removal-3', categoryId: 'hair-removal', name: 'Sugaring', description: 'Natural hair removal paste.', price: 60, duration: 30 },
+  { id: 'removal-4', categoryId: 'hair-removal', name: 'Laser Hair Removal', description: 'Permanent hair reduction.', price: 200, duration: 30 },
+  { id: 'removal-5', categoryId: 'hair-removal', name: 'Vajacial', description: 'A facial for the bikini area.', price: 70, duration: 45 },
+
   // Body
-  { id: '7', categoryId: 'body', name: 'Deep Tissue Massage', description: 'A massage targeting deeper layers of muscle and connective tissue.', price: 100, duration: 60 },
-  { id: 's-body-1', categoryId: 'body', name: 'Swedish Massage', description: 'A gentle, relaxing full-body massage.', price: 80, duration: 60 },
-  { id: 's-body-2', categoryId: 'body', name: 'Hot Stone Massage', description: 'A massage using heated stones to relax muscles.', price: 110, duration: 75 },
-  // Hands
-  { id: 's-hands-1', categoryId: 'hands', name: 'Paraffin Wax Treatment', description: 'A soothing and moisturizing treatment for your hands.', price: 25, duration: 20 },
+  { id: 'body-1', categoryId: 'body', name: 'Body Scrub / Polish', description: 'Exfoliating body treatment.', price: 80, duration: 60 },
+  { id: 'body-2', categoryId: 'body', name: 'Body Wrap', description: 'Detoxifying and hydrating body wrap.', price: 100, duration: 75 },
+  { id: 'body-3', categoryId: 'body', name: 'Spray Tan', description: 'Sunless tanning application.', price: 40, duration: 20 },
+  { id: 'body-4', categoryId: 'body', name: 'Massage (Swedish, Deep Tissue)', description: 'Relaxing or therapeutic massage.', price: 90, duration: 60 },
+  { id: 'body-5', categoryId: 'body', name: 'Cupping Therapy', description: 'Alternative therapy for pain relief.', price: 60, duration: 45 },
+
+  // Makeup
+  { id: 'makeup-1', categoryId: 'makeup', name: 'Makeup Application', description: 'Professional makeup for any occasion.', price: 85, duration: 60 },
+  { id: 'makeup-2', categoryId: 'makeup', name: 'Bridal Makeup', description: 'Specialized makeup for brides.', price: 200, duration: 120 },
+  { id: 'makeup-3', categoryId: 'makeup', name: 'Makeup Lessons', description: 'Learn makeup application techniques.', price: 150, duration: 90 },
+  { id: 'makeup-4', categoryId: 'makeup', name: 'False Lash Application', description: 'Application of strip or individual lashes.', price: 25, duration: 15 },
+  
+  // Aesthetic / Medi-Spa
+  { id: 'medi-1', categoryId: 'medi-spa', name: 'Botox®, Fillers', description: 'Injectable cosmetic treatments.', price: 500, duration: 45 },
+  { id: 'medi-2', categoryId: 'medi-spa', name: 'Laser Resurfacing', description: 'Skin resurfacing with laser.', price: 600, duration: 60 },
+  { id: 'medi-3', categoryId: 'medi-spa', name: 'IPL / Photofacial', description: 'Light therapy for skin rejuvenation.', price: 350, duration: 45 },
+  { id: 'medi-4', categoryId: 'medi-spa', name: 'Body Contouring', description: 'Non-invasive fat reduction.', price: 400, duration: 60 },
+  { id: 'medi-5', categoryId: 'medi-spa', name: 'Vampire Facial (PRP)', description: 'Facial using your own plasma.', price: 750, duration: 90 },
+  { id: 'medi-6', categoryId: 'medi-spa', name: 'IV Vitamin Drips', description: 'Intravenous vitamin therapy.', price: 250, duration: 60 },
 ];
 
 export const reviews: Review[] = [
@@ -74,7 +135,7 @@ export const providers: Provider[] = [
       { id: 'p2', url: 'https://placehold.co/600x400.png', dataAiHint: 'pedicure design' },
       { id: 'p3', url: 'https://placehold.co/600x400.png', dataAiHint: 'nail salon' },
     ],
-    services: [services[0], services[1], services[2], services[12]],
+    services: services.filter(s => s.categoryId === 'nails'),
     reviews: [reviews[0]],
     badges: ['Top Rated', 'Quick Responder', 'Nail Art Pro'],
     location: 'New York, NY',
@@ -88,7 +149,7 @@ export const providers: Provider[] = [
       { id: 'p5', url: 'https://placehold.co/600x400.png', dataAiHint: 'woman relaxing' },
       { id: 'p6', url: 'https://placehold.co/600x400.png', dataAiHint: 'beauty clinic' },
     ],
-    services: [services[4], services[5], services[6]],
+    services: services.filter(s => s.categoryId === 'facials' || s.categoryId === 'medi-spa'),
     reviews: [reviews[1]],
     badges: ['Skincare Guru', '5-Star Safety', 'Client Favorite'],
     location: 'Miami, FL',
@@ -101,7 +162,7 @@ export const providers: Provider[] = [
       { id: 'p7', url: 'https://placehold.co/600x400.png', dataAiHint: 'balayage hair' },
       { id: 'p8', url: 'https://placehold.co/600x400.png', dataAiHint: 'woman haircut' },
     ],
-    services: [services[7], services[8], services[9]],
+    services: services.filter(s => s.categoryId === 'hair'),
     reviews: [reviews[3]],
     badges: ['Color Whiz', 'Bridal Expert'],
     location: 'Los Angeles, CA',
@@ -111,7 +172,7 @@ export const providers: Provider[] = [
     id: '4', name: 'Bridal Beauty Co.', specialty: 'Wedding Makeup', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'makeup brushes', rating: 5.0, reviewCount: 56,
     bio: 'Creating timeless and elegant bridal looks. My goal is to make you feel like the most beautiful version of yourself on your wedding day.',
     portfolio: [],
-    services: [services[8]],
+    services: services.filter(s => s.categoryId === 'makeup'),
     reviews: [],
     badges: ['Bridal Expert', 'On-Location Pro'],
     location: 'Chicago, IL',
@@ -121,7 +182,7 @@ export const providers: Provider[] = [
     id: '5', name: 'The Relaxation Station', specialty: 'Massage Therapy', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'massage oil', rating: 4.9, reviewCount: 301, isFeatured: true,
     bio: 'Licensed massage therapist with a focus on pain relief and relaxation. Each session is tailored to your individual needs.',
     portfolio: [],
-    services: [services[10], services[11]],
+    services: services.filter(s => s.categoryId === 'body'),
     reviews: [],
     badges: ['Pain Relief Pro', 'Top Rated'],
     location: 'Austin, TX',

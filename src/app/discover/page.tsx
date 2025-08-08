@@ -48,6 +48,8 @@ export default function DiscoverPage() {
     return `${selectedLocations.size} districts selected`;
   }
 
+  const currentServiceCategories = serviceCategories.slice(0, 8); // We can show up to 8 categories
+
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
       {/* Hero Section */}
@@ -187,14 +189,14 @@ export default function DiscoverPage() {
                   </div>
 
                   {/* Menu Items */}
-                  {serviceCategories.map((category, index) => {
-                    const angle = (index / serviceCategories.length) * 2 * Math.PI - (Math.PI / 2);
-                    const radius = 300; 
+                  {currentServiceCategories.map((category, index) => {
+                    const angle = (index / currentServiceCategories.length) * 2 * Math.PI - (Math.PI / 2);
+                    const radius = 300; // This should be half of the container's width/height
 
                     const dotX = radius * Math.cos(angle);
                     const dotY = radius * Math.sin(angle);
 
-                    const labelRadius = 300;
+                    const labelRadius = 290; // Slightly inside the main radius
                     const labelX = labelRadius * Math.cos(angle);
                     const labelY = labelRadius * Math.sin(angle);
                     
