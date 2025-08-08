@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Play, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -59,39 +59,42 @@ export default function DiscoverPage() {
               Select a category to start exploring expert providers.
             </p>
           </div>
-          <div className="relative flex justify-center items-center min-h-[450px]">
-            <div className="absolute w-[300px] h-[450px] rounded-[150px] overflow-hidden">
-                <Image src="https://placehold.co/400x600.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
-                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-                    <button className="w-16 h-16 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-800">
-                        <Play className="w-8 h-8 ml-1" />
-                    </button>
+          <div className="flex justify-center items-center">
+            <div className="relative w-[600px] h-[600px]">
+                {/* Dotted Circle */}
+                <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
+
+                {/* Central Image */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
+                    <Image src="https://placehold.co/400x400.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
                 </div>
+
+                {/* Menu Items */}
+                {serviceCategories.map((category, index) => {
+                  const angle = (index / serviceCategories.length) * 2 * Math.PI - Math.PI / 2;
+                  const radius = 260; // radius in pixels
+                  const x = radius * Math.cos(angle);
+                  const y = radius * Math.sin(angle);
+                  const textAlign = x > 0 ? 'left' : 'right';
+
+                  return (
+                    <div
+                      key={category.name}
+                      className="absolute group"
+                      style={{
+                        left: `calc(50% + ${x}px)`,
+                        top: `calc(50% + ${y}px)`,
+                        transform: 'translate(-50%, -50%)',
+                      }}
+                    >
+                      <div className={`flex items-center gap-3 ${textAlign === 'right' ? 'flex-row-reverse' : ''}`}>
+                        <Link href="#" className="font-semibold text-lg hover:text-primary transition-colors">{category.name}</Link>
+                        <div className="w-3 h-3 bg-primary rounded-full group-hover:scale-125 transition-transform" />
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
-            {serviceCategories.map((category, index) => {
-              const angle = (index / serviceCategories.length) * 2 * Math.PI - Math.PI / 2;
-              const radius = 40; // Use a single radius for a perfect circle
-              const x = 50 + radius * Math.cos(angle);
-              const y = 50 + radius * Math.sin(angle) * (9/16 * 1.5); // Adjust for aspect ratio of container
-              const textAlign = x > 50 ? 'left' : 'right';
-              
-              return (
-                <div
-                  key={category.name}
-                  className="absolute group"
-                  style={{
-                    left: `${x}%`,
-                    top: `${y}%`,
-                    transform: `translate(-50%, -50%)`,
-                  }}
-                >
-                  <div className={`flex items-center gap-3 ${textAlign === 'right' ? 'flex-row-reverse' : ''}`}>
-                    <Link href="#" className="font-semibold text-lg hover:text-primary transition-colors">{category.name}</Link>
-                    <div className="w-3 h-3 bg-primary rounded-full group-hover:scale-125 transition-transform" />
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
