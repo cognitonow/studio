@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -43,7 +44,9 @@ export function Header() {
           </div>
           <nav className="flex items-center">
             <Button variant="ghost">Login</Button>
-            <Button>Sign Up</Button>
+            <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
           </nav>
         </div>
       </div>
