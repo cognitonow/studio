@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ProviderCard } from '@/components/provider-card';
 import { getFeaturedProviders, getProvidersByPlaylist, playlists, providers } from '@/lib/data';
+import { ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
   const featuredProviders = getFeaturedProviders();
@@ -13,41 +14,54 @@ export default function LandingPage() {
   return (
     <div className="container mx-auto py-12 px-4 space-y-24">
       {/* Hero Section */}
-      <section className="text-center">
-        <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">Find & Book Your Next</h1>
-        <h2 className="text-4xl md:text-6xl font-bold font-headline text-primary mb-8">Beauty Appointment</h2>
-        <p className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10">
-          Discover top-rated beauty professionals in your area. Read reviews, browse portfolios, and book your perfect service instantly.
-        </p>
-        <div className="max-w-xl mx-auto">
-          <div className="relative">
-            <Input placeholder="Search for services or providers..." className="h-14 text-lg pl-6 pr-14" />
-            <Button size="icon" className="absolute right-2.5 top-1/2 -translate-y-1/2 h-10 w-10">
-              <Search />
-            </Button>
-          </div>
+      <section className="relative bg-accent/50 rounded-3xl p-8 md:p-12 min-h-[60vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://placehold.co/1200x800.png"
+            alt="Relaxing background with beauty products"
+            fill
+            className="object-cover opacity-20"
+            data-ai-hint="candles beauty products"
+          />
+        </div>
+        <div className="relative z-10 max-w-2xl text-foreground/80">
+          <h1 className="text-4xl md:text-6xl font-headline mb-4 text-foreground font-semibold">
+            Create Your Sanctuary of Self-Care
+          </h1>
+          <p className="max-w-xl text-lg text-foreground/70 mb-8">
+            Discover the art of relaxation and rejuvenation. We connect you with top-tier beauty professionals to transform your space and elevate your mood.
+          </p>
+          <Button size="lg" className="h-12 text-base" asChild>
+            <Link href="#discover">
+              Book Now
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
       </section>
 
       {/* Categories Section */}
-      {playlists.map(playlist => (
-        <section key={playlist.id}>
-          <h3 className="text-3xl font-bold font-headline mb-6">{playlist.title}</h3>
-          <Carousel opts={{ align: "start", loop: true }} className="w-full">
-            <CarouselContent>
-              {getProvidersByPlaylist(playlist.id).map(provider => (
-                <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                  <div className="p-1">
-                    <ProviderCard provider={provider} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </section>
-      ))}
+      <section id="discover">
+        <h3 className="text-3xl font-bold font-headline mb-8 text-center">Find Your Perfect Match</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {playlists.map(playlist => (
+            <Link href="#" key={playlist.id} className="block group">
+              <div className="relative h-64 w-full rounded-xl overflow-hidden shadow-lg transition-transform group-hover:scale-105 duration-300">
+                <Image
+                  src={`https://placehold.co/400x400.png`}
+                  alt={playlist.title}
+                  fill
+                  className="object-cover"
+                  data-ai-hint={playlist.id}
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-end p-6">
+                  <h4 className="text-2xl font-bold text-white font-headline">{playlist.title}</h4>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Featured Providers Section */}
       <section>
