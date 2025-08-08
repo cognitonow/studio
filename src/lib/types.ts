@@ -1,3 +1,4 @@
+
 export type Provider = {
   id: string;
   name: string;
@@ -18,6 +19,7 @@ export type Provider = {
 
 export type Service = {
   id: string;
+  categoryId: string;
   name: string;
   description: string;
   price: number;
@@ -38,3 +40,13 @@ export type Playlist = {
   id: string;
   title: string;
 };
+
+export type ServiceCategory = {
+  id: string;
+  name: string;
+}
+
+export type DublinDistrict = {
+    id: string;
+    name: string;
+}

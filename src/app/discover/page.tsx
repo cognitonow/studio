@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react';
-import { playlists, providers, getFeaturedProviders } from '@/lib/data';
+import { playlists, providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts } from '@/lib/data';
 import { ProviderCard } from '@/components/provider-card';
 import {
   Carousel,
@@ -12,27 +12,41 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
 
-  const serviceCategories = [
-    { id: 'hair', name: 'Hair' },
-    { id: 'nails', name: 'Nails' },
-    { id: 'skin', name: 'Skin' },
-    { id: 'feet', name: 'Feet' },
-    { id: 'hands', name: 'Hands' },
-    { id: 'body', name: 'Body' },
-  ];
-
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [selectedService, setSelectedService] = useState<string | undefined>();
+  const [selectedLocations, setSelectedLocations] = useState<Set<string>>(new Set());
+
+  const filteredServices = selectedCategory ? allServices.filter(s => s.categoryId === selectedCategory) : [];
+
+  const handleLocationSelect = (districtId: string) => {
+    setSelectedLocations(prev => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(districtId)) {
+        newSelection.delete(districtId);
+      } else {
+        newSelection.add(districtId);
+      }
+      return newSelection;
+    });
+  }
+  
+  const getSelectedLocationsText = () => {
+    if (selectedLocations.size === 0) return "Select a district";
+    if (selectedLocations.size === 1) return dublinDistricts.find(d => d.id === Array.from(selectedLocations)[0])?.name;
+    return `${selectedLocations.size} districts selected`;
+  }
 
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
@@ -78,7 +92,7 @@ export default function DiscoverPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <Select value={selectedCategory} onValueChange={(value) => { setSelectedCategory(value); setSelectedService(undefined); }}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
@@ -89,20 +103,43 @@ export default function DiscoverPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Select>
-                      <SelectTrigger id="location">
-                        <SelectValue placeholder="Select a location" />
+                   <div className="space-y-2">
+                    <Label htmlFor="service">Service</Label>
+                    <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory}>
+                      <SelectTrigger id="service">
+                        <SelectValue placeholder="Select a service" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ny">New York, NY</SelectItem>
-                        <SelectItem value="la">Los Angeles, CA</SelectItem>
-                        <SelectItem value="chi">Chicago, IL</SelectItem>
-                        <SelectItem value="mia">Miami, FL</SelectItem>
-                        <SelectItem value="aus">Austin, TX</SelectItem>
+                        {filteredServices.map(service => (
+                           <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <span>{getSelectedLocationsText()}</span>
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-64">
+                        <DropdownMenuLabel>Dublin Districts</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {dublinDistricts.map(district => (
+                          <DropdownMenuCheckboxItem
+                            key={district.id}
+                            checked={selectedLocations.has(district.id)}
+                            onSelect={(e) => e.preventDefault()} // prevent menu from closing
+                            onPointerDown={() => handleLocationSelect(district.id)}
+                          >
+                            {district.name}
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="price">Price Range</Label>
@@ -142,7 +179,7 @@ export default function DiscoverPage() {
             <div className="lg:col-span-2 flex justify-center items-center">
               <div className="relative w-[600px] h-[600px]">
                   {/* Dotted Circle */}
-                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full z-10"></div>
+                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
 
                   {/* Central Image */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
@@ -151,13 +188,13 @@ export default function DiscoverPage() {
 
                   {/* Menu Items */}
                   {serviceCategories.map((category, index) => {
-                    const angle = (index / serviceCategories.length) * 2 * Math.PI - (Math.PI / 2); // Start from top
-                    const radius = 300; // radius of the container
+                    const angle = (index / serviceCategories.length) * 2 * Math.PI - (Math.PI / 2);
+                    const radius = 300; 
 
                     const dotX = radius * Math.cos(angle);
                     const dotY = radius * Math.sin(angle);
 
-                    const labelRadius = 340; // radius for text to be outside
+                    const labelRadius = 340;
                     const labelX = labelRadius * Math.cos(angle);
                     const labelY = labelRadius * Math.sin(angle);
                     
@@ -169,11 +206,11 @@ export default function DiscoverPage() {
                       transform += ' translateX(-100%) translateX(-20px)';
                     } else if (isRight) {
                       transform += ' translateX(20px)';
-                    } else { // top or bottom
+                    } else { 
                       transform += ' translateX(-50%)';
-                      if(Math.sin(angle) > 0) { // bottom
+                      if(Math.sin(angle) > 0) {
                         transform += ' translateY(20px)';
-                      } else { // top
+                      } else {
                         transform += ' translateY(-20px)';
                       }
                     }
@@ -191,7 +228,7 @@ export default function DiscoverPage() {
                           />
                           {/* Label */}
                           <div
-                            onClick={() => setSelectedCategory(category.id)}
+                            onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
                             className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
                             style={{
                               left: `calc(50% + ${labelX}px)`,
