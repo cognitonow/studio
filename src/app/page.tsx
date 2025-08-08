@@ -1,83 +1,53 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
-import { ProviderCard } from '@/components/provider-card';
-import { playlists, getProvidersByPlaylist, getFeaturedProviders, providers } from '@/lib/data';
+import Image from 'next/image';
 
-export default function DiscoveryPage() {
-  const featuredProviders = getFeaturedProviders();
+const LeafIcon = () => (
+  <svg
+    className="inline-block w-16 h-16 text-primary"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.05 16.95C15.65 17.35 15.05 17.35 14.65 16.95L12 14.3L9.35 16.95C8.95 17.35 8.35 17.35 7.95 16.95C7.55 16.55 7.55 15.95 7.95 15.55L10.6 12.9L7.95 10.25C7.55 9.85 7.55 9.25 7.95 8.85C8.35 8.45 8.95 8.45 9.35 8.85L12 11.5L14.65 8.85C15.05 8.45 15.65 8.45 16.05 8.85C16.45 9.25 16.45 9.85 16.05 10.25L13.4 12.9L16.05 15.55C16.45 15.95 16.45 16.55 16.05 16.95Z"
+      transform="translate(0, -1.5) scale(0.9)"
+    />
+  </svg>
+);
 
+export default function HomePage() {
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
-      <section className="text-center py-12">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 font-headline">Find Your Perfect Beauty Match</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Discover and book top-rated stylists, artists, and estheticians in your area.
-        </p>
-        <div className="mt-8 max-w-xl mx-auto flex items-center space-x-2">
-          <Input type="search" placeholder="Search for services or providers..." className="flex-1 text-base" />
-          <Button size="lg">
-            <Search className="mr-2 h-5 w-5" />
-            Search
-          </Button>
-        </div>
-      </section>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-5xl md:text-7xl font-light tracking-tight text-foreground leading-tight">
+          <span className="text-primary font-normal">Rejuvenation</span>
+          <LeafIcon /> of
+          <br />
+          the face and scalp
+        </h1>
 
-      <section className="py-12">
-        <h2 className="text-3xl font-bold tracking-tight mb-6 font-headline">Featured Providers</h2>
-        <Carousel opts={{ align: "start", loop: true }} className="w-full">
-          <CarouselContent>
-            {featuredProviders.map((provider) => (
-              <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
-                  <ProviderCard provider={provider} />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </section>
-      
-      {playlists.map((playlist) => {
-        const playlistProviders = getProvidersByPlaylist(playlist.id);
-        if (playlistProviders.length === 0) return null;
-        return (
-          <section key={playlist.id} className="py-12">
-            <h2 className="text-3xl font-bold tracking-tight mb-6 font-headline">{playlist.title}</h2>
-            <Carousel opts={{ align: "start" }} className="w-full">
-              <CarouselContent>
-                {playlistProviders.map((provider) => (
-                  <CarouselItem key={provider.id} className="basis-5/6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                    <div className="p-1">
-                      <ProviderCard provider={provider} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
-          </section>
-        );
-      })}
-
-      <section className="py-12">
-        <h2 className="text-3xl font-bold tracking-tight mb-6 font-headline">Explore All Providers</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {providers.map((provider) => (
-            <ProviderCard key={provider.id} provider={provider} />
-          ))}
+        <div className="mt-16 grid md:grid-cols-2 gap-12 items-center">
+          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
+            <Image
+              src="https://placehold.co/800x600.png"
+              alt="Cosmetic products display"
+              layout="fill"
+              objectFit="cover"
+              data-ai-hint="cosmetic products"
+            />
+          </div>
+          <div className="max-w-md">
+            <h2 className="text-2xl font-medium text-foreground mb-4">
+              An advanced medical product specially designed for facial and
+              scalp rejuvenation.
+            </h2>
+            <p className="text-foreground/70 leading-relaxed">
+              One of the key technologies included in RevivaDerm. It uses
+              hybrid exosomes to replace old and damaged cells with young and
+              healthy cells.
+            </p>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
