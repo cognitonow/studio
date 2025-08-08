@@ -10,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['system-ui', 'sans-serif'],
-        headline: ['system-ui', 'sans-serif'],
-        code: ['monospace'],
+        body: ['Inter', 'sans-serif'],
+        headline: ['Inter', 'sans-serif'],
+        display: ['"Dancing Script"', 'cursive'],
       },
       colors: {
         background: 'hsl(var(--background))',
