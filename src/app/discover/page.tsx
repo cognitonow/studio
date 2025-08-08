@@ -1,4 +1,7 @@
 
+'use client'
+
+import { useState } from 'react';
 import { playlists, providers, getFeaturedProviders } from '@/lib/data';
 import { ProviderCard } from '@/components/provider-card';
 import {
@@ -21,13 +24,15 @@ export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
 
   const serviceCategories = [
-    { name: 'Hair' },
-    { name: 'Nails' },
-    { name: 'Skin' },
-    { name: 'Feet' },
-    { name: 'Hands' },
-    { name: 'Body' },
+    { id: 'hair', name: 'Hair' },
+    { id: 'nails', name: 'Nails' },
+    { id: 'skin', name: 'Skin' },
+    { id: 'feet', name: 'Feet' },
+    { id: 'hands', name: 'Hands' },
+    { id: 'body', name: 'Body' },
   ];
+
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
 
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
@@ -73,16 +78,14 @@ export default function DiscoverPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Select>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="hair">Hair</SelectItem>
-                        <SelectItem value="nails">Nails</SelectItem>
-                        <SelectItem value="skin">Skin</SelectItem>
-                        <SelectItem value="massage">Massage</SelectItem>
-                        <SelectItem value="makeup">Makeup</SelectItem>
+                        {serviceCategories.map(cat => (
+                           <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -148,34 +151,56 @@ export default function DiscoverPage() {
 
                   {/* Menu Items */}
                   {serviceCategories.map((category, index) => {
-                    const angle = (index / serviceCategories.length) * 2 * Math.PI;
-                    const radius = 300; // radius for the dot
-                    const dotX = (radius / 2) * Math.cos(angle);
-                    const dotY = (radius / 2) * Math.sin(angle);
+                    const angle = (index / serviceCategories.length) * 2 * Math.PI - (Math.PI / 2); // Start from top
+                    const radius = 300; // radius of the container
+
+                    const dotX = radius * Math.cos(angle);
+                    const dotY = radius * Math.sin(angle);
 
                     const labelRadius = 340; // radius for text to be outside
-                    const labelX = (labelRadius / 2) * Math.cos(angle);
-                    const labelY = (labelRadius / 2) * Math.sin(angle);
+                    const labelX = labelRadius * Math.cos(angle);
+                    const labelY = labelRadius * Math.sin(angle);
                     
-                    const isLeft = Math.cos(angle) < 0;
+                    const isLeft = Math.cos(angle) < -0.1;
+                    const isRight = Math.cos(angle) > 0.1;
+
+                    let transform = 'translate(-50%, -50%)';
+                    if (isLeft) {
+                      transform += ' translateX(-100%) translateX(-20px)';
+                    } else if (isRight) {
+                      transform += ' translateX(20px)';
+                    } else { // top or bottom
+                      transform += ' translateX(-50%)';
+                      if(Math.sin(angle) > 0) { // bottom
+                        transform += ' translateY(20px)';
+                      } else { // top
+                        transform += ' translateY(-20px)';
+                      }
+                    }
 
                     return (
-                      <div key={category.name} className="absolute" style={{ left: '50%', top: '50%', transform: `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)` }}>
+                      <div key={category.id}>
                          {/* Dot */}
                          <div
                             className="absolute w-5 h-5 bg-primary rounded-full z-20"
+                             style={{
+                              left: `calc(50% + ${dotX}px)`,
+                              top: `calc(50% + ${dotY}px)`,
+                              transform: 'translate(-50%, -50%)',
+                            }}
                           />
                           {/* Label */}
-                          <Link href="#" passHref>
-                            <span
-                              className="absolute bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
-                              style={{
-                                transform: `translate(${isLeft ? '-100%' : '0%'}, -50%) translateX(${isLeft ? -20 : 20}px)`,
-                              }}
-                            >
+                          <div
+                            onClick={() => setSelectedCategory(category.id)}
+                            className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
+                            style={{
+                              left: `calc(50% + ${labelX}px)`,
+                              top: `calc(50% + ${labelY}px)`,
+                              transform,
+                            }}
+                          >
                             {category.name}
-                            </span>
-                          </Link>
+                          </div>
                       </div>
                     );
                   })}
