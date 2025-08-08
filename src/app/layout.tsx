@@ -5,8 +5,8 @@ import { Header } from '@/components/layout/header';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'RevivaDerm',
-  description: 'Rejuvenation of the face and scalp.',
+  title: 'Beauty Book',
+  description: 'Book your next beauty appointment with ease.',
 };
 
 export default function RootLayout({
