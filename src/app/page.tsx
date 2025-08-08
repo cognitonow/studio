@@ -9,11 +9,10 @@ export default function LandingPage() {
       <div className="grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter">
+            <span className="block">Swipe and find</span>
             <span className="text-primary flex items-center gap-3">
-              Rejuvenation
-              <Sprout className="w-12 h-12" />
+              your next Beauty Match
             </span>
-            <span>of the mind and body</span>
           </h1>
           <div className="max-w-md text-muted-foreground space-y-4 text-lg">
             <p>
