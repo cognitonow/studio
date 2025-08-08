@@ -35,8 +35,8 @@ export function ProviderCard({ provider }: ProviderCardProps) {
           <p className="text-sm text-muted-foreground">{provider.specialty}</p>
         </CardContent>
         <CardFooter className="p-4 pt-0">
-           <Button asChild variant="outline" className="w-full">
-              <Link href={`/provider/${provider.id}`}>Book now</Link>
+           <Button variant="outline" className="w-full" asChild={false}>
+              Book now
            </Button>
         </CardFooter>
       </Card>
