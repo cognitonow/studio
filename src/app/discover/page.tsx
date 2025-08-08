@@ -9,18 +9,27 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Play, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
 
+  const serviceCategories = [
+    { name: 'Hair' },
+    { name: 'Nails' },
+    { name: 'Skin' },
+    { name: 'Feet' },
+    { name: 'Hands' },
+    { name: 'Body' },
+  ];
+
   return (
     <div className="container mx-auto py-12 px-4 space-y-16">
       {/* Hero Section */}
       <section className="relative h-[450px] rounded-2xl overflow-hidden flex items-center">
-        <Image 
+        <Image
             src="https://placehold.co/1200x450.png"
             alt="Woman with beautiful makeup"
             fill
@@ -41,26 +50,48 @@ export default function DiscoverPage() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section>
-        <h3 className="text-2xl font-bold font-headline mb-6">Categories</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {playlists.map(playlist => (
-            <Link href="#" key={playlist.id} className="block group">
-              <div className="relative h-48 w-full rounded-lg overflow-hidden shadow-sm transition-transform group-hover:scale-105 duration-300">
-                <Image
-                  src={`https://placehold.co/400x400.png`}
-                  alt={playlist.title}
-                  fill
-                  className="object-cover"
-                  data-ai-hint={playlist.id}
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-end p-4">
-                  <h4 className="text-lg font-bold text-white font-headline">{playlist.title}</h4>
+      {/* Categories Section v2 */}
+       <section className="py-16 bg-muted/30 rounded-2xl">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold font-headline">Find a Service</h2>
+            <p className="text-muted-foreground mt-2">
+              Select a category to start exploring expert providers.
+            </p>
+          </div>
+          <div className="relative flex justify-center items-center min-h-[400px]">
+            <div className="absolute w-[300px] h-[450px] rounded-[150px] overflow-hidden">
+                <Image src="https://placehold.co/400x600.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
+                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                    <button className="w-16 h-16 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-800">
+                        <Play className="w-8 h-8 ml-1" />
+                    </button>
                 </div>
-              </div>
-            </Link>
-          ))}
+            </div>
+            {serviceCategories.map((category, index) => {
+              const angle = (index / serviceCategories.length) * 2 * Math.PI - Math.PI / 2;
+              const x = 50 + 40 * Math.cos(angle);
+              const y = 50 + 45 * Math.sin(angle);
+              const textAlign = x > 50 ? 'left' : 'right';
+              
+              return (
+                <div
+                  key={category.name}
+                  className="absolute group"
+                  style={{
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    transform: `translate(-50%, -50%)`,
+                  }}
+                >
+                  <div className={`flex items-center gap-3 ${textAlign === 'right' ? 'flex-row-reverse' : ''}`}>
+                    <Link href="#" className="font-semibold text-lg hover:text-primary transition-colors">{category.name}</Link>
+                    <div className="w-3 h-3 bg-primary rounded-full group-hover:scale-125 transition-transform" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
