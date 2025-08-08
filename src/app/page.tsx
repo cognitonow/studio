@@ -1,9 +1,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getFeaturedProviders, getProvidersByPlaylist, playlists, providers } from '@/lib/data';
-import { ArrowRight } from 'lucide-react';
+import { getFeaturedProviders, playlists } from '@/lib/data';
+import { ArrowRight, Bot, CalendarCheck, ShieldCheck, Sparkles } from 'lucide-react';
 import { ProviderCard } from '@/components/provider-card';
+
+const features = [
+    {
+      icon: <ShieldCheck />,
+      title: 'Verified Providers',
+      description: 'We ensure that every provider on our platform is vetted for quality and professionalism, giving you peace of mind.',
+    },
+    {
+      icon: <CalendarCheck />,
+      title: 'Seamless Booking',
+      description: 'Find a time that works for you and book your appointment in just a few clicks. It\'s that simple.',
+    },
+    {
+      icon: <Sparkles />,
+      title: 'Personalized Experience',
+      description: 'We use AI to help you discover new services and providers tailored to your unique style and preferences.',
+    },
+    {
+      icon: <Bot />,
+      title: 'Direct Communication',
+      description: 'Our in-app chat lets you connect directly with your provider to discuss details and ask questions.',
+    },
+]
+
 
 export default function LandingPage() {
   const featuredProviders = getFeaturedProviders();
@@ -60,6 +84,43 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Features Section */}
+      <section className="bg-background rounded-3xl relative">
+        <div className="absolute inset-0 flex items-center justify-center">
+            <Sparkles className="w-1/2 h-1/2 text-accent/50" />
+        </div>
+        <div className="container mx-auto px-4 py-16 relative">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-4xl font-bold font-headline">
+                Why Choose Beauty Book?
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                We offer a variety of services and features designed to enhance your beauty and wellness journey.
+              </p>
+              <Button size="lg" asChild>
+                <Link href="/signup">
+                  Get Started
+                </Link>
+              </Button>
+            </div>
+            <div className="space-y-8">
+                {features.map((feature, index) => (
+                    <div key={index} className="flex items-start gap-4">
+                        <div className="flex-shrink-0 size-12 rounded-full bg-accent/80 flex items-center justify-center text-primary">
+                            {feature.icon}
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-semibold font-headline">{feature.title}</h4>
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Featured Providers Section */}
       <section>
         <h3 className="text-3xl font-bold font-headline mb-6">Featured Providers</h3>
@@ -67,21 +128,6 @@ export default function LandingPage() {
           {featuredProviders.map(provider => (
             <ProviderCard key={provider.id} provider={provider} />
           ))}
-        </div>
-      </section>
-
-       {/* All Providers Section */}
-       <section>
-        <div className="text-center">
-          <h3 className="text-3xl font-bold font-headline mb-6">Explore All Providers</h3>
-          <p className="max-w-2xl mx-auto text-lg text-muted-foreground mb-8">
-            Browse through our extensive network of talented beauty experts.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {providers.map(provider => (
-                <ProviderCard key={provider.id} provider={provider} />
-            ))}
-          </div>
         </div>
       </section>
     </div>
