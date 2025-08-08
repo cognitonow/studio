@@ -72,7 +72,7 @@ export default function DiscoverPage() {
                 {/* Menu Items */}
                 {serviceCategories.map((category, index) => {
                   const angle = (index / serviceCategories.length) * 2 * Math.PI;
-                  const radius = 280; // radius in pixels for the dot
+                  const radius = 300; // radius in pixels for the dot
                   const dotX = radius * Math.cos(angle);
                   const dotY = radius * Math.sin(angle);
 
