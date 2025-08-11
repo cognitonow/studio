@@ -17,7 +17,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -30,7 +30,7 @@ export default function DiscoverPage() {
   const [selectedLocations, setSelectedLocations] = useState<Set<string>>(new Set());
 
   const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+    setSelectedCategory(categoryId === 'all' ? undefined : categoryId);
     setSelectedService(undefined);
   }
 
@@ -108,6 +108,8 @@ export default function DiscoverPage() {
                         {serviceCategories.map(cat => (
                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                         ))}
+                        <SelectSeparator />
+                        <SelectItem value="all">All</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -128,6 +130,8 @@ export default function DiscoverPage() {
                         {filteredServices.map(service => (
                            <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
                         ))}
+                        <SelectSeparator />
+                        <SelectItem value="all">All</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -167,19 +171,8 @@ export default function DiscoverPage() {
                         <SelectItem value="2">$$</SelectItem>
                         <SelectItem value="3">$$$</SelectItem>
                         <SelectItem value="4">$$$$</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rating">Rating</Label>
-                    <Select>
-                      <SelectTrigger id="rating">
-                        <SelectValue placeholder="Any rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="5">5 stars</SelectItem>
-                        <SelectItem value="4">4 stars & up</SelectItem>
-                        <SelectItem value="3">3 stars & up</SelectItem>
+                        <SelectSeparator />
+                        <SelectItem value="all">All</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
