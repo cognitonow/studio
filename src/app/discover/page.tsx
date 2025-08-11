@@ -11,10 +11,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  useCarousel,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, ChevronDown, Heart, MessageCircle, User } from 'lucide-react';
+import { Search, Filter, ChevronDown, Heart, MessageCircle, User, Undo2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,53 +27,96 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
 
-function ExploreCarouselContent() {
-  const { scrollNext } = useCarousel()
+function ExploreStack() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right' | 'up' | 'none'>('none');
+
+  const handleNext = () => {
+    setDirection('right');
+    setTimeout(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
+      setDirection('none');
+    }, 300);
+  };
+  
+  const handleLike = () => {
+    setDirection('up');
+    setTimeout(() => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
+        setDirection('none');
+    }, 300);
+  };
+
+  const handlePrevious = () => {
+    setDirection('left');
+    setTimeout(() => {
+        setActiveIndex((prevIndex) => (prevIndex - 1 + providers.length) % providers.length);
+        setDirection('none');
+    }, 300);
+  };
+
+  const getCardStyle = (index: number) => {
+    const isActive = index === activeIndex;
+    const isNext = index === (activeIndex + 1) % providers.length;
+    
+    let transform = 'scale(0.9) translateY(20px)';
+    let opacity = 0;
+    let zIndex = providers.length - index;
+
+    if (isActive) {
+        opacity = 1;
+        transform = 'scale(1) translateY(0)';
+        if (direction === 'right') {
+            transform = 'translateX(100%) rotate(15deg) scale(1)';
+        } else if (direction === 'left') {
+            transform = 'translateX(-100%) rotate(-15deg) scale(1)';
+        } else if (direction === 'up') {
+            transform = 'translateY(-100%) rotate(0deg) scale(1)';
+        }
+    } else if (isNext) {
+        opacity = 1;
+        transform = 'scale(0.95) translateY(10px)';
+    }
+
+    return {
+        transition: 'all 0.3s ease-in-out',
+        transform,
+        opacity,
+        zIndex,
+    };
+  };
 
   return (
-    <>
-      <CarouselContent>
-        {providers.map((provider) => (
-          <CarouselItem key={provider.id} className="flex justify-center">
-            <div className="w-full max-w-md">
-              <ExploreProviderCard provider={provider} />
-              <div className="p-6 pt-8 flex justify-center items-center">
-                  <div className="flex justify-center items-center gap-6">
-                      <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Save to list">
-                          <Heart className="h-10 w-10 fill-primary text-primary" />
-                      </Button>
-                       <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md">
-                        <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                            <User className="h-10 w-10 text-primary" />
-                        </Link>
-                     </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Open chat">
-                          <MessageCircle className="h-10 w-10 fill-primary text-primary" />
-                      </Button>
-                  </div>
-              </div>
-            </div>
-          </CarouselItem>
+    <div className="flex flex-col items-center">
+      <div className="relative w-full max-w-md h-[550px]">
+        {providers.map((provider, index) => (
+          <div key={provider.id} className="absolute w-full h-full" style={getCardStyle(index)}>
+            <ExploreProviderCard provider={provider} />
+          </div>
         ))}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </>
-  )
+      </div>
+      <div className="p-6 pt-8 flex justify-center items-center">
+        <div className="flex justify-center items-center gap-6">
+          <Button onClick={handlePrevious} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Previous">
+            <Undo2 className="h-10 w-10 text-primary" />
+          </Button>
+          <Button onClick={handleLike} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Save to list">
+            <Heart className="h-10 w-10 fill-primary text-primary" />
+          </Button>
+          <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md">
+            <Link href={`/provider/${providers[activeIndex].id}`} aria-label="View profile">
+              <User className="h-10 w-10 text-primary" />
+            </Link>
+          </Button>
+          <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Open chat">
+            <MessageCircle className="h-10 w-10 fill-primary text-primary" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function ExploreCarousel() {
-  return (
-    <Carousel
-      opts={{
-        align: "start",
-      }}
-      className="w-full"
-    >
-      <ExploreCarouselContent />
-    </Carousel>
-  )
-}
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -151,7 +193,7 @@ export default function DiscoverPage() {
             <TabsTrigger value="find">Find a Service</TabsTrigger>
           </TabsList>
           <TabsContent value="explore">
-            <ExploreCarousel />
+            <ExploreStack />
           </TabsContent>
           <TabsContent value="featured">
               <Carousel opts={{ align: 'start', loop: true }}>
