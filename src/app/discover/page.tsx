@@ -28,6 +28,7 @@ import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import type { Provider } from '@/lib/types';
+import { ProviderProfileView } from '@/components/provider-profile-view';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -138,14 +139,14 @@ function ExploreStack() {
                   <User className="h-10 w-10 text-primary" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="p-0 border-0 max-w-md">
+            <DialogContent className="p-0 border-0 max-w-4xl h-[90vh]">
                 <DialogHeader className="sr-only">
                     <DialogTitle>Provider Profile</DialogTitle>
                     <DialogDescription>
                         Detailed view of the service provider's profile.
                     </DialogDescription>
                 </DialogHeader>
-              <ExploreProviderCard provider={providers[activeIndex]} />
+                <ProviderProfileView provider={providers[activeIndex]} />
             </DialogContent>
           </Dialog>
           <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
