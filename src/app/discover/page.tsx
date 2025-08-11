@@ -54,12 +54,12 @@ function ExploreCarousel() {
       opts={{
         align: "start",
       }}
-      className="w-full max-w-md mx-auto"
+      className="w-full"
     >
       <CarouselContent>
         {providers.map((provider) => (
-          <CarouselItem key={provider.id}>
-            <div className="p-1">
+          <CarouselItem key={provider.id} className="flex justify-center">
+            <div className="w-full max-w-md">
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-between items-center">
                   <div className="flex gap-2">

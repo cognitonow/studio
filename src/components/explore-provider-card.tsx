@@ -34,7 +34,7 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
   const subImage2 = portfolioImages[2] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'makeup application' };
 
   return (
-    <Card className="w-full max-w-md mx-auto overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-primary/20 hover:shadow-xl">
+    <Card className="w-full mx-auto overflow-hidden shadow-lg transition-all duration-300 ease-in-out hover:shadow-primary/20 hover:shadow-xl">
         <CardHeader className="p-0">
             <div className="grid grid-cols-3 grid-rows-2 gap-1 h-64">
                 <div className="col-span-2 row-span-2 relative">
@@ -78,7 +78,7 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                     <span>{provider.location}</span>
                 </div>
             </div>
-             <div className="text-center">
+             <div>
                 <CardTitle className="text-3xl font-bold font-headline">{provider.name}</CardTitle>
                 <CardDescription className="text-muted-foreground">{provider.specialty}</CardDescription>
             </div>
