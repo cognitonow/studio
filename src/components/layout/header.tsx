@@ -2,31 +2,27 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, Bell, User, Search } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, Bell, User, Search, LogIn, LayoutDashboard } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
 const userRole = 'client'; // 'provider' | 'guest'
 
 function getNavLinks(role: string) {
-    const commonLinks = [
-        { href: '/discover', label: 'Discover' },
-    ];
-    
     const discoverIcon = { href: '/discover', label: 'Discover', icon: Search };
     const messagesIcon = { href: '/messages', label: 'Messages', icon: MessageSquare };
     const notificationsIcon = { href: '/notifications', label: 'Notifications', icon: Bell };
     const accountIcon = { href: '/account', label: 'Account', icon: User };
+    const dashboardIcon = { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard };
+    const signUpIcon = { href: '/signup', label: 'Sign Up', icon: LogIn };
+
+    const clientLinks = [discoverIcon, messagesIcon, notificationsIcon, accountIcon];
+    const providerLinks = [dashboardIcon, messagesIcon, notificationsIcon, accountIcon];
+    const guestLinks = [discoverIcon, signUpIcon];
 
     switch (role) {
         case 'client':
             return {
-                desktop: [],
-                desktopIcons: [
-                    discoverIcon,
-                    messagesIcon,
-                    notificationsIcon,
-                    accountIcon,
-                ],
+                desktop: clientLinks,
                 mobile: [
                     { href: '/discover', label: 'Discover' },
                     { href: '/bookings', label: 'My Bookings' },
@@ -38,14 +34,7 @@ function getNavLinks(role: string) {
             };
         case 'provider':
              return {
-                desktop: [
-                    { href: '/dashboard', label: 'Dashboard' },
-                ],
-                desktopIcons: [
-                    messagesIcon,
-                    notificationsIcon,
-                    accountIcon,
-                ],
+                desktop: providerLinks,
                 mobile: [
                     { href: '/dashboard', label: 'Dashboard' },
                     { href: '/messages', label: 'Messages' },
@@ -55,38 +44,21 @@ function getNavLinks(role: string) {
             };
         default: // guest
              return {
-                desktop: [
-                    ...commonLinks,
-                    { href: '/signup', label: 'Sign Up', isButton: true },
-                ],
-                desktopIcons: [],
+                desktop: guestLinks,
                 mobile: [
-                     ...commonLinks,
+                     { href: '/discover', label: 'Discover' },
+                     { href: '/signup', label: 'Sign Up' },
                 ],
             };
     }
 }
 
 const DesktopNavLinks = () => {
-    const { desktop, desktopIcons } = getNavLinks(userRole);
+    const { desktop } = getNavLinks(userRole);
 
     return (
         <>
-            {desktop.map(({ href, label, isButton }) => {
-                if (isButton) {
-                    return (
-                        <Button key={href} asChild>
-                            <Link href={href}>{label}</Link>
-                        </Button>
-                    );
-                }
-                return (
-                    <Link key={href} href={href} className="transition-colors text-foreground hover:text-primary font-medium">
-                        {label}
-                    </Link>
-                );
-            })}
-            {desktopIcons.map(({ href, label, icon: Icon }) => (
+            {desktop.map(({ href, label, icon: Icon }) => (
                 <Button key={href} variant="outline" size="icon" className="rounded-full" asChild>
                    <Link href={href}>
                         <Icon className="h-5 w-5" />
