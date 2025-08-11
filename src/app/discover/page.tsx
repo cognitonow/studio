@@ -14,7 +14,7 @@ import {
   useCarousel,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, ChevronDown, Heart, MessageCircle, ChevronRight } from 'lucide-react';
+import { Search, Filter, ChevronDown, Heart, MessageCircle, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,17 +58,17 @@ function ExploreCarousel() {
             <div className="w-full max-w-md">
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-center items-center">
-                  <div className="flex justify-center gap-6">
+                  <div className="flex justify-center items-center gap-6">
                       <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Save to list">
-                          <Heart className="h-14 w-14" />
+                          <Heart className="h-16 w-16 fill-primary text-primary" />
                       </Button>
-                      <Button asChild variant="outline" size="icon" className="rounded-full h-28 w-28">
+                       <Button asChild variant="outline" size="icon" className="rounded-full h-28 w-28">
                         <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                            <ChevronRight className="h-14 w-14" />
+                            <User className="h-16 w-16 text-primary" />
                         </Link>
                      </Button>
                       <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Open chat">
-                          <MessageCircle className="h-14 w-14" />
+                          <MessageCircle className="h-16 w-16 fill-primary text-primary" />
                       </Button>
                   </div>
               </div>
