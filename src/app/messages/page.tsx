@@ -18,17 +18,33 @@ export default function MessagesPage() {
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
 
   useEffect(() => {
-    // Mark all as read when the page loads
+    // Mark all as read when the page is viewed
     markAllMessagesAsRead();
-    
-    const convos = getConversations();
-    const msgs = getMessages();
-    setConversations(convos);
-    setMessages(msgs);
-    if (convos.length > 0) {
-      setActiveConversation(convos[1] || convos[0]);
+
+    const fetchConversations = () => {
+        const convos = getConversations();
+        setConversations(convos);
+
+        // Update active conversation data if it exists
+        if (activeConversation) {
+            const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
+            setActiveConversation(updatedActiveConvo);
+        } else if (convos.length > 0) {
+            // Set initial active conversation
+            setActiveConversation(convos[1] || convos[0]);
+        }
     }
-  }, []);
+    
+    fetchConversations();
+    const msgs = getMessages();
+    setMessages(msgs);
+    
+    // Poll for new messages to update unread counts
+    const interval = setInterval(fetchConversations, 2000); 
+
+    return () => clearInterval(interval);
+
+  }, [activeConversation?.id]); // Rerun effect if active conversation changes
 
   if (!activeConversation) {
     return (
