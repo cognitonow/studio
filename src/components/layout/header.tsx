@@ -23,8 +23,6 @@ const GuestLinks = () => (
 
 const ClientLinks = () => (
     <>
-      <Link href="/bookings" className="transition-colors hover:text-primary text-foreground">My Bookings</Link>
-      <Link href="/my-lists" className="transition-colors hover:text-primary text-foreground">My Lists</Link>
       <Button size="icon" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
@@ -87,8 +85,6 @@ const MobileGuestLinks = () => (
 
 const MobileClientLinks = () => (
     <>
-      <Link href="/bookings" className="text-foreground transition-colors hover:text-primary">My Bookings</Link>
-      <Link href="/my-lists" className="text-foreground transition-colors hover:text-primary">My Lists</Link>
       <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
       <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
     </>
