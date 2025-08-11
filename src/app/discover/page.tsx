@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState } from 'react';
@@ -181,7 +182,7 @@ export default function DiscoverPage() {
             <div className="lg:col-span-2 flex justify-center items-center">
               <div className="relative w-[600px] h-[600px]">
                   {/* Dotted Circle */}
-                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
+                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full z-10"></div>
 
                   {/* Central Image */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
@@ -195,38 +196,19 @@ export default function DiscoverPage() {
 
                     const x = radius * Math.cos(angle);
                     const y = radius * Math.sin(angle);
-                    
-                    const isLeft = Math.cos(angle) < -0.1;
-                    const isRight = Math.cos(angle) > 0.1;
-
-                    let transform = 'translate(-50%, -50%)';
-                    if (isLeft) {
-                      transform += ' translateX(-50%)';
-                    } else if (isRight) {
-                      transform += ' translateX(50%)';
-                    } else { 
-                      transform += ' translateX(-50%)';
-                      if(Math.sin(angle) > 0) {
-                        transform += ' translateY(50%)';
-                      } else {
-                        transform += ' translateY(-50%)';
-                      }
-                    }
 
                     return (
-                      <div key={category.id}>
-                          {/* Label */}
-                          <div
-                            onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
-                            className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
-                            style={{
-                              left: `calc(50% + ${x}px)`,
-                              top: `calc(50% + ${y}px)`,
-                              transform,
-                            }}
-                          >
-                            {category.name}
-                          </div>
+                      <div
+                        key={category.id}
+                        onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
+                        className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
+                        style={{
+                          left: `calc(50% + ${x}px)`,
+                          top: `calc(50% + ${y}px)`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                      >
+                        {category.name}
                       </div>
                     );
                   })}
