@@ -8,52 +8,50 @@ import { Menu, Sprout, MessageSquare, Bell, User, Search, LogIn, LayoutDashboard
 const userRole = 'client'; // 'provider' | 'guest'
 
 function getNavLinks(role: string) {
-    const discoverIcon = { href: '/discover', label: 'Discover', icon: Search };
-    const messagesIcon = { href: '/messages', label: 'Messages', icon: MessageSquare };
-    const notificationsIcon = { href: '/notifications', label: 'Notifications', icon: Bell };
-    const accountIcon = { href: '/account', label: 'Account', icon: User };
-    const dashboardIcon = { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard };
-    const signUpIcon = { href: '/signup', label: 'Sign Up', icon: LogIn };
-
-    const clientLinks = [discoverIcon, messagesIcon, notificationsIcon, accountIcon];
-    const providerLinks = [dashboardIcon, messagesIcon, notificationsIcon, accountIcon];
-    const guestLinks = [discoverIcon, signUpIcon];
-
-    let desktopLinks: { href: string; label: string; icon: React.ElementType; }[] = [];
-    let mobileLinks: { href: string; label: string; }[] = [];
-
-    switch (role) {
-        case 'client':
-            desktopLinks = clientLinks;
-            mobileLinks = [
+    const navConfig = {
+        guest: {
+            desktop: [
+                { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/signup', label: 'Sign Up', icon: LogIn }
+            ],
+            mobile: [
                 { href: '/discover', label: 'Discover' },
-                { href: '/bookings', label: 'My Bookings' },
-                { href: '/my-lists', label: 'My Lists' },
+                { href: '/signup', label: 'Sign Up' },
+            ],
+        },
+        client: {
+            desktop: [
+                { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/messages', label: 'Messages', icon: MessageSquare },
+                { href: '/notifications', label: 'Notifications', icon: Bell },
+                { href: '/account', label: 'Account', icon: User },
+            ],
+            mobile: [
+                { href: '/discover', label: 'Discover' },
                 { href: '/messages', label: 'Messages' },
                 { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
-            ];
-            break;
-        case 'provider':
-            desktopLinks = providerLinks;
-            mobileLinks = [
+            ],
+        },
+        provider: {
+            desktop: [
+                { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { href: '/messages', label: 'Messages', icon: MessageSquare },
+                { href: '/notifications', label: 'Notifications', icon: Bell },
+                { href: '/account', label: 'Account', icon: User },
+            ],
+            mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
                 { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
-            ];
-            break;
-        default: // guest
-            desktopLinks = guestLinks;
-            mobileLinks = [
-                { href: '/discover', label: 'Discover' },
-                { href: '/signup', label: 'Sign Up' },
-            ];
-            break;
-    }
-    
-    return { desktop: desktopLinks, mobile: mobileLinks };
+            ]
+        }
+    };
+
+    return navConfig[role as keyof typeof navConfig] || navConfig.guest;
 }
+
 
 const DesktopNavLinks = () => {
     const { desktop } = getNavLinks(userRole);
@@ -61,12 +59,12 @@ const DesktopNavLinks = () => {
     return (
         <>
             {desktop.map(({ href, label, icon: Icon }) => (
-                <Button key={href} variant="outline" size="icon" className="rounded-full" asChild>
-                   <Link href={href}>
+                <Link key={href} href={href} passHref>
+                    <Button variant="outline" size="icon" className="rounded-full">
                         <Icon className="h-5 w-5" />
                         <span className="sr-only">{label}</span>
-                    </Link>
-                </Button>
+                    </Button>
+                </Link>
             ))}
         </>
     );
@@ -109,10 +107,10 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="pr-0">
-                 <SheetHeader>
+                 <SheetHeader className="p-4">
                     <SheetTitle className="sr-only">Menu</SheetTitle>
                  </SheetHeader>
-                <Link href="/" className="mr-6 flex items-center space-x-2 p-4">
+                <Link href="/" className="mr-6 flex items-center space-x-2 px-4">
                   <Sprout className="h-6 w-6 text-primary" />
                   <span className="font-bold text-lg">Beauty Book</span>
                 </Link>
