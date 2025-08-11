@@ -26,6 +26,7 @@ import { PlaylistResults } from '@/components/playlist-results';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -117,11 +118,16 @@ function ExploreStack() {
           <Button onClick={handleLike} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Save to list">
             <Heart className="h-10 w-10 fill-primary text-primary" />
           </Button>
-          <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30">
-            <Link href={`/provider/${providers[activeIndex].id}`} aria-label="View profile">
-              <User className="h-10 w-10 text-primary" />
-            </Link>
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="View profile">
+                  <User className="h-10 w-10 text-primary" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="p-0 border-0 max-w-md">
+              <ExploreProviderCard provider={providers[activeIndex]} />
+            </DialogContent>
+          </Dialog>
           <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
             <MessageCircle className="h-10 w-10 fill-primary text-primary" />
           </Button>
