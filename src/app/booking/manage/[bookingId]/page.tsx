@@ -3,13 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { providers, services as allServices, getBookingById, updateBooking, getServicesByIds } from '@/lib/data';
+import { providers, getBookingById, updateBooking, getServicesByIds } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
-import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, AlertTriangle, Save } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save } from 'lucide-react';
 import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';

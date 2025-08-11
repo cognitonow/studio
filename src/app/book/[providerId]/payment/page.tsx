@@ -2,14 +2,13 @@
 'use client'
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { getProviderById, getServicesByIds, addBooking, services as allServices } from '@/lib/data';
+import { getProviderById, getServicesByIds, addBooking } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard, MessageSquare, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 export default function PaymentPage() {

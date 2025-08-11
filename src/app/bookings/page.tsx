@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { getBookings, getServicesByIds, services as allServices } from "@/lib/data"
+import { getBookings, getServicesByIds } from "@/lib/data"
 import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
 
