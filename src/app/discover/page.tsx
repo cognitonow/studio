@@ -28,31 +28,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
 
-function ExploreCarousel() {
-  const [api, setApi] = React.useState<ReturnType<typeof useCarousel>[1]>();
-  const [current, setCurrent] = React.useState(0);
+function ExploreCarouselContent() {
   const { scrollNext } = useCarousel()
 
-  React.useEffect(() => {
-    if (!api) {
-      return
-    }
- 
-    setCurrent(api.selectedScrollSnap())
- 
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap())
-    })
-  }, [api])
-
   return (
-    <Carousel
-      setApi={setApi}
-      opts={{
-        align: "start",
-      }}
-      className="w-full"
-    >
+    <>
       <CarouselContent>
         {providers.map((provider) => (
           <CarouselItem key={provider.id} className="flex justify-center">
@@ -79,6 +59,19 @@ function ExploreCarousel() {
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />
+    </>
+  )
+}
+
+function ExploreCarousel() {
+  return (
+    <Carousel
+      opts={{
+        align: "start",
+      }}
+      className="w-full"
+    >
+      <ExploreCarouselContent />
     </Carousel>
   )
 }
