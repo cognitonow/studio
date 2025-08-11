@@ -24,7 +24,7 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const id = params.id
+  const { id } = params;
   const provider = getProviderById(id)
  
   if (!provider) {
@@ -46,7 +46,8 @@ export async function generateStaticParams() {
 }
 
 export default function ProviderDetailPage({ params }: { params: { id: string } }) {
-  const provider = getProviderById(params.id);
+  const { id } = params;
+  const provider = getProviderById(id);
 
   if (!provider) {
     notFound();
