@@ -72,7 +72,7 @@ const DesktopNavLinks = ({ role }: { role: UserRole }) => {
     return (
         <>
             {desktop.map(({ href, label, icon: Icon }) => (
-                 <Link key={href} href={href} passHref>
+                 <Link key={`${href}-${label}`} href={href} passHref>
                     <Button variant="outline" size="icon" className="rounded-full">
                         <Icon className="h-5 w-5" />
                         <span className="sr-only">{label}</span>
