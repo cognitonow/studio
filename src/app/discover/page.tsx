@@ -38,7 +38,7 @@ function ExploreCarouselContent() {
           <CarouselItem key={provider.id} className="flex justify-center">
             <div className="w-full max-w-md">
               <ExploreProviderCard provider={provider} />
-              <div className="p-6 pt-4 flex justify-center items-center">
+              <div className="p-6 pt-8 flex justify-center items-center">
                   <div className="flex justify-center items-center gap-6">
                       <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Save to list">
                           <Heart className="h-10 w-10 fill-primary text-primary" />
