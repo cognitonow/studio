@@ -56,6 +56,7 @@ export default function DiscoverPage() {
   
   const getSelectedLocationsText = () => {
     if (selectedLocations.size === 0) return "Select a district";
+    if (selectedLocations.size === dublinDistricts.length) return "All Districts";
     if (selectedLocations.size === 1) return dublinDistricts.find(d => d.id === Array.from(selectedLocations)[0])?.name;
     return `${selectedLocations.size} districts selected`;
   }
@@ -128,7 +129,7 @@ export default function DiscoverPage() {
                         </span>
                       )}
                     </Label>
-                    <Select value={selectedService} onValueChange={setSelectedService} disabled={!filteredServices.length && !!selectedCategory}>
+                    <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory && !allServicesGrouped.length}>
                         <SelectTrigger id="service">
                           <SelectValue placeholder="Select a service" />
                         </SelectTrigger>
@@ -142,10 +143,10 @@ export default function DiscoverPage() {
                           ) : (
                             allServicesGrouped.map(group => (
                               group.services.length > 0 && (
-                                <SelectGroup key={group.id}>
-                                  <SelectLabel>{group.name}</SelectLabel>
+                                <SelectGroup key={`group-${group.id}`}>
+                                   <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
                                   {group.services.map(service => (
-                                    <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                    <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
                                   ))}
                                 </SelectGroup>
                               )
@@ -188,8 +189,9 @@ export default function DiscoverPage() {
                                     setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
                                 }
                             }}
+                            checked={selectedLocations.size === dublinDistricts.length}
                           >
-                            All
+                            All Districts
                           </DropdownMenuCheckboxItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
