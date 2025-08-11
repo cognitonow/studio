@@ -7,7 +7,8 @@ import { Star, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 interface ExploreProviderCardProps {
   provider: Provider;
@@ -84,21 +85,23 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                 </div>
             </div>
             <p className="text-foreground/80 leading-relaxed line-clamp-3 h-[4.5rem]">{provider.bio}</p>
-            <TooltipProvider>
-                <div className="flex flex-wrap gap-2">
-                    {provider.badges.slice(0, 3).map(badge => (
-                        <Tooltip key={badge}>
-                            <TooltipTrigger>
-                                <Badge variant="secondary">{badge}</Badge>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs bg-background text-foreground border-border shadow-lg p-3 rounded-lg">
-                                <p className="font-semibold text-base mb-1">{badge}</p>
-                                <p className="text-sm text-muted-foreground">{badgeDescriptions[badge] || 'This provider has earned a special badge.'}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    ))}
-                </div>
-            </TooltipProvider>
+            <div className="flex flex-wrap gap-2">
+                {provider.badges.slice(0, 3).map(badge => (
+                    <Popover key={badge}>
+                        <PopoverTrigger asChild>
+                            <Badge variant="secondary" className="cursor-pointer">{badge}</Badge>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64">
+                            <div className="space-y-2">
+                                <h4 className="font-semibold">{badge}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    {badgeDescriptions[badge] || 'This provider has earned a special badge.'}
+                                </p>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                ))}
+            </div>
         </CardContent>
         <CardFooter className="p-6 pt-0">
            <Button className="w-full" asChild size="lg">
