@@ -28,7 +28,9 @@ function getNavLinks(role: string) {
                     accountIcon,
                 ],
                 mobile: [
-                    ...commonLinks,
+                    { href: '/discover', label: 'Discover' },
+                    { href: '/bookings', label: 'My Bookings' },
+                    { href: '/my-lists', label: 'My Lists' },
                     { href: '/messages', label: 'Messages' },
                     { href: '/notifications', label: 'Notifications' },
                     { href: '/account', label: 'Account' },
@@ -79,7 +81,7 @@ const DesktopNavLinks = () => {
                     );
                 }
                 return (
-                    <Link key={href} href={href} className="transition-colors hover:text-primary text-foreground font-medium">
+                    <Link key={href} href={href} className="transition-colors text-foreground hover:text-primary font-medium">
                         {label}
                     </Link>
                 );
