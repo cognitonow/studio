@@ -28,6 +28,14 @@ const availableTimes = [
     "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
 ];
 
+// Helper to format time to AM/PM
+const formatToAmPm = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    return `${String(formattedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
+};
+
 export default function ManageBookingPage() {
   const params = useParams();
   const bookingId = params.bookingId as string;
@@ -88,7 +96,7 @@ export default function ManageBookingPage() {
                   <CalendarIcon className="w-5 h-5 text-muted-foreground" />
                   <span>
                     {selectedDate 
-                      ? `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
+                      ? `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`
                       : 'No date selected'}
                   </span>
                 </div>
@@ -164,7 +172,7 @@ export default function ManageBookingPage() {
                         </SelectTrigger>
                         <SelectContent>
                             {availableTimes.map(time => (
-                                <SelectItem key={time} value={time}>{time}</SelectItem>
+                                <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
