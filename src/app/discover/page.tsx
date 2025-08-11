@@ -40,16 +40,16 @@ function ExploreCarouselContent() {
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-center items-center">
                   <div className="flex justify-center items-center gap-6">
-                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md" aria-label="Save to list">
-                          <Heart className="h-6 w-6 fill-primary text-primary" />
+                      <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Save to list">
+                          <Heart className="h-10 w-10 fill-primary text-primary" />
                       </Button>
-                       <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md">
+                       <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md">
                         <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                            <User className="h-6 w-6 text-primary" />
+                            <User className="h-10 w-10 text-primary" />
                         </Link>
                      </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md" aria-label="Open chat">
-                          <MessageCircle className="h-6 w-6 fill-primary text-primary" />
+                      <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Open chat">
+                          <MessageCircle className="h-10 w-10 fill-primary text-primary" />
                       </Button>
                   </div>
               </div>
