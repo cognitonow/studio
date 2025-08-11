@@ -65,7 +65,7 @@ function ExploreStack() {
     
     // Invert the stacking: top card (offset 0) is smallest, bottom cards (offset > 0) are larger.
     const scale = 1 - offset * 0.05;
-    const translateY = offset * -20;
+    const translateY = offset * -30;
     const translateX = offset * -20;
     
     let transform = `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`;
@@ -74,7 +74,7 @@ function ExploreStack() {
 
     if (offset < 0) { // Cards that have been swiped past
       opacity = 0;
-      transform = `translateY(0px) scale(1)`;
+      transform = `translateX(0px) translateY(0px) scale(1)`;
     } else if (offset === 0) { // Active card
         zIndex = providers.length + 1; // Always on top
         if (direction === 'right') {
