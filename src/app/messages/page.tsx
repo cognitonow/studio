@@ -19,6 +19,7 @@ export default function MessagesPage() {
 
   const fetchAndUpdateState = useCallback(() => {
     const convos = getConversations();
+    console.log('Polling: Fetched conversations', convos.map(c => ({id: c.id, unread: c.unread})));
     setConversations(convos);
 
     if (activeConversation) {
@@ -46,11 +47,14 @@ export default function MessagesPage() {
   }, [fetchAndUpdateState]);
   
   const handleConversationSelect = (convo: Conversation) => {
+    console.log('handleConversationSelect triggered for convo ID:', convo.id);
     setActiveConversation(convo);
     // Mark messages as read in the data source
     markAllMessagesAsRead(convo.id);
     // Re-fetch conversations to update the UI with the new 'read' status
-    setConversations(getConversations());
+    const updatedConvos = getConversations();
+    console.log('State after marking as read:', updatedConvos.map(c => ({id: c.id, unread: c.unread})));
+    setConversations(updatedConvos);
   }
 
 

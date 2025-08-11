@@ -405,12 +405,17 @@ export const getUnreadMessageCount = () => {
 };
 
 export const markAllMessagesAsRead = (conversationId?: number) => {
+    console.log('markAllMessagesAsRead called for conversationId:', conversationId);
     if (conversationId) {
         const convo = conversations.find(c => c.id === conversationId);
         if (convo) {
             convo.unread = 0;
+            console.log(`Conversation ${conversationId} unread count set to 0`);
+        } else {
+             console.log(`Conversation ${conversationId} not found`);
         }
     } else {
+        console.log('Marking all conversations as read');
         conversations.forEach(convo => convo.unread = 0);
     }
 };
