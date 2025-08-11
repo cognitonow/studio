@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { getProviderBookings, updateBookingStatus } from '@/lib/data';
 import type { Booking } from '@/lib/types';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 const notifications = [
     {
@@ -120,7 +121,14 @@ export default function ProviderDashboardPage() {
         if (bookingDate <= now) {
           return <Button size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>;
         }
-        return <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>;
+        return (
+            <div className="flex gap-2">
+                 <Button size="sm" variant="outline" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
+            </div>
+        )
       default:
         return null;
     }
