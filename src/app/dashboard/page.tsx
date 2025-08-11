@@ -145,98 +145,15 @@ export default function ProviderDashboardPage() {
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">Provider Dashboard</h1>
-      <Tabs defaultValue="bookings" className="space-y-4">
+      <Tabs defaultValue="shop-management" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="bookings">Booking Management</TabsTrigger>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="shop-management">
+           <TabsTrigger value="shop-management">
             <Store className="mr-2 h-4 w-4" />
             Shop Management
           </TabsTrigger>
+          <TabsTrigger value="bookings">Booking Management</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="stats" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Bookings</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+235</div>
-                <p className="text-xs text-muted-foreground">+10.5% from last month</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">New Clients</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+72</div>
-                <p className="text-xs text-muted-foreground">+5 since last week</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg. Rating</CardTitle>
-                <Award className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">4.9</div>
-                <p className="text-xs text-muted-foreground">Based on 212 reviews</p>
-              </CardContent>
-            </Card>
-          </div>
-          <MonthlyEarningsChart />
-        </TabsContent>
-
-        <TabsContent value="bookings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Manage Bookings</CardTitle>
-              <CardDescription>View and manage all your client bookings.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Service(s)</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bookings.map(booking => (
-                    <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.clientName}</TableCell>
-                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
-                      <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
-                      <TableCell>
-                        {getStatusBadge(booking.status)}
-                      </TableCell>
-                       <TableCell className="text-right">
-                        {getBookingActions(booking)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="shop-management">
           <div className="grid md:grid-cols-2 gap-8">
@@ -347,11 +264,90 @@ export default function ProviderDashboardPage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="bookings">
+          <Card>
+            <CardHeader>
+              <CardTitle>Manage Bookings</CardTitle>
+              <CardDescription>View and manage all your client bookings.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Client</TableHead>
+                    <TableHead>Service(s)</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bookings.map(booking => (
+                    <TableRow key={booking.id}>
+                      <TableCell className="font-medium">{booking.clientName}</TableCell>
+                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
+                      <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
+                      <TableCell>
+                        {getStatusBadge(booking.status)}
+                      </TableCell>
+                       <TableCell className="text-right">
+                        {getBookingActions(booking)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="stats" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">$45,231.89</div>
+                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Bookings</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+235</div>
+                <p className="text-xs text-muted-foreground">+10.5% from last month</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">New Clients</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+72</div>
+                <p className="text-xs text-muted-foreground">+5 since last week</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Avg. Rating</CardTitle>
+                <Award className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">4.9</div>
+                <p className="text-xs text-muted-foreground">Based on 212 reviews</p>
+              </CardContent>
+            </Card>
+          </div>
+          <MonthlyEarningsChart />
+        </TabsContent>
+
       </Tabs>
     </div>
   )
 }
-
-    
-
-    
