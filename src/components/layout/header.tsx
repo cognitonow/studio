@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu, Sprout, MessageSquare, Bell, User, Search, LogIn, LayoutDashboard } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
-const userRole = 'client'; // 'provider' | 'guest'
+const userRole = 'looker'; // 'provider' | 'guest' | 'client'
 
 function getNavLinks(role: string) {
     const navConfig = {
@@ -42,6 +42,16 @@ function getNavLinks(role: string) {
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
+                { href: '/account', label: 'Account' },
+            ]
+        },
+        looker: {
+            desktop: [
+                { href: '/looker-dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { href: '/account', label: 'Account', icon: User },
+            ],
+            mobile: [
+                { href: '/looker-dashboard', label: 'Dashboard' },
                 { href: '/account', label: 'Account' },
             ]
         }
