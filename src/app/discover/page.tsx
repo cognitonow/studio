@@ -2,8 +2,8 @@
 
 'use client'
 
-import { useState } from 'react';
-import { providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts } from '@/lib/data';
+import { useState, useEffect } from 'react';
+import { providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts, getProvidersByPlaylist } from '@/lib/data';
 import { ProviderCard } from '@/components/provider-card';
 import {
   Carousel,
@@ -158,6 +158,14 @@ function ExploreStack() {
   );
 }
 
+const categoryToPlaylistMap: Record<string, string> = {
+  nails: 'top-rated-nails',
+  facials: 'rejuvenating-facials',
+  makeup: 'wedding-specialists',
+  hair: 'wedding-specialists',
+  'brows-lashes': 'wedding-specialists'
+};
+
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -165,10 +173,18 @@ export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [selectedService, setSelectedService] = useState<string | undefined>();
   const [selectedLocations, setSelectedLocations] = useState<Set<string>>(new Set());
+  const [playlistProviders, setPlaylistProviders] = useState<Provider[]>(featuredProviders);
 
   const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId === 'all' ? undefined : categoryId);
+    const newCategory = categoryId === 'all' ? undefined : categoryId;
+    setSelectedCategory(newCategory);
     setSelectedService(undefined);
+    
+    if(newCategory && categoryToPlaylistMap[newCategory]) {
+        setPlaylistProviders(getProvidersByPlaylist(categoryToPlaylistMap[newCategory]));
+    } else {
+        setPlaylistProviders(getFeaturedProviders());
+    }
   }
 
   const filteredServices = selectedCategory ? allServices.filter(s => s.categoryId === selectedCategory) : [];
@@ -254,7 +270,7 @@ export default function DiscoverPage() {
               <div className="container mx-auto">
                 <div className="grid lg:grid-cols-3 gap-8 items-stretch">
                   <div className="lg:col-span-1">
-                    <PlaylistResults />
+                    <PlaylistResults providers={playlistProviders} />
                   </div>
                   <div className="lg:col-span-2 flex flex-col space-y-8">
                       {/* Circular Menu */}

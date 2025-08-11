@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getFeaturedProviders } from '@/lib/data';
 import { PlaylistProviderCard } from './playlist-provider-card';
 import { ListMusic } from 'lucide-react';
+import type { Provider } from '@/lib/types';
 
-export function PlaylistResults() {
-  const playlistProviders = getFeaturedProviders(); // Using featured for placeholder
+interface PlaylistResultsProps {
+  providers: Provider[];
+}
 
+export function PlaylistResults({ providers }: PlaylistResultsProps) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
@@ -17,15 +19,17 @@ export function PlaylistResults() {
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden">
         <ScrollArea className="h-full">
-          <div className="space-y-4 pr-4">
-            {playlistProviders.map(provider => (
-              <PlaylistProviderCard key={provider.id} provider={provider} />
-            ))}
-            {/* Add more for scrolling effect */}
-            {playlistProviders.map(provider => (
-              <PlaylistProviderCard key={`${provider.id}-clone`} provider={provider} />
-            ))}
-          </div>
+          {providers.length > 0 ? (
+            <div className="space-y-4 pr-4">
+              {providers.map(provider => (
+                <PlaylistProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-muted-foreground text-center">Select a category to see a playlist.</p>
+            </div>
+          )}
         </ScrollArea>
       </CardContent>
     </Card>
