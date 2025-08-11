@@ -37,43 +37,44 @@ export function BadgeSuggester() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-headline">
-          <Sparkles className="w-6 h-6 text-primary" />
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
           AI Skill Badge Suggestions
         </CardTitle>
         <CardDescription>
-          Leverage AI to identify your top skills and get badge suggestions based on your booking history and client reviews.
+          Get badge suggestions based on your booking history and client reviews.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="p-4 bg-muted/50 rounded-lg border border-dashed">
-            <h4 className="font-semibold mb-2 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> Based on your profile, we're analyzing:</h4>
+            <h4 className="font-semibold mb-2 flex items-center gap-2"><Lightbulb className="w-4 h-4" /> We're analyzing:</h4>
             <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
                 <li>50 recent bookings for Balayage & Bridal Makeup.</li>
                 <li>4.9-star average rating from 212 reviews.</li>
-                <li>Positive feedback on color work and wedding services.</li>
+                <li>Feedback on color work and wedding services.</li>
             </ul>
         </div>
         
-        <Button onClick={handleSuggestBadges} disabled={loading}>
+        <Button onClick={handleSuggestBadges} disabled={loading} className="w-full">
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Generating...
             </>
-          ) : 'Suggest New Badges'}
+          ) : 'Suggest Badges'}
         </Button>
 
-        {error && <p className="text-destructive">{error}</p>}
+        {error && <p className="text-destructive text-sm">{error}</p>}
         
         {suggestions.length > 0 && (
           <div>
-            <h4 className="font-semibold mb-3">Here are your suggested badges:</h4>
+            <h4 className="font-semibold mb-3">Suggested badges to add:</h4>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((badge, index) => (
-                <Badge key={index} variant="default" className="text-base px-4 py-2">
+                <Button key={index} variant="secondary" size="sm">
+                  <PlusCircle className="mr-2 h-4 w-4" />
                   {badge}
-                </Badge>
+                </Button>
               ))}
             </div>
           </div>

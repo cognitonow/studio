@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Contact, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Contact, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -24,11 +24,16 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import Image from 'next/image';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { BadgeSuggester } from '@/components/badge-suggester';
   
 
 export default function ProviderDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const provider = providers[2]; // Mocking Chloe's Hair Haven
+  const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set(provider.portfolio.slice(0, 3).map(p => p.id)));
+
 
   useEffect(() => {
     setBookings(getProviderBookings());
@@ -37,6 +42,20 @@ export default function ProviderDashboardPage() {
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status);
     setBookings(getProviderBookings());
+  };
+  
+  const handleFeaturedImageSelect = (imageId: string) => {
+    setFeaturedImages(prev => {
+        const newSelection = new Set(prev);
+        if (newSelection.has(imageId)) {
+            newSelection.delete(imageId);
+        } else {
+            if (newSelection.size < 3) {
+                newSelection.add(imageId);
+            }
+        }
+        return newSelection;
+    });
   };
 
   const getStatusBadge = (status: Booking['status']) => {
@@ -217,96 +236,148 @@ export default function ProviderDashboardPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="shop-management" className="space-y-8">
-            {/* Availability Settings */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" />Availability Settings</CardTitle>
-                    <CardDescription>Set your standard weekly working hours.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 items-center">
-                        <Label>Monday</Label>
-                        <Select defaultValue="09:00">
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent><SelectItem value="09:00">09:00 AM</SelectItem></SelectContent>
-                        </Select>
-                        <Select defaultValue="17:00">
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent><SelectItem value="17:00">05:00 PM</SelectItem></SelectContent>
-                        </Select>
-                    </div>
-                     <Button>Save Availability</Button>
-                </CardContent>
-            </Card>
-
-             {/* Service Management */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
-                    <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Service</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Duration</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {provider.services.map(service => (
-                                <TableRow key={service.id}>
-                                    <TableCell className="font-medium">{service.name}</TableCell>
-                                    <TableCell>${service.price}</TableCell>
-                                    <TableCell>{service.duration} min</TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="sm">Edit</Button>
-                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">Delete</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    <Button className="mt-4">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add New Service
-                    </Button>
-                </CardContent>
-            </Card>
-
-            {/* Portfolio Management */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><GalleryHorizontal className="w-5 h-5" />Portfolio Management</CardTitle>
-                    <CardDescription>Showcase your best work by adding images to your public profile.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {provider.portfolio.map(item => (
-                            <div key={item.id} className="relative group">
-                                <Image src={item.url} alt="Portfolio item" width={200} height={200} className="rounded-md object-cover aspect-square" data-ai-hint={item.dataAiHint} />
-                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Button variant="destructive" size="icon">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
+        <TabsContent value="shop-management">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left Column */}
+            <div className="space-y-8">
+                {/* Shop Profile Card */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><User className="w-5 h-5"/>Shop Profile</CardTitle>
+                        <CardDescription>This information is displayed publicly on your profile.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="shop-name">Shop Name</Label>
+                            <Input id="shop-name" defaultValue={provider.name} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="specialty">Specialty</Label>
+                            <Input id="specialty" defaultValue={provider.specialty} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="location">Location</Label>
+                            <Input id="location" defaultValue={provider.location} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="bio">About / Bio</Label>
+                            <Textarea id="bio" defaultValue={provider.bio} rows={5} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Your Badges</Label>
+                             <div className="flex flex-wrap gap-2">
+                                {provider.badges.map(badge => <Badge key={badge} variant="secondary">{badge}</Badge>)}
                             </div>
-                        ))}
-                    </div>
-                     <Button className="mt-6">
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload Image
-                    </Button>
-                </CardContent>
-            </Card>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Badge Suggester Card */}
+                <BadgeSuggester />
+
+            </div>
+            {/* Right Column */}
+            <div className="space-y-8">
+                {/* Availability Settings */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" />Availability Settings</CardTitle>
+                        <CardDescription>Set your standard weekly working hours.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-3 gap-4 items-center">
+                            <Label>Monday</Label>
+                            <Select defaultValue="09:00">
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent><SelectItem value="09:00">09:00 AM</SelectItem></SelectContent>
+                            </Select>
+                            <Select defaultValue="17:00">
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent><SelectItem value="17:00">05:00 PM</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                        <Button>Save Availability</Button>
+                    </CardContent>
+                </Card>
+
+                {/* Portfolio Management */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><GalleryHorizontal className="w-5 h-5" />Portfolio & Featured Images</CardTitle>
+                        <CardDescription>Showcase your work and select up to 3 images to feature on your Explore card.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {provider.portfolio.map(item => (
+                                <div key={item.id} className="relative group">
+                                    <Label htmlFor={`featured-${item.id}`} className="cursor-pointer">
+                                        <Image src={item.url} alt="Portfolio item" width={200} height={200} className="rounded-md object-cover aspect-square" data-ai-hint={item.dataAiHint} />
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <Trash2 className="h-6 w-6 text-white" />
+                                        </div>
+                                    </Label>
+                                    <div className="absolute top-2 right-2 bg-background/80 rounded-full p-1">
+                                        <Checkbox 
+                                            id={`featured-${item.id}`}
+                                            checked={featuredImages.has(item.id)}
+                                            onCheckedChange={() => handleFeaturedImageSelect(item.id)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex gap-4 mt-6">
+                            <Button className="flex-1">
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Image
+                            </Button>
+                             <Button className="flex-1" variant="outline">
+                                <Save className="mr-2 h-4 w-4" />
+                                Save Changes
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+                
+                 {/* Service Management */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
+                        <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Service</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {provider.services.map(service => (
+                                    <TableRow key={service.id}>
+                                        <TableCell className="font-medium">{service.name}</TableCell>
+                                        <TableCell>${service.price}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="sm">Edit</Button>
+                                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">Delete</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <Button className="mt-4">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add New Service
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+          </div>
         </TabsContent>
 
       </Tabs>
     </div>
   )
 }
-
-    
