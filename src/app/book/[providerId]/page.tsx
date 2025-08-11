@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { getProviderById, services as allServices } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,9 +25,11 @@ const formatToAmPm = (time: string) => {
     return `${String(formattedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
 };
 
-export default function BookingPage({ params: { providerId } }: { params: { providerId: string } }) {
+export default function BookingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const providerId = params.providerId as string;
   const serviceId = searchParams.get('service');
   
   const provider = getProviderById(providerId);
