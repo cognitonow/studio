@@ -2,7 +2,7 @@
 'use client'
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { getProviderById, services as allServices } from '@/lib/data';
+import { getProviderById, services as allServices, addBooking } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,8 +43,17 @@ export default function PaymentPage() {
   }
   
   const handleConfirmBooking = () => {
-    // In a real app, you would process the payment here.
-    // For now, we'll just navigate to the bookings page.
+    if (!provider || !service || !date) return;
+
+    addBooking({
+        providerId: provider.id,
+        provider: provider.name,
+        serviceId: service.id,
+        service: service.name,
+        date: date.toISOString(),
+        status: 'Confirmed'
+    });
+
     console.log('Booking confirmed!');
     router.push('/bookings');
   };
@@ -132,3 +141,5 @@ export default function PaymentPage() {
     </div>
   );
 }
+
+    

@@ -1,4 +1,6 @@
 
+'use client'
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -12,18 +14,21 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-
-const upcomingBookings = [
-  { id: "1", provider: "Chloe's Hair Haven", service: "Balayage", date: "2024-08-15", status: "Confirmed" },
-  { id: "3", provider: "Olivia's Nail Studio", service: "Classic Manicure", date: "2024-08-18", status: "Confirmed" },
-]
-
-const pastBookings = [
-    { id: "2", provider: "Glow & Go Esthetics", service: "Signature Facial", date: "2024-07-16", status: "Completed" },
-    { id: "4", provider: "Bridal Beauty Co.", service: "Bridal Makeup", date: "2024-06-01", status: "Completed" },
-  ]
+import { getBookings } from "@/lib/data"
+import { useEffect, useState } from "react"
+import type { Booking } from "@/lib/types"
 
 export default function ClientBookingsPage() {
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const { upcoming, past } = getBookings();
+    setUpcomingBookings(upcoming);
+    setPastBookings(past);
+  }, []);
+
+
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">My Bookings</h1>
@@ -54,7 +59,7 @@ export default function ClientBookingsPage() {
                     <TableRow key={booking.id}>
                       <TableCell className="font-medium">{booking.provider}</TableCell>
                       <TableCell>{booking.service}</TableCell>
-                      <TableCell>{booking.date}</TableCell>
+                      <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">{booking.status}</Badge>
                       </TableCell>
@@ -92,7 +97,7 @@ export default function ClientBookingsPage() {
                     <TableRow key={booking.id}>
                       <TableCell className="font-medium">{booking.provider}</TableCell>
                       <TableCell>{booking.service}</TableCell>
-                      <TableCell>{booking.date}</TableCell>
+                      <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Badge>{booking.status}</Badge>
                       </TableCell>
@@ -110,3 +115,5 @@ export default function ClientBookingsPage() {
     </div>
   )
 }
+
+    

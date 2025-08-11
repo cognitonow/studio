@@ -1,5 +1,5 @@
 
-import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict } from './types';
+import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking } from './types';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -196,6 +196,37 @@ export const playlists: Playlist[] = [
     { id: 'rejuvenating-facials', title: 'Rejuvenating Facials' },
 ];
 
+let bookings: Booking[] = [
+    { id: "1", providerId: "3", provider: "Chloe's Hair Haven", serviceId: "hair-22", service: "Balayage", date: "2024-08-15T14:00:00.000Z", status: "Confirmed" },
+    { id: "2", providerId: "2", provider: "Glow & Go Esthetics", serviceId: "facials-1", service: "Signature Facial", date: "2024-07-16T10:00:00.000Z", status: "Completed" },
+    { id: "3", providerId: "1", provider: "Olivia's Nail Studio", serviceId: "nails-1", service: "Classic Manicure", date: "2024-08-18T11:00:00.000Z", status: "Confirmed" },
+    { id: "4", providerId: "4", provider: "Bridal Beauty Co.", serviceId: "makeup-2", service: "Bridal Makeup", date: "2024-06-01T09:00:00.000Z", status: "Completed" },
+];
+
+export const getBookings = () => {
+    const upcoming = bookings
+        .filter(b => new Date(b.date) >= new Date() && b.status === 'Confirmed')
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const past = bookings
+        .filter(b => new Date(b.date) < new Date() || b.status !== 'Confirmed')
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
+    return { upcoming, past };
+};
+
+export const addBooking = (booking: Omit<Booking, 'id'>) => {
+    const newBooking: Booking = {
+        id: String(bookings.length + 1),
+        ...booking,
+    };
+    bookings.push(newBooking);
+    return newBooking;
+};
+
+
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
+
+    

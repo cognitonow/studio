@@ -59,3 +59,15 @@ export type BookingHistory = {
   status: 'Completed' | 'Cancelled';
   price: number;
 };
+
+export type Booking = {
+    id: string;
+    providerId: string;
+    provider: string;
+    serviceId: string;
+    service: string;
+    date: string;
+    status: 'Confirmed' | 'Completed' | 'Cancelled';
+};
+
+    
