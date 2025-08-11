@@ -54,7 +54,7 @@ export function ServiceManagementCard() {
         if (service) {
             setPrice(service.price);
             setDuration(service.duration);
-            setDescription(service.description);
+            setDescription(`This service takes ${service.duration} minutes to complete.`);
         }
     }
 
