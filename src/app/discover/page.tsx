@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { PlaylistResults } from '@/components/playlist-results';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -87,6 +88,36 @@ export default function DiscoverPage() {
             </div>
             <div></div>
         </div>
+      </section>
+
+      {/* Tabs Section */}
+      <section>
+        <Tabs defaultValue="featured">
+          <TabsList className="mb-6">
+            <TabsTrigger value="featured">Featured Providers</TabsTrigger>
+            <TabsTrigger value="explore">Explore</TabsTrigger>
+          </TabsList>
+          <TabsContent value="featured">
+              <Carousel opts={{ align: 'start', loop: true }}>
+                <CarouselContent>
+                  {featuredProviders.map(provider => (
+                    <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/4">
+                      <ProviderCard provider={provider} />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2" />
+                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2" />
+              </Carousel>
+          </TabsContent>
+          <TabsContent value="explore">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+              {providers.map(provider => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </section>
 
       {/* Categories Section v2 */}
@@ -254,32 +285,6 @@ export default function DiscoverPage() {
                 </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Featured Providers Section */}
-      <section>
-        <h3 className="text-2xl font-bold font-headline mb-6">Featured Providers</h3>
-        <Carousel opts={{ align: 'start', loop: true }}>
-          <CarouselContent>
-            {featuredProviders.map(provider => (
-              <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/4">
-                <ProviderCard provider={provider} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2" />
-          <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2" />
-        </Carousel>
-      </section>
-
-      {/* All Providers Section */}
-      <section>
-        <h3 className="text-2xl font-bold font-headline mb-6">All Providers</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-          {providers.map(provider => (
-            <ProviderCard key={provider.id} provider={provider} />
-          ))}
         </div>
       </section>
     </div>
