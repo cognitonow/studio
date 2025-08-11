@@ -238,7 +238,6 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
     }
 };
 
-
 export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
