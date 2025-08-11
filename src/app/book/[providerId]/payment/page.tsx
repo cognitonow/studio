@@ -44,9 +44,9 @@ export default function PaymentPage() {
   
   const handleConfirmBooking = () => {
     // In a real app, you would process the payment here.
-    // For now, we'll just navigate to the messages page.
+    // For now, we'll just navigate to the bookings page.
     console.log('Booking confirmed!');
-    router.push('/messages');
+    router.push('/bookings');
   };
   
   const handleChat = () => {
