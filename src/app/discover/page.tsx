@@ -56,16 +56,19 @@ function ExploreStack() {
   };
 
   const getCardStyle = (index: number) => {
-    const isActive = index === activeIndex;
-    const isNext = index === (activeIndex + 1) % providers.length;
-    
-    let transform = 'scale(0.9) translateY(20px)';
-    let opacity = 0;
-    let zIndex = providers.length - index;
+    const offset = index - activeIndex;
+    const isVisible = Math.abs(offset) <= 2; // Show active, and 2 cards behind
 
-    if (isActive) {
-        opacity = 1;
-        transform = 'scale(1) translateY(0)';
+    if (!isVisible) {
+      return { opacity: 0, zIndex: 0, transform: 'scale(0.5)' };
+    }
+    
+    let transform = `translateY(${offset * 15}px) scale(${1 - Math.abs(offset) * 0.05})`;
+    let opacity = 1;
+    let zIndex = providers.length - Math.abs(offset);
+
+    if (offset === 0) { // Active card
+        zIndex = providers.length;
         if (direction === 'right') {
             transform = 'translateX(100%) rotate(15deg) scale(1)';
         } else if (direction === 'left') {
@@ -73,9 +76,9 @@ function ExploreStack() {
         } else if (direction === 'up') {
             transform = 'translateY(-100%) rotate(0deg) scale(1)';
         }
-    } else if (isNext) {
-        opacity = 1;
-        transform = 'scale(0.95) translateY(10px)';
+    } else if (offset < 0) { // Cards that have been swiped past
+      opacity = 0;
+      transform = 'translateX(-100%)'
     }
 
     return {
@@ -83,6 +86,9 @@ function ExploreStack() {
         transform,
         opacity,
         zIndex,
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
     };
   };
 
@@ -90,7 +96,7 @@ function ExploreStack() {
     <div className="flex flex-col items-center">
       <div className="relative w-full max-w-md h-[550px]">
         {providers.map((provider, index) => (
-          <div key={provider.id} className="absolute w-full h-full" style={getCardStyle(index)}>
+          <div key={provider.id} style={getCardStyle(index)}>
             <ExploreProviderCard provider={provider} />
           </div>
         ))}
