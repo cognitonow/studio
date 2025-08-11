@@ -100,6 +100,9 @@ export default function DiscoverPage() {
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-8 items-start">
+            <div className="w-full h-full">
+                <PlaylistResults />
+            </div>
             <div className="space-y-8">
                 {/* Circular Menu */}
                 <div className="flex justify-center items-center">
@@ -264,9 +267,6 @@ export default function DiscoverPage() {
                     </CardContent>
                   </Card>
                 </div>
-            </div>
-             <div className="w-full h-full">
-                <PlaylistResults />
             </div>
           </div>
         </div>
