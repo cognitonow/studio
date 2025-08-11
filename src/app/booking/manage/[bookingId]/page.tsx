@@ -149,33 +149,35 @@ export default function ManageBookingPage() {
                 <CardTitle>Amend Date & Time</CardTitle>
                 <CardDescription>Select a new time for your appointment.</CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col items-center gap-4">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  className="rounded-md border"
-                  disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-                />
-                <div className="w-full space-y-2">
-                    <Label htmlFor="time" className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>Appointment Time</span>
-                    </Label>
-                    <Select 
-                        onValueChange={handleTimeSelect}
-                        value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                        disabled={!selectedDate}
-                    >
-                        <SelectTrigger id="time">
-                            <SelectValue placeholder="Select a time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {availableTimes.map(time => (
-                                <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+              <CardContent className="flex justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      className="rounded-md border"
+                      disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                    />
+                    <div className="w-full space-y-2">
+                        <Label htmlFor="time" className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span>Appointment Time</span>
+                        </Label>
+                        <Select 
+                            onValueChange={handleTimeSelect}
+                            value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
+                            disabled={!selectedDate}
+                        >
+                            <SelectTrigger id="time">
+                                <SelectValue placeholder="Select a time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableTimes.map(time => (
+                                    <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
               </CardContent>
             </Card>
