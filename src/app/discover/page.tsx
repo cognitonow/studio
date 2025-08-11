@@ -64,8 +64,8 @@ function ExploreStack() {
     }
     
     // Invert the stacking: top card (offset 0) is smallest, bottom cards (offset > 0) are larger.
-    const scale = 1 - offset * 0.1;
-    const translateY = -offset * 20;
+    const scale = 1 - offset * 0.05;
+    const translateY = offset * -40;
     
     let transform = `translateY(${translateY}px) scale(${scale})`;
     let opacity = 1;
