@@ -145,7 +145,7 @@ export default function DiscoverPage() {
                   </div>
                 </div>
                 {/* Advanced Search */}
-                <div className="w-4/5 mx-auto">
+                <div className="w-3/5 mx-auto">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
@@ -283,7 +283,3 @@ export default function DiscoverPage() {
     </div>
   );
 }
-
-    
-
-    
