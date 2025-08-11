@@ -14,7 +14,7 @@ import {
   useCarousel,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter, ChevronDown, Heart, MessageCircle, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,7 +60,23 @@ function ExploreCarousel() {
         {providers.map((provider) => (
           <CarouselItem key={provider.id}>
             <div className="p-1">
-              <ExploreProviderCard provider={provider} onNext={scrollNext} />
+              <ExploreProviderCard provider={provider} />
+              <div className="p-6 pt-4 flex justify-between items-center">
+                  <div className="flex gap-2">
+                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Save to list">
+                          <Heart className="h-6 w-6" />
+                      </Button>
+                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Open chat">
+                          <MessageCircle className="h-6 w-6" />
+                      </Button>
+                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Next provider" onClick={scrollNext}>
+                          <ChevronRight className="h-6 w-6" />
+                      </Button>
+                  </div>
+                  <Button asChild size="lg">
+                    <Link href={`/provider/${provider.id}`}>View Profile</Link>
+                 </Button>
+              </div>
             </div>
           </CarouselItem>
         ))}
