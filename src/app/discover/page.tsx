@@ -97,25 +97,12 @@ export default function DiscoverPage() {
           <TabsList className="mb-6">
             <TabsTrigger value="explore">Explore</TabsTrigger>
             <TabsTrigger value="featured">Featured Providers</TabsTrigger>
+            <TabsTrigger value="find">Find a Service</TabsTrigger>
           </TabsList>
-          <TabsContent value="featured">
-              <Carousel opts={{ align: 'start', loop: true }}>
-                <CarouselContent>
-                  {featuredProviders.map(provider => (
-                    <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/4">
-                      <ProviderCard provider={provider} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2" />
-                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2" />
-              </Carousel>
-          </TabsContent>
           <TabsContent value="explore">
              <Carousel
               opts={{
                 align: "start",
-                loop: true,
               }}
               className="w-full max-w-xs mx-auto"
             >
@@ -132,175 +119,182 @@ export default function DiscoverPage() {
               <CarouselNext />
             </Carousel>
           </TabsContent>
-        </Tabs>
-      </section>
+          <TabsContent value="featured">
+              <Carousel opts={{ align: 'start', loop: true }}>
+                <CarouselContent>
+                  {featuredProviders.map(provider => (
+                    <CarouselItem key={provider.id} className="md:basis-1/2 lg:basis-1/4">
+                      <ProviderCard provider={provider} />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-[-1rem] top-1/2 -translate-y-1/2" />
+                <CarouselNext className="absolute right-[-1rem] top-1/2 -translate-y-1/2" />
+              </Carousel>
+          </TabsContent>
+          <TabsContent value="find">
+            <div className="py-16 bg-muted/30 rounded-2xl">
+              <div className="container mx-auto">
+                <div className="grid lg:grid-cols-3 gap-8 items-stretch">
+                  <div className="lg:col-span-1">
+                    <PlaylistResults />
+                  </div>
+                  <div className="lg:col-span-2 flex flex-col space-y-8">
+                      {/* Circular Menu */}
+                      <div className="flex justify-center items-center">
+                        <div className="relative w-[500px] h-[500px]">
+                            {/* Dotted Circle */}
+                            <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
 
-      {/* Categories Section v2 */}
-       <section className="py-16 bg-muted/30 rounded-2xl">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold font-headline">Find a Service</h2>
-            <p className="text-muted-foreground mt-2">
-              Select a category or use advanced search to find providers.
-            </p>
-          </div>
-          <div className="grid lg:grid-cols-3 gap-8 items-stretch">
-            <div className="lg:col-span-1">
-              <PlaylistResults />
-            </div>
-            <div className="lg:col-span-2 flex flex-col space-y-8">
-                {/* Circular Menu */}
-                <div className="flex justify-center items-center">
-                  <div className="relative w-[500px] h-[500px]">
-                      {/* Dotted Circle */}
-                      <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
+                            {/* Central Image */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
+                                <Image src="https://placehold.co/400x400.png" alt="Skincare" fill className="object-cover" data-ai-hint="woman face beauty" />
+                            </div>
 
-                      {/* Central Image */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
-                          <Image src="https://placehold.co/400x400.png" alt="Skincare" fill className="object-cover" data-ai-hint="woman face beauty" />
+                            {/* Menu Items */}
+                            {currentServiceCategories.map((category, index) => {
+                              const angle = (index / currentServiceCategories.length) * 2 * Math.PI - (Math.PI / 2);
+                              const radius = 250; // This should be half of the container's width/height
+
+                              const x = radius * Math.cos(angle);
+                              const y = radius * Math.sin(angle);
+                              
+                              const isSelected = selectedCategory === category.id;
+
+                              return (
+                                <div
+                                  key={category.id}
+                                  onClick={() => handleCategorySelect(category.id)}
+                                  className={cn(
+                                    "absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-all duration-300 z-20 text-center",
+                                    isSelected && "bg-primary text-primary-foreground border-primary scale-110",
+                                  )}
+                                  style={{
+                                    left: `calc(50% + ${x}px)`,
+                                    top: `calc(50% + ${y}px)`,
+                                    transform: 'translate(-50%, -50%)',
+                                  }}
+                                >
+                                  {category.name}
+                                </div>
+                              );
+                            })}
+                        </div>
                       </div>
-
-                      {/* Menu Items */}
-                      {currentServiceCategories.map((category, index) => {
-                        const angle = (index / currentServiceCategories.length) * 2 * Math.PI - (Math.PI / 2);
-                        const radius = 250; // This should be half of the container's width/height
-
-                        const x = radius * Math.cos(angle);
-                        const y = radius * Math.sin(angle);
-                        
-                        const isSelected = selectedCategory === category.id;
-
-                        return (
-                          <div
-                            key={category.id}
-                            onClick={() => handleCategorySelect(category.id)}
-                            className={cn(
-                              "absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-all duration-300 z-20 text-center",
-                              isSelected && "bg-primary text-primary-foreground border-primary scale-110",
-                            )}
-                            style={{
-                              left: `calc(50% + ${x}px)`,
-                              top: `calc(50% + ${y}px)`,
-                              transform: 'translate(-50%, -50%)',
-                            }}
-                          >
-                            {category.name}
-                          </div>
-                        );
-                      })}
+                      {/* Advanced Search */}
+                      <div className="flex-grow flex flex-col justify-end">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4 pb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="category" className="flex items-center h-5">Category</Label>
+                                <Select value={selectedCategory} onValueChange={handleCategorySelect}>
+                                  <SelectTrigger id="category">
+                                    <SelectValue placeholder="Select a category" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {serviceCategories.map(cat => (
+                                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                    ))}
+                                    <SelectSeparator />
+                                    <SelectItem value="all">All</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="service" className="flex items-center h-5">
+                                  <span>Service</span>
+                                  {selectedCategory && (
+                                    <span className="ml-2 text-xs text-muted-foreground font-normal">
+                                      - {serviceCategories.find(c => c.id === selectedCategory)?.name}
+                                    </span>
+                                  )}
+                                </Label>
+                                <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory && !allServicesGrouped.length}>
+                                    <SelectTrigger id="service">
+                                      <SelectValue placeholder="Select a service" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {selectedCategory ? (
+                                        <SelectGroup>
+                                          <SelectItem value={selectedCategory} className="font-bold text-primary">{serviceCategories.find(c => c.id === selectedCategory)?.name}</SelectItem>
+                                          {filteredServices.map(service => (
+                                            <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
+                                          ))}
+                                        </SelectGroup>
+                                      ) : (
+                                        allServicesGrouped.map(group => (
+                                          group.services.length > 0 && (
+                                            <SelectGroup key={`group-${group.id}`}>
+                                              <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
+                                              {group.services.map(service => (
+                                                <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
+                                              ))}
+                                            </SelectGroup>
+                                          )
+                                        ))
+                                      )}
+                                      <SelectSeparator />
+                                      <SelectItem value="all">All</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="location" className="flex items-center h-5">Location</Label>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-between">
+                                      <span>{getSelectedLocationsText()}</span>
+                                      <ChevronDown className="h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent className="w-64">
+                                    <DropdownMenuLabel>Dublin Districts</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    {dublinDistricts.map(district => (
+                                      <DropdownMenuCheckboxItem
+                                        key={district.id}
+                                        checked={selectedLocations.has(district.id)}
+                                        onSelect={(e) => e.preventDefault()} // prevent menu from closing
+                                        onPointerDown={() => handleLocationSelect(district.id)}
+                                      >
+                                        {district.name}
+                                      </DropdownMenuCheckboxItem>
+                                    ))}
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuCheckboxItem
+                                        onSelect={(e) => {
+                                            e.preventDefault();
+                                            if (selectedLocations.size === dublinDistricts.length) {
+                                                setSelectedLocations(new Set());
+                                            } else {
+                                                setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
+                                            }
+                                        }}
+                                        checked={selectedLocations.size === dublinDistricts.length}
+                                      >
+                                        All Districts
+                                      </DropdownMenuCheckboxItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                            <Button className="w-full">
+                              <Search className="mr-2 h-4 w-4" />
+                              Search
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
                   </div>
                 </div>
-                {/* Advanced Search */}
-                <div className="flex-grow flex flex-col justify-end">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4 pb-8">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                           <Label htmlFor="category" className="flex items-center h-5">Category</Label>
-                          <Select value={selectedCategory} onValueChange={handleCategorySelect}>
-                            <SelectTrigger id="category">
-                              <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {serviceCategories.map(cat => (
-                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                              ))}
-                              <SelectSeparator />
-                              <SelectItem value="all">All</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="service" className="flex items-center h-5">
-                            <span>Service</span>
-                            {selectedCategory && (
-                              <span className="ml-2 text-xs text-muted-foreground font-normal">
-                                - {serviceCategories.find(c => c.id === selectedCategory)?.name}
-                              </span>
-                            )}
-                          </Label>
-                          <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory && !allServicesGrouped.length}>
-                              <SelectTrigger id="service">
-                                <SelectValue placeholder="Select a service" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {selectedCategory ? (
-                                  <SelectGroup>
-                                    <SelectItem value={selectedCategory} className="font-bold text-primary">{serviceCategories.find(c => c.id === selectedCategory)?.name}</SelectItem>
-                                    {filteredServices.map(service => (
-                                      <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                ) : (
-                                  allServicesGrouped.map(group => (
-                                    group.services.length > 0 && (
-                                      <SelectGroup key={`group-${group.id}`}>
-                                        <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
-                                        {group.services.map(service => (
-                                          <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
-                                        ))}
-                                      </SelectGroup>
-                                    )
-                                  ))
-                                )}
-                                <SelectSeparator />
-                                <SelectItem value="all">All</SelectItem>
-                              </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="location" className="flex items-center h-5">Location</Label>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="outline" className="w-full justify-between">
-                                <span>{getSelectedLocationsText()}</span>
-                                <ChevronDown className="h-4 w-4 opacity-50" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-64">
-                              <DropdownMenuLabel>Dublin Districts</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              {dublinDistricts.map(district => (
-                                <DropdownMenuCheckboxItem
-                                  key={district.id}
-                                  checked={selectedLocations.has(district.id)}
-                                  onSelect={(e) => e.preventDefault()} // prevent menu from closing
-                                  onPointerDown={() => handleLocationSelect(district.id)}
-                                >
-                                  {district.name}
-                                </DropdownMenuCheckboxItem>
-                              ))}
-                              <DropdownMenuSeparator />
-                              <DropdownMenuCheckboxItem
-                                  onSelect={(e) => {
-                                      e.preventDefault();
-                                      if (selectedLocations.size === dublinDistricts.length) {
-                                          setSelectedLocations(new Set());
-                                      } else {
-                                          setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
-                                      }
-                                  }}
-                                  checked={selectedLocations.size === dublinDistricts.length}
-                                >
-                                  All Districts
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                      <Button className="w-full">
-                        <Search className="mr-2 h-4 w-4" />
-                        Search
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </section>
     </div>
   );
