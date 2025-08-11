@@ -67,6 +67,10 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
             </div>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
+             <div>
+                <CardTitle className="text-3xl font-bold font-headline">{provider.name}</CardTitle>
+                <CardDescription className="text-muted-foreground">{provider.specialty}</CardDescription>
+            </div>
              <div className="flex justify-between items-center text-sm text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-primary fill-primary" />
@@ -77,10 +81,6 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                     <MapPin className="w-4 h-4" />
                     <span>{provider.location}</span>
                 </div>
-            </div>
-             <div>
-                <CardTitle className="text-3xl font-bold font-headline">{provider.name}</CardTitle>
-                <CardDescription className="text-muted-foreground">{provider.specialty}</CardDescription>
             </div>
             
             <p className="text-foreground/80 leading-relaxed line-clamp-3 h-[4.5rem]">{provider.bio}</p>
