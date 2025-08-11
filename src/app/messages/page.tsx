@@ -148,6 +148,7 @@ export default function MessagesPage() {
                                             <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
                                                 <Sparkles className="w-3 h-3" />
                                                 <span>Sent by AI Assistant</span>
+                                                {message.bookingId && <span className="text-muted-foreground/80">- click to view booking</span>}
                                             </div>
                                         )}
                                     </div>
