@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ function getNavLinks(role: UserRole) {
         guest: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
-                { href: '/signup', label: 'Sign Up', icon: LogIn }
+                { href: '/signup', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
