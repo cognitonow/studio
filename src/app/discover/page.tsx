@@ -111,18 +111,18 @@ function ExploreStack() {
       </div>
       <div className="p-6 pt-8 flex justify-center items-center">
         <div className="flex justify-center items-center gap-6">
-          <Button onClick={handlePrevious} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Previous">
+          <Button onClick={handlePrevious} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Previous">
             <Undo2 className="h-10 w-10 text-primary" />
           </Button>
-          <Button onClick={handleLike} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Save to list">
+          <Button onClick={handleLike} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Save to list">
             <Heart className="h-10 w-10 fill-primary text-primary" />
           </Button>
-          <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md">
+          <Button asChild variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30">
             <Link href={`/provider/${providers[activeIndex].id}`} aria-label="View profile">
               <User className="h-10 w-10 text-primary" />
             </Link>
           </Button>
-          <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md" aria-label="Open chat">
+          <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
             <MessageCircle className="h-10 w-10 fill-primary text-primary" />
           </Button>
         </div>
