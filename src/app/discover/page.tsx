@@ -24,6 +24,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { cn } from '@/lib/utils';
 import { PlaylistResults } from '@/components/playlist-results';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExploreProviderCard } from '@/components/explore-provider-card';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -104,13 +105,13 @@ export default function DiscoverPage() {
               opts={{
                 align: "start",
               }}
-              className="w-full max-w-xs mx-auto"
+              className="w-full max-w-md mx-auto"
             >
               <CarouselContent>
                 {providers.map((provider) => (
                   <CarouselItem key={provider.id}>
                     <div className="p-1">
-                      <ProviderCard provider={provider} />
+                      <ExploreProviderCard provider={provider} />
                     </div>
                   </CarouselItem>
                 ))}
