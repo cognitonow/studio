@@ -23,7 +23,6 @@ function getNavLinks(role: string) {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
-                { href: '/notifications', label: 'Notifications', icon: Bell },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
@@ -31,7 +30,6 @@ function getNavLinks(role: string) {
                 { href: '/my-lists', label: 'My Lists' },
                 { href: '/bookings', label: 'Bookings' },
                 { href: '/messages', label: 'Messages' },
-                { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
             ],
         },
@@ -39,12 +37,11 @@ function getNavLinks(role: string) {
             desktop: [
                 { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
-                { href: '/notifications', label: 'Notifications', icon: User },
+                { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
-                { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
             ]
         }
