@@ -98,14 +98,14 @@ export default function DiscoverPage() {
               Select a category or use advanced search to find providers.
             </p>
           </div>
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
+          <div className="grid lg:grid-cols-5 gap-8 items-center">
             {/* Advanced Search */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pb-8">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
                     <Select value={selectedCategory} onValueChange={handleCategorySelect}>
@@ -222,7 +222,7 @@ export default function DiscoverPage() {
               </Card>
             </div>
             {/* Circular Menu */}
-            <div className="lg:col-span-2 flex justify-center items-center">
+            <div className="lg:col-span-3 flex justify-center items-center">
               <div className="relative w-[500px] h-[500px]">
                   {/* Dotted Circle */}
                   <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
