@@ -115,16 +115,19 @@ export default function ProviderDashboardPage() {
         );
         break;
       case 'Confirmed':
-        if (bookingDate > now) {
+        if (bookingDate <= now) {
+            actions.push(<Button key="complete" size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
+        }
+        
+        if (booking.status !== 'Cancelled') {
             actions.push(
-                 <Button key="manage" size="sm" variant="outline" asChild>
+                <Button key="manage" size="sm" variant="outline" asChild>
                     <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
                 </Button>
             );
         }
-        if (bookingDate <= now) {
-          actions.push(<Button key="complete" size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
-        } else {
+
+        if (bookingDate > now) {
             actions.push(
                 <Button key="cancel" size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
             );
