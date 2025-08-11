@@ -1,4 +1,5 @@
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking } from './types';
 
 export const serviceCategories: ServiceCategory[] = [
@@ -243,6 +244,7 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
 
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
+export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 

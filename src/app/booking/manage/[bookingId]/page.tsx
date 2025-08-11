@@ -1,10 +1,11 @@
 
+
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { providers, services as allServices } from '@/lib/data';
-import type { Service } from '@/lib/types';
+import { providers, services as allServices, getBookingById } from '@/lib/data';
+import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -15,13 +16,6 @@ import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Mock data - in a real app, this would be fetched from a database
-const mockBooking = {
-  id: "1",
-  providerId: "3",
-  serviceIds: ["hair-22"],
-  date: new Date("2024-08-15T14:00:00"),
-};
 
 const availableTimes = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
@@ -40,15 +34,35 @@ export default function ManageBookingPage() {
   const params = useParams();
   const bookingId = params.bookingId as string;
 
-  // For now, we'll use the mock booking if the ID matches.
-  const booking = bookingId === mockBooking.id ? mockBooking : null;
-
+  const [booking, setBooking] = useState<Booking | null | undefined>(undefined);
+  
+  useEffect(() => {
+    if (bookingId) {
+      const foundBooking = getBookingById(bookingId);
+      setBooking(foundBooking);
+    }
+  }, [bookingId]);
+  
   const provider = providers.find(p => p.id === booking?.providerId);
   
-  const [bookedServices, setBookedServices] = useState<Service[]>(() => 
-    allServices.filter(s => booking?.serviceIds.includes(s.id))
-  );
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(booking?.date);
+  // Initialize services with an empty array or based on the fetched booking
+  const [bookedServices, setBookedServices] = useState<Service[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    if (booking) {
+      // Assuming a booking has one service for now, as per current data structure
+      const initialService = allServices.find(s => s.id === booking.serviceId);
+      setBookedServices(initialService ? [initialService] : []);
+      setSelectedDate(new Date(booking.date));
+    }
+  }, [booking]);
+
+
+  if (booking === undefined) {
+    // We are still loading the booking
+    return <div>Loading...</div>;
+  }
 
   if (!booking || !provider) {
     notFound();
