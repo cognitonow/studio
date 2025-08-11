@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { providers, getBookingById, updateBooking, getServicesByIds } from '@/lib/data';
+import { providers, getBookingById, updateBooking, getServicesByIds, updateBookingStatus } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -90,11 +90,19 @@ export default function ManageBookingPage() {
         title: "Booking Updated!",
         description: "Your appointment details have been successfully saved.",
       });
-      // A bit of a hack to determine where to go back.
-      // For now, we'll assume if they can get here they are a provider or client
-      // who knows where they came from. A better solution might be router.back()
-      // but let's send to provider dashboard for this case.
       router.push('/dashboard'); 
+    }
+  };
+  
+  const handleCancelBooking = () => {
+    if (booking) {
+      updateBookingStatus(booking.id, 'Cancelled');
+      toast({
+        title: "Booking Cancelled",
+        description: "The appointment has been successfully cancelled.",
+        variant: "destructive",
+      });
+      router.push('/dashboard');
     }
   };
 
@@ -214,7 +222,7 @@ export default function ManageBookingPage() {
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
-               <CancelBookingDialog onConfirm={() => console.log('Booking cancelled')}>
+               <CancelBookingDialog onConfirm={handleCancelBooking}>
                     <Button variant="destructive" size="lg" className="w-full">
                       <XCircle className="mr-2 h-4 w-4" />
                       Cancel Booking
