@@ -2,56 +2,80 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, Bell, User, Search, List, Heart } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, Bell, User, Search } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
 const userRole = 'client'; // 'provider' | 'guest'
 
-const navLinks = {
-  common: [
-    { href: '/discover', label: 'Discover', icon: Search },
-  ],
-  guest: [
-    { href: '/signup', label: 'Sign Up', isButton: true },
-  ],
-  client: [
-    { href: '/my-lists', label: 'My Lists', icon: Heart },
-    { href: '/bookings', label: 'Bookings', icon: Bell },
-    { href: '/account', label: 'Account', icon: User },
-  ],
-  provider: [
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/messages', label: 'Messages', icon: MessageSquare },
-    { href: '/notifications', label: 'Notifications', icon: Bell },
-    { href: '/account', label: 'Account', icon: User },
-  ],
-};
+function getNavLinks(role: string) {
+    const commonLinks = [
+        { href: '/discover', label: 'Discover' },
+    ];
+
+    const commonIconLinks = [
+        { href: '/discover', label: 'Discover', icon: Search },
+    ];
+
+    switch (role) {
+        case 'client':
+            return {
+                desktop: [
+                    ...commonLinks,
+                ],
+                desktopIcons: [
+                    ...commonIconLinks,
+                    { href: '/messages', label: 'Messages', icon: MessageSquare },
+                    { href: '/notifications', label: 'Notifications', icon: Bell },
+                    { href: '/account', label: 'Account', icon: User },
+                ],
+                mobile: [
+                    ...commonLinks,
+                    { href: '/messages', label: 'Messages' },
+                    { href: '/notifications', label: 'Notifications' },
+                    { href: '/account', label: 'Account' },
+                ],
+            };
+        case 'provider':
+             return {
+                desktop: [
+                    { href: '/dashboard', label: 'Dashboard' },
+                ],
+                desktopIcons: [
+                    { href: '/messages', label: 'Messages', icon: MessageSquare },
+                    { href: '/notifications', label: 'Notifications', icon: Bell },
+                    { href: '/account', label: 'Account', icon: User },
+                ],
+                mobile: [
+                    { href: '/dashboard', label: 'Dashboard' },
+                    { href: '/messages', label: 'Messages' },
+                    { href: '/notifications', label: 'Notifications' },
+                    { href: '/account', label: 'Account' },
+                ],
+            };
+        default: // guest
+             return {
+                desktop: [
+                    ...commonLinks,
+                    { href: '/signup', label: 'Sign Up', isButton: true },
+                ],
+                desktopIcons: [],
+                mobile: [
+                     ...commonLinks,
+                ],
+            };
+    }
+}
 
 const DesktopNavLinks = () => {
-    const links = [
-        ...navLinks.common,
-        ...(userRole === 'client' ? navLinks.client : []),
-        ...(userRole === 'provider' ? navLinks.provider : []),
-        ...(userRole === 'guest' ? navLinks.guest : []),
-    ];
+    const { desktop, desktopIcons } = getNavLinks(userRole);
 
     return (
         <>
-            {links.map(({ href, label, icon: Icon, isButton }) => {
+            {desktop.map(({ href, label, isButton }) => {
                 if (isButton) {
                     return (
                         <Button key={href} asChild>
                             <Link href={href}>{label}</Link>
-                        </Button>
-                    );
-                }
-                if (Icon) {
-                    return (
-                        <Button key={href} variant="outline" size="icon" className="rounded-full" asChild>
-                           <Link href={href}>
-                                <Icon className="h-5 w-5" />
-                                <span className="sr-only">{label}</span>
-                            </Link>
                         </Button>
                     );
                 }
@@ -61,21 +85,25 @@ const DesktopNavLinks = () => {
                     </Link>
                 );
             })}
+            {desktopIcons.map(({ href, label, icon: Icon }) => (
+                <Button key={href} variant="outline" size="icon" className="rounded-full" asChild>
+                   <Link href={href}>
+                        <Icon className="h-5 w-5" />
+                        <span className="sr-only">{label}</span>
+                    </Link>
+                </Button>
+            ))}
         </>
     );
 };
 
 
 const MobileNavLinks = () => {
-    const links = [
-        ...navLinks.common,
-        ...(userRole === 'client' ? navLinks.client : []),
-        ...(userRole === 'provider' ? navLinks.provider : []),
-    ];
+    const { mobile } = getNavLinks(userRole);
 
     return (
         <div className="flex flex-col space-y-3">
-            {links.map(({ href, label }) => (
+            {mobile.map(({ href, label }) => (
                 <Link key={href} href={href} className="text-foreground transition-colors hover:text-primary">
                     {label}
                 </Link>
@@ -114,8 +142,8 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="left" className="pr-0">
                  <SheetHeader>
-                  <SheetTitle className="sr-only">Menu</SheetTitle>
-                </SheetHeader>
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
+                 </SheetHeader>
                 <Link href="/" className="mr-6 flex items-center space-x-2 p-4">
                   <Sprout className="h-6 w-6 text-primary" />
                   <span className="font-bold text-lg">Beauty Book</span>
