@@ -42,6 +42,10 @@ const prompt = ai.definePrompt({
 
   The message should be friendly and confirm the details.
 
+  IMPORTANT RULES:
+  - Do not include any links or URLs.
+  - Do not identify yourself as a person (e.g., "This is Chloe"). You are an AI assistant for Beauty Book.
+
   Drafted message:`,
 });
 

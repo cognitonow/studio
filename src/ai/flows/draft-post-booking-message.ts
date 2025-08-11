@@ -39,6 +39,10 @@ const prompt = ai.definePrompt({
 
   Draft a polite and friendly follow-up message from the provider to the client. The message should thank them for their visit and encourage them to book again in the future.
 
+  IMPORTANT RULES:
+  - Do not include any links or URLs.
+  - Do not identify yourself as a person (e.g., "This is Chloe"). You are an AI assistant for Beauty Book.
+
   Drafted message:`,
 });
 
