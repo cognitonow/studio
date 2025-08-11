@@ -28,6 +28,8 @@ function getNavLinks(role: string) {
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
+                { href: '/my-lists', label: 'My Lists' },
+                { href: '/bookings', label: 'Bookings' },
                 { href: '/messages', label: 'Messages' },
                 { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
@@ -37,8 +39,7 @@ function getNavLinks(role: string) {
             desktop: [
                 { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
-                { href: '/notifications', label: 'Notifications', icon: Bell },
-                { href: '/account', label: 'Account', icon: User },
+                { href: '/notifications', label: 'Notifications', icon: User },
             ],
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
@@ -93,7 +94,7 @@ export function Header() {
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Sprout className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">Beauty Book</span>
+            <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
         </div>
 
@@ -110,9 +111,9 @@ export function Header() {
                  <SheetHeader className="p-4">
                     <SheetTitle className="sr-only">Menu</SheetTitle>
                  </SheetHeader>
-                <Link href="/" className="mr-6 flex items-center space-x-2 px-4">
+                <Link href="/" className="mr-6 flex items-center space-x-2 p-4">
                   <Sprout className="h-6 w-6 text-primary" />
-                  <span className="font-bold text-lg">Beauty Book</span>
+                  <span className="font-bold text-lg text-foreground">Beauty Book</span>
                 </Link>
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
                   <MobileNavLinks />
