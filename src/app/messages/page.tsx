@@ -1,28 +1,17 @@
 
+'use client'
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Phone, Video } from "lucide-react"
-
-export const conversations = [
-  { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0, online: true },
-  { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2, online: false },
-  { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0, online: false },
-  { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0, online: true },
-]
-
-export const messages = [
-    { id: 1, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.' },
-    { id: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
-    { id: 3, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
-    { id: 4, sender: 'user', text: "That's fantastic, thank you so much! "},
-    { id: 5, sender: 'provider', text: "You're very welcome. Looking forward to seeing you tomorrow!" },
-]
+import { conversations, messages } from "@/lib/data"
+import { useState } from "react"
 
 export default function MessagesPage() {
-  const activeConversation = conversations[1]; // Chloe's Hair Haven is the active chat
+  const [activeConversation, setActiveConversation] = useState(conversations[1]);
 
   return (
     <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)]">
@@ -41,7 +30,7 @@ export default function MessagesPage() {
             <ScrollArea className="h-full">
               <div className="space-y-1">
                 {conversations.map(convo => (
-                    <button key={convo.id} className={`flex items-center gap-4 p-4 w-full text-left hover:bg-muted/50 ${convo.id === activeConversation.id ? 'bg-muted' : ''}`}>
+                    <button key={convo.id} onClick={() => setActiveConversation(convo)} className={`flex items-center gap-4 p-4 w-full text-left hover:bg-muted/50 ${convo.id === activeConversation.id ? 'bg-muted' : ''}`}>
                         <div className="relative">
                             <Avatar className="w-12 h-12">
                                 <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
@@ -82,7 +71,7 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {messages.map((message) => (
+                        {messages.filter(m => m.conversationId === activeConversation.id).map((message) => (
                             <div key={message.id} className={`flex items-start gap-3 ${message.sender === 'user' ? 'justify-end' : ''}`}>
                                 {message.sender === 'provider' && (
                                     <Avatar className="w-8 h-8">

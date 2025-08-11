@@ -78,3 +78,21 @@ export type Notification = {
   time: string;
   read: boolean;
 };
+
+export type Conversation = {
+  id: number;
+  name: string;
+  avatar: string;
+  dataAiHint?: string;
+  lastMessage: string;
+  time: string;
+  unread: number;
+  online: boolean;
+};
+
+export type Message = {
+  id: number;
+  conversationId: number;
+  sender: 'user' | 'provider';
+  text: string;
+};
