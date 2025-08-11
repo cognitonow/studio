@@ -60,15 +60,15 @@ function ExploreCarousel() {
               <div className="p-6 pt-4 flex justify-center items-center">
                   <div className="flex justify-center items-center gap-6">
                       <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Save to list">
-                          <Heart className="h-16 w-16 fill-primary text-primary" />
+                          <Heart className="h-24 w-24 fill-primary text-primary" />
                       </Button>
                        <Button asChild variant="outline" size="icon" className="rounded-full h-28 w-28">
                         <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                            <User className="h-16 w-16 text-primary" />
+                            <User className="h-24 w-24 text-primary" />
                         </Link>
                      </Button>
                       <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Open chat">
-                          <MessageCircle className="h-16 w-16 fill-primary text-primary" />
+                          <MessageCircle className="h-24 w-24 fill-primary text-primary" />
                       </Button>
                   </div>
               </div>
