@@ -335,7 +335,11 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 });
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
             } else if (status === 'Completed') {
-                // We could add a different notification type for completion if desired
+                addNotification({
+                    icon: 'new-booking',
+                    title: 'Booking Completed!',
+                    description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`
+                });
                 await sendAutomatedMessage(booking, draftPostBookingMessage);
             }
         }
