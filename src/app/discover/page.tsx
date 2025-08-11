@@ -69,12 +69,11 @@ function ExploreCarousel() {
                       <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Open chat">
                           <MessageCircle className="h-6 w-6" />
                       </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Next provider" onClick={scrollNext}>
-                          <ChevronRight className="h-6 w-6" />
-                      </Button>
                   </div>
-                  <Button asChild size="lg">
-                    <Link href={`/provider/${provider.id}`}>View Profile</Link>
+                  <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
+                    <Link href={`/provider/${provider.id}`} aria-label="View profile">
+                        <ChevronRight className="h-6 w-6" />
+                    </Link>
                  </Button>
               </div>
             </div>
