@@ -231,6 +231,13 @@ export const updateBookingStatus = (bookingId: string, status: Booking['status']
     }
 };
 
+export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking>) => {
+    const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+    if (bookingIndex !== -1) {
+        bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
+    }
+};
+
 
 export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     const newBooking: Booking = {

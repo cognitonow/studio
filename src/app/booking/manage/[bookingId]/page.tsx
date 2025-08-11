@@ -3,8 +3,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { notFound, useParams } from 'next/navigation';
-import { providers, services as allServices, getBookingById } from '@/lib/data';
+import { notFound, useParams, useRouter } from 'next/navigation';
+import { providers, services as allServices, getBookingById, updateBooking } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 
 
 const availableTimes = [
@@ -32,6 +33,8 @@ const formatToAmPm = (time: string) => {
 
 export default function ManageBookingPage() {
   const params = useParams();
+  const router = useRouter();
+  const { toast } = useToast();
   const bookingId = params.bookingId as string;
 
   const [booking, setBooking] = useState<Booking | null | undefined>(undefined);
@@ -87,6 +90,24 @@ export default function ManageBookingPage() {
     setBookedServices(prev => prev.filter(s => s.id !== serviceId));
   };
   
+  const handleSaveChanges = () => {
+    if (booking && selectedDate) {
+      // For now, we'll just update the date.
+      // In a real app, you might update services too.
+      updateBooking(booking.id, { date: selectedDate.toISOString() });
+      toast({
+        title: "Booking Updated!",
+        description: "Your appointment details have been successfully saved.",
+      });
+      // A bit of a hack to determine where to go back.
+      // In a real app, you might have user roles to determine this.
+      // For now, we'll assume if they can get here they are a provider or client
+      // who knows where they came from. A better solution might be router.back()
+      // but let's send to provider dashboard for this case.
+      router.push('/dashboard'); 
+    }
+  };
+
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
@@ -197,7 +218,7 @@ export default function ManageBookingPage() {
             </Card>
 
             <div className="flex flex-col gap-4">
-               <Button size="lg" className="w-full">
+               <Button size="lg" className="w-full" onClick={handleSaveChanges}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>
