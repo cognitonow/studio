@@ -109,7 +109,7 @@ export default function DiscoverPage() {
 
                       {/* Central Image */}
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
-                          <Image src="https://placehold.co/400x400.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
+                          <Image src="https://placehold.co/400x400.png" alt="Skincare" fill className="object-cover" data-ai-hint="woman face beauty" />
                       </div>
 
                       {/* Menu Items */}
