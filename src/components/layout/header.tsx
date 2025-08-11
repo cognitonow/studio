@@ -1,8 +1,10 @@
 
+'use client'
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, List, BookCopy } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import React, { useState } from 'react';
 
-// TODO: Replace with actual authentication logic
-const userRole = 'client'; // 'provider' | 'guest' | 'client'
+type UserRole = 'guest' | 'client' | 'provider';
 
-function getNavLinks(role: string) {
+function getNavLinks(role: UserRole) {
     const navConfig = {
         guest: {
             desktop: [
@@ -58,12 +60,12 @@ function getNavLinks(role: string) {
         }
     };
 
-    return navConfig[role as keyof typeof navConfig] || navConfig.guest;
+    return navConfig[role] || navConfig.guest;
 }
 
 
-const DesktopNavLinks = () => {
-    const { desktop } = getNavLinks(userRole);
+const DesktopNavLinks = ({ role }: { role: UserRole }) => {
+    const { desktop } = getNavLinks(role);
 
     return (
         <>
@@ -80,8 +82,8 @@ const DesktopNavLinks = () => {
 };
 
 
-const MobileNavLinks = () => {
-    const { mobile } = getNavLinks(userRole);
+const MobileNavLinks = ({ role }: { role: UserRole }) => {
+    const { mobile } = getNavLinks(role);
 
     return (
         <div className="flex flex-col space-y-3">
@@ -96,6 +98,14 @@ const MobileNavLinks = () => {
 
 
 export function Header() {
+  const [userRole, setUserRole] = useState<UserRole>('client');
+
+  const roleLabels: Record<UserRole, string> = {
+    guest: 'Guest View',
+    client: 'Client View',
+    provider: 'Provider View'
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 max-w-7xl items-center">
@@ -107,27 +117,27 @@ export function Header() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-1">
-                    Client View
+                    {roleLabels[userRole]}
                     <ChevronDown className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel>Switch View</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                 <DropdownMenuItem asChild>
-                    <Link href="/">
+                 <DropdownMenuItem onClick={() => setUserRole('guest')}>
+                    <Link href="/" className="flex items-center w-full">
                         <Globe className="mr-2 h-4 w-4"/>
                         Guest View
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link href="/discover">
+                <DropdownMenuItem onClick={() => setUserRole('client')}>
+                    <Link href="/discover" className="flex items-center w-full">
                         <Eye className="mr-2 h-4 w-4"/>
                         Client View
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link href="/dashboard">
+                <DropdownMenuItem onClick={() => setUserRole('provider')}>
+                    <Link href="/dashboard" className="flex items-center w-full">
                         <Briefcase className="mr-2 h-4 w-4"/>
                         Provider View
                     </Link>
@@ -154,7 +164,7 @@ export function Header() {
                   <span className="font-bold text-lg text-foreground">Beauty Book</span>
                 </Link>
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                  <MobileNavLinks />
+                  <MobileNavLinks role={userRole} />
                 </div>
               </SheetContent>
             </Sheet>
@@ -162,7 +172,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-                <DesktopNavLinks />
+                <DesktopNavLinks role={userRole} />
             </nav>
         </div>
       </div>
