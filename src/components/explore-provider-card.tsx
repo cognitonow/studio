@@ -3,15 +3,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Provider } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Star, MapPin } from 'lucide-react';
+import { Star, MapPin, Heart, MessageCircle, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 
 interface ExploreProviderCardProps {
   provider: Provider;
+  onNext: () => void;
 }
 
 const badgeDescriptions: Record<string, string> = {
@@ -28,7 +28,7 @@ const badgeDescriptions: Record<string, string> = {
 }
 
 
-export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
+export function ExploreProviderCard({ provider, onNext }: ExploreProviderCardProps) {
   const portfolioImages = provider.portfolio.slice(0, 3);
   const mainImage = portfolioImages[0] ?? { url: 'https://placehold.co/600x400.png', dataAiHint: 'salon interior' };
   const subImage1 = portfolioImages[1] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'hair styling' };
@@ -47,10 +47,6 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                         data-ai-hint={mainImage.dataAiHint}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                    <div className="absolute bottom-4 left-4 text-white">
-                        <CardTitle className="text-3xl font-bold font-headline drop-shadow-lg">{provider.name}</CardTitle>
-                        <CardDescription className="text-white/90 drop-shadow-md">{provider.specialty}</CardDescription>
-                    </div>
                 </div>
                 <div className="col-span-1 row-span-1 relative">
                      <Image
@@ -73,7 +69,11 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
             </div>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
+             <div className="text-center -mt-20">
+                <CardTitle className="text-3xl font-bold font-headline drop-shadow-lg text-white">{provider.name}</CardTitle>
+                <CardDescription className="text-white/90 drop-shadow-md">{provider.specialty}</CardDescription>
+            </div>
+            <div className="flex justify-between items-center text-sm text-muted-foreground pt-4">
                 <div className="flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-primary fill-primary" />
                     <span className="font-semibold text-foreground">{provider.rating.toFixed(1)}</span>
@@ -103,8 +103,19 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                 ))}
             </div>
         </CardContent>
-        <CardFooter className="p-6 pt-0">
-           <Button className="w-full" asChild size="lg">
+        <CardFooter className="p-6 pt-0 flex justify-between items-center">
+            <div className="flex gap-2">
+                <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Save to list">
+                    <Heart className="h-6 w-6" />
+                </Button>
+                <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Open chat">
+                    <MessageCircle className="h-6 w-6" />
+                </Button>
+                <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Next provider" onClick={onNext}>
+                    <ChevronRight className="h-6 w-6" />
+                </Button>
+            </div>
+            <Button asChild size="lg">
               <Link href={`/provider/${provider.id}`}>View Profile</Link>
            </Button>
         </CardFooter>

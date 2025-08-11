@@ -11,6 +11,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  useCarousel,
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, ChevronDown } from 'lucide-react';
@@ -25,6 +26,50 @@ import { cn } from '@/lib/utils';
 import { PlaylistResults } from '@/components/playlist-results';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
+import * as React from 'react';
+
+function ExploreCarousel() {
+  const [api, setApi] = React.useState<ReturnType<typeof useCarousel>[1]>();
+  const [current, setCurrent] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!api) {
+      return
+    }
+ 
+    setCurrent(api.selectedScrollSnap())
+ 
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api])
+
+  const scrollNext = React.useCallback(() => {
+    api?.scrollNext()
+  }, [api]);
+
+  return (
+    <Carousel
+      setApi={setApi}
+      opts={{
+        align: "start",
+      }}
+      className="w-full max-w-md mx-auto"
+    >
+      <CarouselContent>
+        {providers.map((provider) => (
+          <CarouselItem key={provider.id}>
+            <div className="p-1">
+              <ExploreProviderCard provider={provider} onNext={scrollNext} />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
+    </Carousel>
+  )
+}
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -101,24 +146,7 @@ export default function DiscoverPage() {
             <TabsTrigger value="find">Find a Service</TabsTrigger>
           </TabsList>
           <TabsContent value="explore">
-             <Carousel
-              opts={{
-                align: "start",
-              }}
-              className="w-full max-w-md mx-auto"
-            >
-              <CarouselContent>
-                {providers.map((provider) => (
-                  <CarouselItem key={provider.id}>
-                    <div className="p-1">
-                      <ExploreProviderCard provider={provider} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            <ExploreCarousel />
           </TabsContent>
           <TabsContent value="featured">
               <Carousel opts={{ align: 'start', loop: true }}>
