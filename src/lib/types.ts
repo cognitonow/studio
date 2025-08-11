@@ -1,4 +1,5 @@
 
+
 export type Provider = {
   id: string;
   name: string;
@@ -50,3 +51,11 @@ export type DublinDistrict = {
     id: string;
     name: string;
 }
+
+export type BookingHistory = {
+  id: string;
+  service: string;
+  date: string;
+  status: 'Completed' | 'Cancelled';
+  price: number;
+};

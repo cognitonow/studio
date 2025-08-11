@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { getProviderById, providers } from '@/lib/data';
@@ -7,8 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
+import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, MessageCircle, Calendar, Send } from 'lucide-react';
 import type { Metadata, ResolvingMetadata } from 'next'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProviderChatHistory } from '@/components/provider-chat-history';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
  
 type Props = {
   params: { id: string }
@@ -45,6 +52,11 @@ export default function ProviderDetailPage({ params }: { params: { id: string } 
   if (!provider) {
     notFound();
   }
+  
+  const bookingHistory = [
+    { id: "1", service: "Balayage", date: "2024-07-16", status: "Completed", price: 180 },
+    { id: "2", service: "Haircut", date: "2024-05-20", status: "Completed", price: 50 },
+  ];
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -101,33 +113,102 @@ export default function ProviderDetailPage({ params }: { params: { id: string } 
             </div>
           )}
 
-          {/* Reviews */}
-          <div>
-            <h2 className="text-2xl font-bold font-headline mb-4">Verified Reviews</h2>
-            <div className="space-y-6">
-              {provider.reviews.map(review => (
-                <Card key={review.id}>
-                  <CardHeader className="flex flex-row items-center gap-4">
-                    <Avatar>
-                      <AvatarImage src={review.avatarUrl} alt={review.author} data-ai-hint={review.dataAiHint} />
-                      <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">{review.author}</p>
-                      <div className="flex items-center gap-0.5">
+          {/* Reviews, Chat, Booking History Tabs */}
+          <Tabs defaultValue="reviews">
+            <TabsList>
+              <TabsTrigger value="reviews">Verified Reviews</TabsTrigger>
+              <TabsTrigger value="feedback">Leave Feedback</TabsTrigger>
+              <TabsTrigger value="chat">Chat History</TabsTrigger>
+              <TabsTrigger value="booking-history">Booking History</TabsTrigger>
+            </TabsList>
+            <TabsContent value="reviews">
+                <div className="space-y-6 mt-6">
+                  {provider.reviews.map(review => (
+                    <Card key={review.id}>
+                      <CardHeader className="flex flex-row items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={review.avatarUrl} alt={review.author} data-ai-hint={review.dataAiHint} />
+                          <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold">{review.author}</p>
+                          <div className="flex items-center gap-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">{review.comment}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+            </TabsContent>
+            <TabsContent value="feedback">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Share Your Experience</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Rating</Label>
+                      <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-primary fill-primary' : 'text-muted-foreground'}`} />
+                           <Button key={i} variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+                             <Star className="w-6 h-6" />
+                           </Button>
                         ))}
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{review.comment}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="feedback-comment">Comment</Label>
+                      <Textarea id="feedback-comment" placeholder="Tell us about your experience..." rows={4} />
+                    </div>
+                    <Button type="submit">
+                      <Send className="mr-2 h-4 w-4" />
+                      Submit Feedback
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="chat">
+              <ProviderChatHistory />
+            </TabsContent>
+            <TabsContent value="booking-history">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your History with {provider.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Service</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Price</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {bookingHistory.map(booking => (
+                        <TableRow key={booking.id}>
+                          <TableCell className="font-medium">{booking.service}</TableCell>
+                          <TableCell>{booking.date}</TableCell>
+                          <TableCell><Badge>{booking.status}</Badge></TableCell>
+                          <TableCell className="text-right">${booking.price}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
         </div>
 
         {/* Services & Booking */}
