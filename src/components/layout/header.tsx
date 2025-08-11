@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, Bell } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, Bell, User } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
 const userRole = 'client'; // 'provider' | 'guest'
@@ -10,8 +10,6 @@ const userRole = 'client'; // 'provider' | 'guest'
 const CommonLinks = () => (
   <>
     <Link href="/discover" className="transition-colors hover:text-primary text-foreground">Discover</Link>
-    <Link href="#" className="transition-colors hover:text-primary text-foreground">About Us</Link>
-    <Link href="#" className="transition-colors hover:text-primary text-foreground">Blog</Link>
   </>
 )
 
@@ -39,8 +37,11 @@ const ClientLinks = () => (
           <span className="sr-only">Notifications</span>
         </Link>
       </Button>
-      <Button asChild>
-        <Link href="/account">Account</Link>
+      <Button size="icon" asChild>
+        <Link href="/account">
+          <User className="h-5 w-5" />
+          <span className="sr-only">Account</span>
+        </Link>
       </Button>
     </>
   );
@@ -60,8 +61,11 @@ const ProviderLinks = () => (
             <span className="sr-only">Notifications</span>
         </Link>
     </Button>
-    <Button asChild>
-      <Link href="/account">Account</Link>
+    <Button size="icon" asChild>
+      <Link href="/account">
+        <User className="h-5 w-5" />
+        <span className="sr-only">Account</span>
+      </Link>
     </Button>
   </>
 );
@@ -70,8 +74,6 @@ const ProviderLinks = () => (
 const MobileCommonLinks = () => (
     <>
       <Link href="/discover" className="text-foreground transition-colors hover:text-primary">Discover</Link>
-      <Link href="#" className="text-foreground transition-colors hover:text-primary">About Us</Link>
-      <Link href="#" className="text-foreground transition-colors hover:text-primary">Blog</Link>
     </>
   )
 
