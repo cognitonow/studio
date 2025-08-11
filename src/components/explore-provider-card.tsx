@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Provider } from '@/lib/types';
@@ -90,8 +91,9 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                             <TooltipTrigger>
                                 <Badge variant="secondary">{badge}</Badge>
                             </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{badgeDescriptions[badge] || 'This provider has earned a special badge.'}</p>
+                            <TooltipContent className="max-w-xs bg-background text-foreground border-border shadow-lg p-3 rounded-lg">
+                                <p className="font-semibold text-base mb-1">{badge}</p>
+                                <p className="text-sm text-muted-foreground">{badgeDescriptions[badge] || 'This provider has earned a special badge.'}</p>
                             </TooltipContent>
                         </Tooltip>
                     ))}
