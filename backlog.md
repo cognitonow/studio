@@ -4,7 +4,7 @@ This document contains a list of features, improvements, and ideas for future de
 
 ## Features
 
-- [ ]
+- [ ] Sign up flow
 - [ ]
 
 ## Improvements
