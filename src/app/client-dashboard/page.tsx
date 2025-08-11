@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Calendar, Heart, Star } from "lucide-react"
@@ -9,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 export default function ClientDashboardPage() {
   const favoriteProvider = providers[0];
   const suggestedProvider = providers[1];
+  const favoriteProviderFirstService = favoriteProvider.services[0];
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -64,7 +66,7 @@ export default function ClientDashboardPage() {
               </div>
             </Link>
              <Button asChild className="w-full mt-6">
-                <Link href={`/provider/${favoriteProvider.id}`}>
+                <Link href={`/book/${favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
                     Book Again
                 </Link>
             </Button>

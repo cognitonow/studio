@@ -102,7 +102,9 @@ export default function ClientBookingsPage() {
                         <Badge>{booking.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                          <Button variant="secondary" size="sm">Book Again</Button>
+                          <Button variant="secondary" size="sm" asChild>
+                            <Link href={`/book/${booking.providerId}?service=${booking.serviceId}`}>Book Again</Link>
+                          </Button>
                       </TableCell>
                     </TableRow>
                   ))}
