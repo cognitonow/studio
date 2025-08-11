@@ -45,8 +45,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function ProviderDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProviderDetailPage({ params: { id } }: { params: { id: string } }) {
   const provider = getProviderById(id);
 
   if (!provider) {
