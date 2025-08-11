@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Bell, CheckCircle, MessageSquare, XCircle } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Bell, CheckCircle, MessageSquare, XCircle, Contact } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -109,29 +109,42 @@ export default function ProviderDashboardPage() {
     const bookingDate = new Date(booking.date);
     const now = new Date();
     
+    const actions: JSX.Element[] = [];
+
+    if (booking.status !== 'Cancelled' && booking.status !== 'Completed') {
+         actions.push(
+            <Button key="contact" size="sm" variant="ghost" asChild>
+                <Link href="/messages">
+                    <Contact className="h-4 w-4" />
+                </Link>
+            </Button>
+        );
+    }
+
     switch (booking.status) {
       case 'Pending':
-        return (
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>
-            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
-          </div>
+        actions.push(
+            <Button key="confirm" size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>,
+            <Button key="cancel" size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
         );
+        break;
       case 'Confirmed':
         if (bookingDate <= now) {
-          return <Button size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>;
-        }
-        return (
-            <div className="flex gap-2">
-                 <Button size="sm" variant="outline" asChild>
+          actions.push(<Button key="complete" size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
+        } else {
+            actions.push(
+                 <Button key="manage" size="sm" variant="outline" asChild>
                     <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
-            </div>
-        )
+                </Button>,
+                <Button key="cancel" size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
+            );
+        }
+        break;
       default:
         return null;
     }
+    
+    return <div className="flex gap-2 justify-end">{actions}</div>;
   };
   
   const renderServices = (serviceIds: string[]) => {
@@ -216,7 +229,7 @@ export default function ProviderDashboardPage() {
                     <TableHead>Service(s)</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
