@@ -34,6 +34,7 @@ function getNavLinks(role: UserRole) {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
                 { href: '/client-dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { href: '/bookings', label: 'My Bookings', icon: Book },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
                 { href: '/account', label: 'Account', icon: User },
             ],
