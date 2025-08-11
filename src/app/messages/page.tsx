@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Phone, Video, Sparkles } from "lucide-react"
+import { Search, Send, Sparkles } from "lucide-react"
 import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
 import { useState, useEffect, useCallback } from "react"
 import type { Conversation, Message } from "@/lib/types"
@@ -86,7 +86,6 @@ export default function MessagesPage() {
                                 <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
                                 <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
                             <p className={cn("truncate", convo.unread > 0 ? 'font-bold text-primary' : 'font-semibold')}>{convo.name}</p>
@@ -115,12 +114,7 @@ export default function MessagesPage() {
                     </Avatar>
                     <div>
                         <p className="font-bold text-lg">{activeConversation.name}</p>
-                        <p className="text-sm text-green-500">Online</p>
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon"><Phone /></Button>
-                    <Button variant="outline" size="icon"><Video /></Button>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-6 overflow-hidden">

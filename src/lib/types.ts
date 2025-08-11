@@ -88,7 +88,6 @@ export type Conversation = {
   lastMessage: string;
   time: string;
   unread: number;
-  online: boolean;
 };
 
 export type Message = {

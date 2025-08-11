@@ -210,10 +210,10 @@ let bookings: Booking[] = [
 ];
 
 let conversations: Conversation[] = [
-  { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0, online: true },
-  { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2, online: false },
-  { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0, online: false },
-  { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0, online: true },
+  { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0 },
+  { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2 },
+  { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0 },
+  { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0 },
 ]
 
 let messages: Message[] = [
