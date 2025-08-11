@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getNotifications } from '@/lib/data';
 
 type UserRole = 'guest' | 'client' | 'provider';
 
@@ -67,14 +68,17 @@ function getNavLinks(role: UserRole) {
 }
 
 
-const DesktopNavLinks = ({ role }: { role: UserRole }) => {
+const DesktopNavLinks = ({ role, hasUnreadNotifications }: { role: UserRole, hasUnreadNotifications: boolean }) => {
     const { desktop } = getNavLinks(role);
 
     return (
         <>
             {desktop.map(({ href, label, icon: Icon }) => (
                  <Link key={`${href}-${label}`} href={href} passHref>
-                    <Button variant="outline" size="icon" className="rounded-full">
+                    <Button variant="outline" size="icon" className="rounded-full relative">
+                        {label === 'Notifications' && hasUnreadNotifications && (
+                             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
+                        )}
                         <Icon className="h-5 w-5" />
                         <span className="sr-only">{label}</span>
                     </Button>
@@ -101,7 +105,22 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 
 export function Header() {
-  const [userRole, setUserRole] = useState<UserRole>('client');
+  const [userRole, setUserRole] = useState<UserRole>('provider');
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    const checkUnread = () => {
+        const notifications = getNotifications();
+        setHasUnread(notifications.some(n => !n.read));
+    };
+
+    checkUnread();
+    
+    // Periodically check for new notifications as we don't have a real-time system
+    const interval = setInterval(checkUnread, 5000); 
+
+    return () => clearInterval(interval);
+  }, []);
 
   const roleLabels: Record<UserRole, string> = {
     guest: 'Guest View',
@@ -175,7 +194,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-                <DesktopNavLinks role={userRole} />
+                <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} />
             </nav>
         </div>
       </div>
