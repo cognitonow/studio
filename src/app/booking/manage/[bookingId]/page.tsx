@@ -15,6 +15,7 @@ import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { ClientDetails } from '@/components/manage-booking/client-details';
 
 
 const availableTimes = [
@@ -135,6 +136,8 @@ export default function ManageBookingPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <ClientDetails clientName={booking.clientName || 'Client'} />
 
             <Card>
               <CardHeader>
