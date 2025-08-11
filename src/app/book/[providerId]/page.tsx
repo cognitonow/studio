@@ -89,7 +89,7 @@ export default function BookingPage({ params: { providerId } }: { params: { prov
               </CardContent>
             </Card>
 
-            <Chat />
+            <Chat providerName={provider.name} />
 
             <Button size="lg" className="w-full">Confirm & Book for ${service.price}</Button>
           </div>
