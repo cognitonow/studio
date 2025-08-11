@@ -60,7 +60,7 @@ function ExploreStack() {
     const isVisible = Math.abs(offset) <= 2; // Show active, and 2 cards behind
 
     if (!isVisible) {
-      return { opacity: 0, zIndex: 0, transform: 'scale(0.5)' };
+      return { opacity: 0, zIndex: 0, transform: 'scale(0.5)', position: 'absolute', width: '100%', height: '100%' };
     }
     
     let transform = `translateY(${offset * 15}px) scale(${1 - Math.abs(offset) * 0.05})`;
@@ -68,7 +68,7 @@ function ExploreStack() {
     let zIndex = providers.length - Math.abs(offset);
 
     if (offset === 0) { // Active card
-        zIndex = providers.length;
+        zIndex = providers.length + 1;
         if (direction === 'right') {
             transform = 'translateX(100%) rotate(15deg) scale(1)';
         } else if (direction === 'left') {
@@ -78,7 +78,6 @@ function ExploreStack() {
         }
     } else if (offset < 0) { // Cards that have been swiped past
       opacity = 0;
-      transform = 'translateX(-100%)'
     }
 
     return {
