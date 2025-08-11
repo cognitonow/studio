@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Contact } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Contact, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -16,14 +16,19 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds } from '@/lib/data';
+import { getProviderBookings, updateBookingStatus, getServicesByIds, providers } from '@/lib/data';
 import type { Booking } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import Image from 'next/image';
   
 
 export default function ProviderDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const provider = providers[2]; // Mocking Chloe's Hair Haven
 
   useEffect(() => {
     setBookings(getProviderBookings());
@@ -123,6 +128,10 @@ export default function ProviderDashboardPage() {
         <TabsList>
           <TabsTrigger value="bookings">Booking Management</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsTrigger value="shop-management">
+            <Store className="mr-2 h-4 w-4" />
+            Shop Management
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="stats" className="space-y-4">
@@ -208,7 +217,96 @@ export default function ProviderDashboardPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="shop-management" className="space-y-8">
+            {/* Availability Settings */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" />Availability Settings</CardTitle>
+                    <CardDescription>Set your standard weekly working hours.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 items-center">
+                        <Label>Monday</Label>
+                        <Select defaultValue="09:00">
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="09:00">09:00 AM</SelectItem></SelectContent>
+                        </Select>
+                        <Select defaultValue="17:00">
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent><SelectItem value="17:00">05:00 PM</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                     <Button>Save Availability</Button>
+                </CardContent>
+            </Card>
+
+             {/* Service Management */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
+                    <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Service</TableHead>
+                                <TableHead>Price</TableHead>
+                                <TableHead>Duration</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {provider.services.map(service => (
+                                <TableRow key={service.id}>
+                                    <TableCell className="font-medium">{service.name}</TableCell>
+                                    <TableCell>${service.price}</TableCell>
+                                    <TableCell>{service.duration} min</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" size="sm">Edit</Button>
+                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">Delete</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <Button className="mt-4">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add New Service
+                    </Button>
+                </CardContent>
+            </Card>
+
+            {/* Portfolio Management */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><GalleryHorizontal className="w-5 h-5" />Portfolio Management</CardTitle>
+                    <CardDescription>Showcase your best work by adding images to your public profile.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {provider.portfolio.map(item => (
+                            <div key={item.id} className="relative group">
+                                <Image src={item.url} alt="Portfolio item" width={200} height={200} className="rounded-md object-cover aspect-square" data-ai-hint={item.dataAiHint} />
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Button variant="destructive" size="icon">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                     <Button className="mt-6">
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload Image
+                    </Button>
+                </CardContent>
+            </Card>
+        </TabsContent>
+
       </Tabs>
     </div>
   )
 }
+
+    
