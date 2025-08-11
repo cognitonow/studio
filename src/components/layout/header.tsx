@@ -9,9 +9,9 @@ const userRole = 'client'; // 'provider' | 'guest'
 
 const CommonLinks = () => (
   <>
-    <Link href="/discover" className="transition-colors hover:text-foreground/80 text-foreground">Discover</Link>
-    <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">About Us</Link>
-    <Link href="#" className="transition-colors hover:text-foreground/80 text-foreground/60">Blog</Link>
+    <Link href="/discover" className="transition-colors hover:text-primary text-foreground">Discover</Link>
+    <Link href="#" className="transition-colors hover:text-primary text-foreground">About Us</Link>
+    <Link href="#" className="transition-colors hover:text-primary text-foreground">Blog</Link>
   </>
 )
 
@@ -25,8 +25,8 @@ const GuestLinks = () => (
 
 const ClientLinks = () => (
     <>
-      <Link href="/bookings" className="transition-colors hover:text-foreground/80 text-foreground/60">My Bookings</Link>
-      <Link href="/my-lists" className="transition-colors hover:text-foreground/80 text-foreground/60">My Lists</Link>
+      <Link href="/bookings" className="transition-colors hover:text-primary text-foreground">My Bookings</Link>
+      <Link href="/my-lists" className="transition-colors hover:text-primary text-foreground">My Lists</Link>
       <Button variant="ghost" size="icon" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
@@ -47,7 +47,7 @@ const ClientLinks = () => (
 
 const ProviderLinks = () => (
   <>
-    <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">Dashboard</Link>
+    <Link href="/dashboard" className="transition-colors hover:text-primary text-foreground">Dashboard</Link>
     <Button variant="ghost" size="icon" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
@@ -69,9 +69,9 @@ const ProviderLinks = () => (
 
 const MobileCommonLinks = () => (
     <>
-      <Link href="/discover" className="text-foreground transition-colors hover:text-foreground/80">Discover</Link>
-      <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">About Us</Link>
-      <Link href="#" className="text-foreground/60 transition-colors hover:text-foreground/80">Blog</Link>
+      <Link href="/discover" className="text-foreground transition-colors hover:text-primary">Discover</Link>
+      <Link href="#" className="text-foreground transition-colors hover:text-primary">About Us</Link>
+      <Link href="#" className="text-foreground transition-colors hover:text-primary">Blog</Link>
     </>
   )
 
@@ -85,18 +85,18 @@ const MobileGuestLinks = () => (
 
 const MobileClientLinks = () => (
     <>
-      <Link href="/bookings" className="text-foreground/60 transition-colors hover:text-foreground/80">My Bookings</Link>
-      <Link href="/my-lists" className="text-foreground/60 transition-colors hover:text-foreground/80">My Lists</Link>
-      <Link href="/messages" className="text-foreground/60 transition-colors hover:text-foreground/80">Messages</Link>
-      <Link href="/notifications" className="text-foreground/60 transition-colors hover:text-foreground/80">Notifications</Link>
+      <Link href="/bookings" className="text-foreground transition-colors hover:text-primary">My Bookings</Link>
+      <Link href="/my-lists" className="text-foreground transition-colors hover:text-primary">My Lists</Link>
+      <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
+      <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
     </>
   );
 
 const MobileProviderLinks = () => (
     <>
-        <Link href="/dashboard" className="text-foreground/60 transition-colors hover:text-foreground/80">Dashboard</Link>
-        <Link href="/messages" className="text-foreground/60 transition-colors hover:text-foreground/80">Messages</Link>
-        <Link href="/notifications" className="text-foreground/60 transition-colors hover:text-foreground/80">Notifications</Link>
+        <Link href="/dashboard" className="text-foreground transition-colors hover:text-primary">Dashboard</Link>
+        <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
+        <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
     </>
 );
 
@@ -132,9 +132,11 @@ export function Header() {
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
                   <div className="flex flex-col space-y-3">
                     <MobileCommonLinks />
-                    {userRole === 'guest' && <MobileGuestLinks />}
-                    {userRole === 'client' && <MobileClientLinks />}
-                    {userRole === 'provider' && <MobileProviderLinks />}
+                    <div className="flex flex-col space-y-3 pt-6 border-t">
+                        {userRole === 'guest' && <MobileGuestLinks />}
+                        {userRole === 'client' && <MobileClientLinks />}
+                        {userRole === 'provider' && <MobileProviderLinks />}
+                    </div>
                   </div>
                 </div>
               </SheetContent>
