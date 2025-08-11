@@ -17,7 +17,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectGroup, SelectLabel } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,12 @@ export default function DiscoverPage() {
   }
 
   const filteredServices = selectedCategory ? allServices.filter(s => s.categoryId === selectedCategory) : [];
+  
+  const allServicesGrouped = serviceCategories.map(category => ({
+    ...category,
+    services: allServices.filter(service => service.categoryId === category.id)
+  }));
+
 
   const handleLocationSelect = (districtId: string) => {
     setSelectedLocations(prev => {
@@ -122,18 +128,33 @@ export default function DiscoverPage() {
                         </span>
                       )}
                     </Label>
-                    <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory}>
-                      <SelectTrigger id="service">
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredServices.map(service => (
-                           <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                        ))}
-                        <SelectSeparator />
-                        <SelectItem value="all">All</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Select value={selectedService} onValueChange={setSelectedService} disabled={!filteredServices.length && !!selectedCategory}>
+                        <SelectTrigger id="service">
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedCategory ? (
+                            <>
+                              {filteredServices.map(service => (
+                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                              ))}
+                            </>
+                          ) : (
+                            allServicesGrouped.map(group => (
+                              group.services.length > 0 && (
+                                <SelectGroup key={group.id}>
+                                  <SelectLabel>{group.name}</SelectLabel>
+                                  {group.services.map(service => (
+                                    <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              )
+                            ))
+                          )}
+                          <SelectSeparator />
+                          <SelectItem value="all">All</SelectItem>
+                        </SelectContent>
+                      </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="location">Location</Label>
@@ -157,6 +178,19 @@ export default function DiscoverPage() {
                             {district.name}
                           </DropdownMenuCheckboxItem>
                         ))}
+                         <DropdownMenuSeparator />
+                        <DropdownMenuCheckboxItem
+                            onSelect={(e) => {
+                                e.preventDefault();
+                                if (selectedLocations.size === dublinDistricts.length) {
+                                    setSelectedLocations(new Set());
+                                } else {
+                                    setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
+                                }
+                            }}
+                          >
+                            All
+                          </DropdownMenuCheckboxItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
