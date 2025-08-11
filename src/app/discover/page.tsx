@@ -63,7 +63,7 @@ function ExploreStack() {
       return { opacity: 0, zIndex: 0, transform: 'scale(0.5)', position: 'absolute', width: '100%', height: '100%' };
     }
     
-    let transform = `translateY(${offset * 10}px) scale(${1 - Math.abs(offset) * 0.03})`;
+    let transform = `translateY(${offset * 10}px) scale(${1 - Math.abs(offset) * 0.05})`;
     let opacity = 1;
     let zIndex = providers.length - Math.abs(offset);
 
