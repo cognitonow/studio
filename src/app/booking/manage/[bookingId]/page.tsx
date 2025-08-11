@@ -157,7 +157,7 @@ export default function ManageBookingPage() {
                   className="rounded-md border"
                   disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                 />
-                <div className="w-full max-w-sm space-y-2">
+                <div className="w-full space-y-2">
                     <Label htmlFor="time" className="flex items-center gap-2">
                         <Clock className="w-4 h-4" />
                         <span>Appointment Time</span>
