@@ -115,16 +115,28 @@ export default function ProviderDashboardPage() {
         );
         break;
       case 'Confirmed':
+        if (bookingDate > now) {
+            actions.push(
+                 <Button key="manage" size="sm" variant="outline" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                </Button>
+            );
+        }
         if (bookingDate <= now) {
           actions.push(<Button key="complete" size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
         } else {
             actions.push(
-                 <Button key="manage" size="sm" variant="outline" asChild>
-                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-                </Button>,
                 <Button key="cancel" size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
             );
         }
+        break;
+      case 'Completed':
+      case 'Cancelled':
+         actions.push(
+            <Button key="details" size="sm" variant="secondary" asChild>
+                <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
+            </Button>
+        );
         break;
       default:
         return null;
