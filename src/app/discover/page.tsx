@@ -27,10 +27,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import type { Provider } from '@/lib/types';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | 'up' | 'none'>('none');
+  const [exploreQueue, setExploreQueue] = useState<Provider[]>([]);
 
   const handleNext = () => {
     setDirection('right');
@@ -42,6 +44,8 @@ function ExploreStack() {
   
   const handleLike = () => {
     setDirection('up');
+    const currentProvider = providers[activeIndex];
+    setExploreQueue(prev => [...prev, currentProvider]);
     setTimeout(() => {
         setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
         setDirection('none');
@@ -54,6 +58,16 @@ function ExploreStack() {
         setActiveIndex((prevIndex) => (prevIndex - 1 + providers.length) % providers.length);
         setDirection('none');
     }, 300);
+  };
+  
+  const handleProfileView = () => {
+    const currentProvider = providers[activeIndex];
+    setExploreQueue(prev => {
+        if (!prev.find(p => p.id === currentProvider.id)) {
+            return [...prev, currentProvider];
+        }
+        return prev;
+    });
   };
 
   const getCardStyle = (index: number) => {
@@ -120,7 +134,7 @@ function ExploreStack() {
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="View profile">
+              <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="View profile" onClick={handleProfileView}>
                   <User className="h-10 w-10 text-primary" />
               </Button>
             </DialogTrigger>

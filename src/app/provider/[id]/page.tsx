@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked } from 'lucide-react';
+import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
 import type { Metadata, ResolvingMetadata } from 'next'
  
 type Props = {
@@ -159,9 +159,14 @@ export default function ProviderDetailPage({ params }: { params: { id: string } 
                   </AccordionItem>
                 ))}
               </Accordion>
-              <Button variant="outline" className="w-full mt-6">
-                <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
-              </Button>
+              <div className="flex flex-col gap-2 mt-6">
+                <Button variant="secondary">
+                  <Heart className="w-4 h-4 mr-2"/> Save to Favourites
+                </Button>
+                <Button variant="outline">
+                  <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
