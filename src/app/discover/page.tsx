@@ -26,7 +26,7 @@ import { PlaylistResults } from '@/components/playlist-results';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -125,6 +125,12 @@ function ExploreStack() {
               </Button>
             </DialogTrigger>
             <DialogContent className="p-0 border-0 max-w-md">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>Provider Profile</DialogTitle>
+                    <DialogDescription>
+                        Detailed view of the service provider's profile.
+                    </DialogDescription>
+                </DialogHeader>
               <ExploreProviderCard provider={providers[activeIndex]} />
             </DialogContent>
           </Dialog>
