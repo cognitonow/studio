@@ -23,19 +23,19 @@ const GuestLinks = () => (
 
 const ClientLinks = () => (
     <>
-      <Button size="icon" asChild>
-        <Link href="/messages">
+      <Button variant="outline" size="icon" className="rounded-full" asChild>
+        <Link href="/my-lists">
           <MessageSquare className="h-5 w-5" />
-          <span className="sr-only">Messages</span>
+          <span className="sr-only">My Lists</span>
         </Link>
       </Button>
-       <Button size="icon" asChild>
-        <Link href="/notifications">
+       <Button variant="outline" size="icon" className="rounded-full" asChild>
+        <Link href="/bookings">
           <Bell className="h-5 w-5" />
-          <span className="sr-only">Notifications</span>
+          <span className="sr-only">My Bookings</span>
         </Link>
       </Button>
-      <Button size="icon" asChild>
+      <Button variant="outline" size="icon" className="rounded-full" asChild>
         <Link href="/account">
           <User className="h-5 w-5" />
           <span className="sr-only">Account</span>
@@ -47,19 +47,19 @@ const ClientLinks = () => (
 const ProviderLinks = () => (
   <>
     <Link href="/dashboard" className="transition-colors hover:text-primary text-foreground">Dashboard</Link>
-    <Button size="icon" asChild>
+    <Button variant="outline" size="icon" className="rounded-full" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
           <span className="sr-only">Messages</span>
         </Link>
     </Button>
-    <Button size="icon" asChild>
+    <Button variant="outline" size="icon" className="rounded-full" asChild>
         <Link href="/notifications">
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
         </Link>
     </Button>
-    <Button size="icon" asChild>
+    <Button variant="outline" size="icon" className="rounded-full" asChild>
       <Link href="/account">
         <User className="h-5 w-5" />
         <span className="sr-only">Account</span>
@@ -85,8 +85,9 @@ const MobileGuestLinks = () => (
 
 const MobileClientLinks = () => (
     <>
-      <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
-      <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
+      <Link href="/my-lists" className="text-foreground transition-colors hover:text-primary">My Lists</Link>
+      <Link href="/bookings" className="text-foreground transition-colors hover:text-primary">My Bookings</Link>
+      <Link href="/account" className="text-foreground transition-colors hover:text-primary">Account</Link>
     </>
   );
 
@@ -95,6 +96,7 @@ const MobileProviderLinks = () => (
         <Link href="/dashboard" className="text-foreground transition-colors hover:text-primary">Dashboard</Link>
         <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
         <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
+        <Link href="/account" className="text-foreground transition-colors hover:text-primary">Account</Link>
     </>
 );
 
