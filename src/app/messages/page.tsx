@@ -19,7 +19,6 @@ export default function MessagesPage() {
 
   const fetchAndUpdateState = useCallback(() => {
     const convos = getConversations();
-    console.log('Polling: Fetched conversations', convos.map(c => ({id: c.id, unread: c.unread})));
     setConversations(convos);
 
     if (activeConversation) {
@@ -47,13 +46,11 @@ export default function MessagesPage() {
   }, [fetchAndUpdateState]);
   
   const handleConversationSelect = (convo: Conversation) => {
-    console.log('handleConversationSelect triggered for convo ID:', convo.id);
     setActiveConversation(convo);
     // Mark messages as read in the data source
     markAllMessagesAsRead(convo.id);
     // Re-fetch conversations to update the UI with the new 'read' status
     const updatedConvos = getConversations();
-    console.log('State after marking as read:', updatedConvos.map(c => ({id: c.id, unread: c.unread})));
     setConversations(updatedConvos);
   }
 
@@ -92,7 +89,7 @@ export default function MessagesPage() {
                             {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
-                            <p className={cn("font-semibold truncate", convo.unread > 0 && "font-bold text-primary")}>{convo.name}</p>
+                            <p className={cn("truncate", convo.unread > 0 ? "font-bold text-primary" : "font-semibold")}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
