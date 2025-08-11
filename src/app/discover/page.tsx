@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import { useState } from 'react';
@@ -113,7 +112,14 @@ export default function DiscoverPage() {
                     </Select>
                   </div>
                    <div className="space-y-2">
-                    <Label htmlFor="service">Service</Label>
+                    <Label htmlFor="service" className="flex items-center">
+                      <span>Service</span>
+                      {selectedCategory && (
+                        <span className="ml-2 text-xs text-muted-foreground font-normal">
+                          - {serviceCategories.find(c => c.id === selectedCategory)?.name}
+                        </span>
+                      )}
+                    </Label>
                     <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory}>
                       <SelectTrigger id="service">
                         <SelectValue placeholder="Select a service" />
