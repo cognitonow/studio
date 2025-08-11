@@ -51,12 +51,13 @@ function getNavLinks(role: UserRole) {
             desktop: [
                 { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
-                { href: '/dashboard?tab=notifications', label: 'Notifications', icon: Bell },
+                { href: '/notifications', label: 'Notifications', icon: Bell },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
+                { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
             ]
         }

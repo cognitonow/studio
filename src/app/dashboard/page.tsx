@@ -2,10 +2,9 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Bell, CheckCircle, MessageSquare, XCircle, Contact } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Contact } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -17,65 +16,22 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds, getNotifications } from '@/lib/data';
-import type { Booking, Notification } from '@/lib/types';
+import { getProviderBookings, updateBookingStatus, getServicesByIds } from '@/lib/data';
+import type { Booking } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
   
-const NotificationList = ({ items }: { items: Notification[] }) => {
-    const getIcon = (icon: Notification['icon']) => {
-        switch (icon) {
-            case 'new-booking':
-                return <CheckCircle className="h-6 w-6 text-green-500" />;
-            case 'cancellation':
-                return <XCircle className="h-6 w-6 text-red-500" />;
-            case 'message':
-                return <MessageSquare className="h-6 w-6 text-primary" />;
-            case 'confirmation':
-                 return <CheckCircle className="h-6 w-6 text-blue-500" />;
-            default:
-                return <Bell className="h-6 w-6 text-muted-foreground" />;
-        }
-    }
-    return (
-    <div className="space-y-4">
-      {items.length > 0 ? items.map((notification) => (
-        <div key={notification.id} className={`flex items-start gap-4 p-4 rounded-lg ${!notification.read ? 'bg-muted/50 border' : 'border-transparent'}`}>
-          <div className="mt-1">
-            {getIcon(notification.icon)}
-          </div>
-          <div className="flex-grow">
-            <p className="font-semibold">{notification.title}</p>
-            <p className="text-sm text-muted-foreground">{notification.description}</p>
-            <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
-          </div>
-          {!notification.read && (
-            <div className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 mt-2"></div>
-          )}
-        </div>
-      )) : (
-          <p className="text-muted-foreground text-center py-8">No new notifications.</p>
-      )}
-    </div>
-  )};
 
 export default function ProviderDashboardPage() {
-  const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'bookings';
-
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
     setBookings(getProviderBookings());
-    setNotifications(getNotifications());
   }, []);
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status);
     setBookings(getProviderBookings());
-    setNotifications(getNotifications());
   };
 
   const getStatusBadge = (status: Booking['status']) => {
@@ -163,11 +119,10 @@ export default function ProviderDashboardPage() {
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">Provider Dashboard</h1>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs defaultValue="bookings" className="space-y-4">
         <TabsList>
           <TabsTrigger value="bookings">Booking Management</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="stats" className="space-y-4">
@@ -253,25 +208,6 @@ export default function ProviderDashboardPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications">
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <CardTitle className="flex items-center gap-2 font-headline">
-                                <Bell className="w-6 h-6"/>
-                                Recent Updates
-                            </CardTitle>
-                            <CardDescription>Stay up-to-date with your bookings and messages.</CardDescription>
-                        </div>
-                        <Button variant="outline" size="sm">Mark all as read</Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <NotificationList items={notifications} />
-                </CardContent>
-            </Card>
-        </TabsContent>
       </Tabs>
     </div>
   )
