@@ -44,10 +44,6 @@ function ExploreCarousel() {
     })
   }, [api])
 
-  const scrollNext = React.useCallback(() => {
-    api?.scrollNext()
-  }, [api]);
-
   return (
     <Carousel
       setApi={setApi}
