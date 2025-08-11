@@ -19,38 +19,40 @@ function getNavLinks(role: string) {
     const providerLinks = [dashboardIcon, messagesIcon, notificationsIcon, accountIcon];
     const guestLinks = [discoverIcon, signUpIcon];
 
+    let desktopLinks: { href: string; label: string; icon: React.ElementType; }[] = [];
+    let mobileLinks: { href: string; label: string; }[] = [];
+
     switch (role) {
         case 'client':
-            return {
-                desktop: clientLinks,
-                mobile: [
-                    { href: '/discover', label: 'Discover' },
-                    { href: '/bookings', label: 'My Bookings' },
-                    { href: '/my-lists', label: 'My Lists' },
-                    { href: '/messages', label: 'Messages' },
-                    { href: '/notifications', label: 'Notifications' },
-                    { href: '/account', label: 'Account' },
-                ],
-            };
+            desktopLinks = clientLinks;
+            mobileLinks = [
+                { href: '/discover', label: 'Discover' },
+                { href: '/bookings', label: 'My Bookings' },
+                { href: '/my-lists', label: 'My Lists' },
+                { href: '/messages', label: 'Messages' },
+                { href: '/notifications', label: 'Notifications' },
+                { href: '/account', label: 'Account' },
+            ];
+            break;
         case 'provider':
-             return {
-                desktop: providerLinks,
-                mobile: [
-                    { href: '/dashboard', label: 'Dashboard' },
-                    { href: '/messages', label: 'Messages' },
-                    { href: '/notifications', label: 'Notifications' },
-                    { href: '/account', label: 'Account' },
-                ],
-            };
+            desktopLinks = providerLinks;
+            mobileLinks = [
+                { href: '/dashboard', label: 'Dashboard' },
+                { href: '/messages', label: 'Messages' },
+                { href: '/notifications', label: 'Notifications' },
+                { href: '/account', label: 'Account' },
+            ];
+            break;
         default: // guest
-             return {
-                desktop: guestLinks,
-                mobile: [
-                     { href: '/discover', label: 'Discover' },
-                     { href: '/signup', label: 'Sign Up' },
-                ],
-            };
+            desktopLinks = guestLinks;
+            mobileLinks = [
+                { href: '/discover', label: 'Discover' },
+                { href: '/signup', label: 'Sign Up' },
+            ];
+            break;
     }
+    
+    return { desktop: desktopLinks, mobile: mobileLinks };
 }
 
 const DesktopNavLinks = () => {
@@ -81,13 +83,6 @@ const MobileNavLinks = () => {
                     {label}
                 </Link>
             ))}
-            {userRole === 'guest' && (
-                <div className="mt-4 pt-4 border-t">
-                    <Button asChild className="w-full">
-                        <Link href="/signup">Sign Up</Link>
-                    </Button>
-                </div>
-            )}
         </div>
     );
 };
