@@ -55,7 +55,7 @@ export default function MessagesPage() {
             <ScrollArea className="h-full">
               <div className="space-y-1">
                 {conversations.map(convo => (
-                    <button key={convo.id} onClick={() => setActiveConversation(convo)} className={`flex items-center gap-4 p-4 w-full text-left hover:bg-muted/50 ${convo.id === activeConversation.id ? 'bg-muted' : ''}`}>
+                    <button key={convo.id} onClick={() => setActiveConversation(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
                         <div className="relative">
                             <Avatar className="w-12 h-12">
                                 <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
@@ -64,12 +64,12 @@ export default function MessagesPage() {
                             {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
-                            <p className="font-semibold truncate">{convo.name}</p>
+                            <p className={cn("font-semibold truncate", convo.unread > 0 && "text-primary")}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
                           <p className="text-xs text-muted-foreground">{convo.time}</p>
-                          {convo.unread > 0 && <span className="w-4 h-4 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>}
+                          {convo.unread > 0 && <span className="w-5 h-5 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>}
                         </div>
                     </button>
                 ))}
