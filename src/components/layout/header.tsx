@@ -33,13 +33,13 @@ function getNavLinks(role: UserRole) {
         client: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
-                { href: '/looker-dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { href: '/client-dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
-                { href: '/looker-dashboard', label: 'Dashboard' },
+                { href: '/client-dashboard', label: 'Dashboard' },
                 { href: '/my-lists', label: 'My Lists' },
                 { href: '/bookings', label: 'My Bookings' },
                 { href: '/messages', label: 'Messages' },

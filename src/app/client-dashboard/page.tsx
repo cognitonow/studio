@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, BarChart2, Users, LineChart, Star } from "lucide-react"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 
-export default function LookerDashboardPage() {
+export default function ClientDashboardPage() {
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="flex items-center gap-4 mb-8">
         <Eye className="w-10 h-10 text-primary" />
-        <h1 className="text-4xl font-bold font-headline">Looker Dashboard</h1>
+        <h1 className="text-4xl font-bold font-headline">Client Dashboard</h1>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
