@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
-import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft } from 'lucide-react';
 import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';
@@ -114,6 +114,10 @@ export default function ManageBookingPage() {
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        <Button variant="ghost" onClick={() => router.push('/dashboard')} className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+        </Button>
         <h1 className="text-4xl font-bold font-headline mb-8">Manage Your Booking</h1>
         
         <div className="grid md:grid-cols-2 gap-8">
