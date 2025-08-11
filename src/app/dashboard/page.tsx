@@ -16,52 +16,32 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds } from '@/lib/data';
-import type { Booking } from '@/lib/types';
+import { getProviderBookings, updateBookingStatus, getServicesByIds, getNotifications } from '@/lib/data';
+import type { Booking, Notification } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
-
-const notifications = [
-    {
-      id: 1,
-      icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-      title: "New Booking!",
-      description: "Alex Ray has booked a Balayage for August 15, 2024 at 2:00 PM.",
-      time: "1 hour ago",
-      read: false,
-    },
-    {
-      id: 2,
-      icon: <MessageSquare className="h-6 w-6 text-primary" />,
-      title: "New Message",
-      description: "Kate Winslet sent you a message about her upcoming Signature Facial.",
-      time: "5 hours ago",
-      read: false,
-    },
-    {
-      id: 3,
-      icon: <XCircle className="h-6 w-6 text-red-500" />,
-      title: "Booking Cancelled",
-      description: "Taylor Swift has cancelled her Bridal Makeup booking for September 1, 2024.",
-      time: "2 days ago",
-      read: true,
-    },
-    {
-        id: 4,
-        icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-        title: "Booking Confirmed!",
-        description: "Jordan Peele's booking for a Classic Manicure is confirmed for August 18, 2024 at 10:00 AM.",
-        time: "3 days ago",
-        read: true,
-    }
-  ]
   
-const NotificationList = ({ items }: { items: typeof notifications }) => (
+const NotificationList = ({ items }: { items: Notification[] }) => {
+    const getIcon = (icon: Notification['icon']) => {
+        switch (icon) {
+            case 'new-booking':
+                return <CheckCircle className="h-6 w-6 text-green-500" />;
+            case 'cancellation':
+                return <XCircle className="h-6 w-6 text-red-500" />;
+            case 'message':
+                return <MessageSquare className="h-6 w-6 text-primary" />;
+            case 'confirmation':
+                 return <CheckCircle className="h-6 w-6 text-blue-500" />;
+            default:
+                return <Bell className="h-6 w-6 text-muted-foreground" />;
+        }
+    }
+    return (
     <div className="space-y-4">
       {items.length > 0 ? items.map((notification) => (
         <div key={notification.id} className={`flex items-start gap-4 p-4 rounded-lg ${!notification.read ? 'bg-muted/50 border' : 'border-transparent'}`}>
           <div className="mt-1">
-            {notification.icon}
+            {getIcon(notification.icon)}
           </div>
           <div className="flex-grow">
             <p className="font-semibold">{notification.title}</p>
@@ -76,18 +56,21 @@ const NotificationList = ({ items }: { items: typeof notifications }) => (
           <p className="text-muted-foreground text-center py-8">No new notifications.</p>
       )}
     </div>
-  );
+  )};
 
 export default function ProviderDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     setBookings(getProviderBookings());
+    setNotifications(getNotifications());
   }, []);
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status);
     setBookings(getProviderBookings());
+    setNotifications(getNotifications());
   };
 
   const getStatusBadge = (status: Booking['status']) => {

@@ -69,3 +69,12 @@ export type Booking = {
     status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
     clientName?: string; // Optional client name for provider view
 };
+
+export type Notification = {
+  id: number;
+  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation';
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+};

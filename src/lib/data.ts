@@ -1,6 +1,8 @@
 
 
-import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking } from './types';
+import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification } from './types';
+import { formatDistanceToNow } from 'date-fns';
+
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -206,6 +208,41 @@ let bookings: Booking[] = [
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
 ];
 
+let notifications: Notification[] = [
+    {
+      id: 1,
+      icon: 'new-booking',
+      title: "New Booking!",
+      description: "Alex Ray has booked a Haircut for August 15, 2024 at 2:00 PM.",
+      time: "1 hour ago",
+      read: false,
+    },
+    {
+      id: 2,
+      icon: 'message',
+      title: "New Message",
+      description: "Kate Winslet sent you a message about her upcoming Classic Facial.",
+      time: "5 hours ago",
+      read: false,
+    },
+    {
+      id: 3,
+      icon: 'cancellation',
+      title: "Booking Cancelled",
+      description: "Taylor Swift has cancelled her Bridal Makeup booking for September 1, 2024.",
+      time: "2 days ago",
+      read: true,
+    },
+    {
+        id: 4,
+        icon: 'confirmation',
+        title: "Booking Confirmed!",
+        description: "Jordan Peele's booking for a Classic Manicure is confirmed for August 18, 2024 at 10:00 AM.",
+        time: "3 days ago",
+        read: true,
+    }
+  ]
+
 export const getBookings = () => {
     const upcoming = bookings
         .filter(b => new Date(b.date) >= new Date() && b.status === 'Confirmed')
@@ -223,10 +260,37 @@ export const getProviderBookings = () => {
     return [...bookings].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
+const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
+    const newNotification: Notification = {
+        id: notifications.length + 1,
+        time: formatDistanceToNow(new Date(), { addSuffix: true }),
+        read: false,
+        ...notification
+    };
+    notifications.unshift(newNotification);
+};
+
 export const updateBookingStatus = (bookingId: string, status: Booking['status']) => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
-        bookings[bookingIndex].status = status;
+        const booking = bookings[bookingIndex];
+        if (booking.status !== status) {
+            booking.status = status;
+
+            if (status === 'Cancelled') {
+                addNotification({
+                    icon: 'cancellation',
+                    title: 'Booking Cancelled',
+                    description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`
+                });
+            } else if (status === 'Confirmed') {
+                 addNotification({
+                    icon: 'confirmation',
+                    title: 'Booking Confirmed!',
+                    description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`
+                });
+            }
+        }
     }
 };
 
@@ -245,8 +309,20 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
         ...booking,
     };
     bookings.push(newBooking);
+
+    addNotification({
+        icon: 'new-booking',
+        title: 'New Booking!',
+        description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`
+    });
+
     return newBooking;
 };
+
+export const getNotifications = () => {
+    // Return a new array to ensure React state updates trigger re-renders
+    return [...notifications];
+}
 
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
