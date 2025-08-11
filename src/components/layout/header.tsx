@@ -9,9 +9,9 @@ const userRole = 'client'; // 'provider' | 'guest'
 
 const CommonLinks = () => (
   <>
-    <Link href="/discover" className="transition-colors hover:text-primary text-foreground/60">Discover</Link>
-    <Link href="#" className="transition-colors hover:text-primary text-foreground/60">About Us</Link>
-    <Link href="#" className="transition-colors hover:text-primary text-foreground/60">Blog</Link>
+    <Link href="/discover" className="transition-colors hover:text-primary text-foreground">Discover</Link>
+    <Link href="#" className="transition-colors hover:text-primary text-foreground">About Us</Link>
+    <Link href="#" className="transition-colors hover:text-primary text-foreground">Blog</Link>
   </>
 )
 
@@ -25,15 +25,15 @@ const GuestLinks = () => (
 
 const ClientLinks = () => (
     <>
-      <Link href="/bookings" className="transition-colors hover:text-primary text-foreground/60">My Bookings</Link>
-      <Link href="/my-lists" className="transition-colors hover:text-primary text-foreground/60">My Lists</Link>
-      <Button variant="ghost" size="icon" asChild>
+      <Link href="/bookings" className="transition-colors hover:text-primary text-foreground">My Bookings</Link>
+      <Link href="/my-lists" className="transition-colors hover:text-primary text-foreground">My Lists</Link>
+      <Button size="icon" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
           <span className="sr-only">Messages</span>
         </Link>
       </Button>
-       <Button variant="ghost" size="icon" asChild>
+       <Button size="icon" asChild>
         <Link href="/notifications">
           <Bell className="h-5 w-5" />
           <span className="sr-only">Notifications</span>
@@ -47,14 +47,14 @@ const ClientLinks = () => (
 
 const ProviderLinks = () => (
   <>
-    <Link href="/dashboard" className="transition-colors hover:text-primary text-foreground/60">Dashboard</Link>
-    <Button variant="ghost" size="icon" asChild>
+    <Link href="/dashboard" className="transition-colors hover:text-primary text-foreground">Dashboard</Link>
+    <Button size="icon" asChild>
         <Link href="/messages">
           <MessageSquare className="h-5 w-5" />
           <span className="sr-only">Messages</span>
         </Link>
     </Button>
-    <Button variant="ghost" size="icon" asChild>
+    <Button size="icon" asChild>
         <Link href="/notifications">
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
