@@ -11,22 +11,21 @@ function getNavLinks(role: string) {
     const commonLinks = [
         { href: '/discover', label: 'Discover' },
     ];
-
-    const commonIconLinks = [
-        { href: '/discover', label: 'Discover', icon: Search },
-    ];
+    
+    const discoverIcon = { href: '/discover', label: 'Discover', icon: Search };
+    const messagesIcon = { href: '/messages', label: 'Messages', icon: MessageSquare };
+    const notificationsIcon = { href: '/notifications', label: 'Notifications', icon: Bell };
+    const accountIcon = { href: '/account', label: 'Account', icon: User };
 
     switch (role) {
         case 'client':
             return {
-                desktop: [
-                    ...commonLinks,
-                ],
+                desktop: [],
                 desktopIcons: [
-                    ...commonIconLinks,
-                    { href: '/messages', label: 'Messages', icon: MessageSquare },
-                    { href: '/notifications', label: 'Notifications', icon: Bell },
-                    { href: '/account', label: 'Account', icon: User },
+                    discoverIcon,
+                    messagesIcon,
+                    notificationsIcon,
+                    accountIcon,
                 ],
                 mobile: [
                     ...commonLinks,
@@ -41,9 +40,9 @@ function getNavLinks(role: string) {
                     { href: '/dashboard', label: 'Dashboard' },
                 ],
                 desktopIcons: [
-                    { href: '/messages', label: 'Messages', icon: MessageSquare },
-                    { href: '/notifications', label: 'Notifications', icon: Bell },
-                    { href: '/account', label: 'Account', icon: User },
+                    messagesIcon,
+                    notificationsIcon,
+                    accountIcon,
                 ],
                 mobile: [
                     { href: '/dashboard', label: 'Dashboard' },
