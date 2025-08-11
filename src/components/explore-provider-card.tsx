@@ -6,10 +6,25 @@ import { Star, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ExploreProviderCardProps {
   provider: Provider;
 }
+
+const badgeDescriptions: Record<string, string> = {
+    'Top Rated': 'This provider has consistently received high ratings from clients.',
+    'Quick Responder': 'This provider is known for their fast response times to inquiries.',
+    'Nail Art Pro': 'An expert in creating intricate and beautiful nail art designs.',
+    'Skincare Guru': 'A specialist in skincare, offering expert advice and treatments.',
+    '5-Star Safety': 'This provider adheres to the highest standards of safety and hygiene.',
+    'Client Favorite': 'A provider who is frequently booked and highly recommended by clients.',
+    'Color Whiz': 'A master of hair color, from subtle highlights to bold transformations.',
+    'Bridal Expert': 'Specializes in creating beautiful looks for weddings and bridal parties.',
+    'On-Location Pro': 'This provider offers services at your location for added convenience.',
+    'Pain Relief Pro': 'Specializes in therapies and treatments aimed at alleviating pain.',
+}
+
 
 export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
   const portfolioImages = provider.portfolio.slice(0, 3);
@@ -68,11 +83,20 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
                 </div>
             </div>
             <p className="text-foreground/80 leading-relaxed line-clamp-3 h-[4.5rem]">{provider.bio}</p>
-            <div className="flex flex-wrap gap-2">
-                {provider.badges.slice(0, 3).map(badge => (
-                    <Badge key={badge} variant="secondary">{badge}</Badge>
-                ))}
-            </div>
+            <TooltipProvider>
+                <div className="flex flex-wrap gap-2">
+                    {provider.badges.slice(0, 3).map(badge => (
+                        <Tooltip key={badge}>
+                            <TooltipTrigger>
+                                <Badge variant="secondary">{badge}</Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{badgeDescriptions[badge] || 'This provider has earned a special badge.'}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    ))}
+                </div>
+            </TooltipProvider>
         </CardContent>
         <CardFooter className="p-6 pt-0">
            <Button className="w-full" asChild size="lg">
