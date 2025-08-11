@@ -1,5 +1,3 @@
-
-
 'use client'
 
 import { useState } from 'react';
@@ -100,9 +98,7 @@ export default function DiscoverPage() {
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="w-full h-full">
-                <PlaylistResults />
-            </div>
+            <PlaylistResults />
             <div className="space-y-8">
                 {/* Circular Menu */}
                 <div className="flex justify-center items-center">
@@ -244,22 +240,6 @@ export default function DiscoverPage() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="price">Price Range</Label>
-                        <Select>
-                          <SelectTrigger id="price">
-                            <SelectValue placeholder="Select a price range" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">$</SelectItem>
-                            <SelectItem value="2">$$</SelectItem>
-                            <SelectItem value="3">$$$</SelectItem>
-                            <SelectItem value="4">$$$$</SelectItem>
-                            <SelectSeparator />
-                            <SelectItem value="all">All</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
                       <Button className="w-full">
                         <Search className="mr-2 h-4 w-4" />
                         Search
@@ -300,5 +280,3 @@ export default function DiscoverPage() {
     </div>
   );
 }
-
-    
