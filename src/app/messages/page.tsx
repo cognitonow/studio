@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Phone, Video, Sparkles } from "lucide-react"
 import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -17,24 +17,24 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
 
-  useEffect(() => {
-    // Mark all as read when the page is viewed
-    markAllMessagesAsRead();
+  const fetchConversations = useCallback(() => {
+    const convos = getConversations();
+    setConversations(convos);
 
-    const fetchConversations = () => {
-        const convos = getConversations();
-        setConversations(convos);
-
-        // Update active conversation data if it exists
-        if (activeConversation) {
-            const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
-            setActiveConversation(updatedActiveConvo);
-        } else if (convos.length > 0) {
-            // Set initial active conversation
-            setActiveConversation(convos[1] || convos[0]);
-        }
+    // Update active conversation data if it exists
+    if (activeConversation) {
+        const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
+        setActiveConversation(updatedActiveConvo);
+    } else if (convos.length > 0) {
+        // Set initial active conversation and mark its messages as read
+        const initialConvo = convos[1] || convos[0];
+        setActiveConversation(initialConvo);
+        markAllMessagesAsRead(initialConvo.id); // Mark initial active convo as read
     }
-    
+  }, [activeConversation]);
+
+
+  useEffect(() => {
     fetchConversations();
     const msgs = getMessages();
     setMessages(msgs);
@@ -44,7 +44,15 @@ export default function MessagesPage() {
 
     return () => clearInterval(interval);
 
-  }, [activeConversation?.id]); // Rerun effect if active conversation changes
+  }, [fetchConversations]);
+  
+  const handleConversationSelect = (convo: Conversation) => {
+    setActiveConversation(convo);
+    markAllMessagesAsRead(convo.id); // Mark selected conversation's messages as read
+    // Manually trigger a refresh of conversations to update UI immediately
+    setConversations(getConversations());
+  }
+
 
   if (!activeConversation) {
     return (
@@ -71,7 +79,7 @@ export default function MessagesPage() {
             <ScrollArea className="h-full">
               <div className="space-y-1">
                 {conversations.map(convo => (
-                    <button key={convo.id} onClick={() => setActiveConversation(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
+                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
                         <div className="relative">
                             <Avatar className="w-12 h-12">
                                 <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
@@ -80,7 +88,7 @@ export default function MessagesPage() {
                             {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
-                            <p className={cn("font-semibold truncate", convo.unread > 0 && "text-primary")}>{convo.name}</p>
+                            <p className={cn("font-semibold truncate", convo.unread > 0 && "text-primary font-bold")}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
