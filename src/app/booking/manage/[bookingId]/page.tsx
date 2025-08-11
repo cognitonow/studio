@@ -110,15 +110,17 @@ export default function ManageBookingPage() {
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled';
+
 
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <Button variant="ghost" onClick={() => router.push('/dashboard')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Return to Dashboard
         </Button>
-        <h1 className="text-4xl font-bold font-headline mb-8">Manage Your Booking</h1>
+        <h1 className="text-4xl font-bold font-headline mb-8">{isReadOnly ? 'Booking Details' : 'Manage Your Booking'}</h1>
         
         <div className="grid md:grid-cols-2 gap-8">
           
@@ -126,7 +128,7 @@ export default function ManageBookingPage() {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>Current Appointment</CardTitle>
+                <CardTitle>Appointment Details</CardTitle>
                 <CardDescription>With {provider.name}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -146,7 +148,7 @@ export default function ManageBookingPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Booked Services</CardTitle>
-                <CardDescription>Add or remove services from your appointment.</CardDescription>
+                {!isReadOnly && <CardDescription>Add or remove services from your appointment.</CardDescription>}
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -156,28 +158,32 @@ export default function ManageBookingPage() {
                         <p className="font-semibold">{service.name}</p>
                         <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleRemoveService(service.id)}>
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
+                      {!isReadOnly && (
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveService(service.id)}>
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      )}
                     </div>
                   )) : (
                     <p className="text-muted-foreground text-center py-4">No services selected.</p>
                   )}
                 </div>
                 <Separator className="my-6" />
-                <AddServiceDialog 
-                  providerServices={provider.services}
-                  onAddService={handleAddService}
-                >
-                  <Button variant="outline" className="w-full">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Another Service
-                  </Button>
-                </AddServiceDialog>
+                {!isReadOnly && (
+                    <AddServiceDialog 
+                    providerServices={provider.services}
+                    onAddService={handleAddService}
+                    >
+                    <Button variant="outline" className="w-full">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Another Service
+                    </Button>
+                    </AddServiceDialog>
+                )}
                 
                 <div className="mt-6 text-right">
-                    <p className="text-sm text-muted-foreground">New duration: {totalDuration} min</p>
-                    <p className="text-xl font-bold">New Total: ${totalCost.toFixed(2)}</p>
+                    <p className="text-sm text-muted-foreground">Total duration: {totalDuration} min</p>
+                    <p className="text-xl font-bold">Total: ${totalCost.toFixed(2)}</p>
                 </div>
 
               </CardContent>
@@ -188,8 +194,8 @@ export default function ManageBookingPage() {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>Amend Date & Time</CardTitle>
-                <CardDescription>Select a new time for your appointment.</CardDescription>
+                <CardTitle>{isReadOnly ? 'Date & Time' : 'Amend Date & Time'}</CardTitle>
+                 {!isReadOnly && <CardDescription>Select a new time for your appointment.</CardDescription>}
               </CardHeader>
               <CardContent className="flex justify-center">
                 <div className="flex flex-col items-center gap-4">
@@ -198,7 +204,7 @@ export default function ManageBookingPage() {
                       selected={selectedDate}
                       onSelect={setSelectedDate}
                       className="rounded-md border"
-                      disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                      disabled={isReadOnly || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
                     />
                     <div className="w-full space-y-2">
                         <Label htmlFor="time" className="flex items-center gap-2">
@@ -208,7 +214,7 @@ export default function ManageBookingPage() {
                         <Select 
                             onValueChange={handleTimeSelect}
                             value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                            disabled={!selectedDate}
+                            disabled={isReadOnly || !selectedDate}
                         >
                             <SelectTrigger id="time">
                                 <SelectValue placeholder="Select a time" />
@@ -224,18 +230,20 @@ export default function ManageBookingPage() {
               </CardContent>
             </Card>
 
-            <div className="flex flex-col gap-4">
-               <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Changes
-                </Button>
-               <CancelBookingDialog onConfirm={handleCancelBooking}>
-                    <Button variant="destructive" size="lg" className="w-full">
-                      <XCircle className="mr-2 h-4 w-4" />
-                      Cancel Booking
+            {!isReadOnly && (
+                <div className="flex flex-col gap-4">
+                <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Changes
                     </Button>
-               </CancelBookingDialog>
-            </div>
+                <CancelBookingDialog onConfirm={handleCancelBooking}>
+                        <Button variant="destructive" size="lg" className="w-full">
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Cancel Booking
+                        </Button>
+                </CancelBookingDialog>
+                </div>
+            )}
           </div>
         </div>
       </div>
