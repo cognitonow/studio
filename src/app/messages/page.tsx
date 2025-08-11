@@ -89,7 +89,7 @@ export default function MessagesPage() {
                             {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
-                            <p className={cn("truncate", convo.unread > 0 ? "font-bold text-primary" : "font-semibold")}>{convo.name}</p>
+                            <p className={cn("truncate", convo.unread > 0 ? 'font-bold text-primary' : 'font-semibold')}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
