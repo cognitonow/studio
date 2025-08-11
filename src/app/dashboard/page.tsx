@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, DollarSign, Users, Award, Bell, CheckCircle, MessageSquare, XCircle, Contact } from "lucide-react"
@@ -59,8 +60,12 @@ const NotificationList = ({ items }: { items: Notification[] }) => {
   )};
 
 export default function ProviderDashboardPage() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'bookings';
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
     setBookings(getProviderBookings());
@@ -115,17 +120,14 @@ export default function ProviderDashboardPage() {
         );
         break;
       case 'Confirmed':
-        if (bookingDate <= now) { // Past or current booking
-            actions.push(<Button key={`manage-past-${booking.id}`} size="sm" variant="outline" asChild>
+        actions.push(
+            <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-            </Button>);
+            </Button>
+        );
+        if (bookingDate <= now) { // Past or current booking
             actions.push(<Button key={`complete-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
         } else { // Future booking
-             actions.push(
-                <Button key={`manage-future-${booking.id}`} size="sm" variant="outline" asChild>
-                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-                </Button>
-            );
             actions.push(
                 <Button key={`cancel-future-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
             );
@@ -161,7 +163,7 @@ export default function ProviderDashboardPage() {
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">Provider Dashboard</h1>
-      <Tabs defaultValue="bookings" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="bookings">Booking Management</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
