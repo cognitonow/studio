@@ -77,6 +77,7 @@ export type Notification = {
   description: string;
   time: string;
   read: boolean;
+  bookingId?: string;
 };
 
 export type Conversation = {

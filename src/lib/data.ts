@@ -1,4 +1,5 @@
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -208,6 +209,21 @@ let bookings: Booking[] = [
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
 ];
 
+export let conversations: Conversation[] = [
+  { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0, online: true },
+  { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2, online: false },
+  { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0, online: false },
+  { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0, online: true },
+]
+
+export let messages: Message[] = [
+    { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.' },
+    { id: 2, conversationId: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
+    { id: 3, conversationId: 2, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
+    { id: 4, conversationId: 2, sender: 'user', text: "That's fantastic, thank you so much! "},
+    { id: 5, conversationId: 2, sender: 'provider', text: "You're very welcome. Looking forward to seeing you tomorrow!" },
+]
+
 let notifications: Notification[] = [
     {
       id: 1,
@@ -216,6 +232,7 @@ let notifications: Notification[] = [
       description: "Alex Ray has booked a Haircut for August 15, 2024 at 2:00 PM.",
       time: "1 hour ago",
       read: false,
+      bookingId: '5'
     },
     {
       id: 2,
@@ -232,6 +249,7 @@ let notifications: Notification[] = [
       description: "Taylor Swift has cancelled her Bridal Makeup booking for September 1, 2024.",
       time: "2 days ago",
       read: true,
+      bookingId: '6'
     },
     {
         id: 4,
@@ -240,28 +258,14 @@ let notifications: Notification[] = [
         description: "Jordan Peele's booking for a Classic Manicure is confirmed for August 18, 2024 at 10:00 AM.",
         time: "3 days ago",
         read: true,
+        bookingId: '3'
     }
   ];
-
-export let conversations: Conversation[] = [
-  { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0, online: true },
-  { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2, online: false },
-  { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0, online: false },
-  { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0, online: true },
-]
-
-export let messages: Message[] = [
-    { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.' },
-    { id: 2, conversationId: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
-    { id: 3, conversationId: 2, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
-    { id: 4, conversationId: 2, sender: 'user', text: "That's fantastic, thank you so much! "},
-    { id: 5, conversationId: 2, sender: 'provider', text: "You're very welcome. Looking forward to seeing you tomorrow!" },
-]
 
 export const getBookings = () => {
     const upcoming = bookings
         .filter(b => new Date(b.date) >= new Date() && b.status === 'Confirmed')
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        .sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime());
 
     const past = bookings
         .filter(b => new Date(b.date) < new Date() || ['Completed', 'Cancelled'].includes(b.status))
@@ -325,20 +329,23 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 addNotification({
                     icon: 'cancellation',
                     title: 'Booking Cancelled',
-                    description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`
+                    description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
+                    bookingId: booking.id
                 });
             } else if (status === 'Confirmed') {
                 addNotification({
                     icon: 'confirmation',
                     title: 'Booking Confirmed!',
-                    description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`
+                    description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`,
+                    bookingId: booking.id
                 });
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
             } else if (status === 'Completed') {
                 addNotification({
                     icon: 'new-booking',
                     title: 'Booking Completed!',
-                    description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`
+                    description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`,
+                    bookingId: booking.id
                 });
                 await sendAutomatedMessage(booking, draftPostBookingMessage);
             }
@@ -365,7 +372,8 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
     addNotification({
         icon: 'new-booking',
         title: 'New Booking!',
-        description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`
+        description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
+        bookingId: newBooking.id
     });
 
     return newBooking;
