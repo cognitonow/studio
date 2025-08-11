@@ -1,7 +1,7 @@
 
 
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, isSameDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 
@@ -415,6 +415,12 @@ export const markAllMessagesAsRead = (conversationId?: number) => {
     } else {
         conversations.forEach(convo => convo.unread = 0);
     }
+};
+
+export const getBookedTimes = (providerId: string, date: Date): string[] => {
+    return bookings
+        .filter(b => b.providerId === providerId && isSameDay(new Date(b.date), date) && b.status !== 'Cancelled')
+        .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
 

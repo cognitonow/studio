@@ -2,7 +2,7 @@
 'use client'
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { getProviderById, services as allServices } from '@/lib/data';
+import { getProviderById, services as allServices, getBookedTimes } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Clock, ArrowRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const availableTimes = [
+const allPossibleTimes = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
     "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
 ];
@@ -36,16 +36,34 @@ export default function BookingPage() {
   const service = allServices.find(s => s.id === serviceId);
 
   const [date, setDate] = useState<Date | undefined>();
+  const [availableTimes, setAvailableTimes] = useState<string[]>(allPossibleTimes);
 
   useEffect(() => {
     const newDate = new Date();
     newDate.setHours(9,0,0,0);
     setDate(newDate);
   }, []);
+  
+  useEffect(() => {
+    if (date && providerId) {
+      const bookedTimes = getBookedTimes(providerId, date);
+      const filteredTimes = allPossibleTimes.filter(time => !bookedTimes.includes(time));
+      setAvailableTimes(filteredTimes);
+    }
+  }, [date, providerId]);
 
 
   if (!provider || !service) {
     notFound();
+  }
+
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate) {
+        const currentHour = date?.getHours() ?? 9;
+        const currentMinutes = date?.getMinutes() ?? 0;
+        selectedDate.setHours(currentHour, currentMinutes, 0, 0);
+    }
+    setDate(selectedDate);
   }
 
   const handleTimeSelect = (time: string) => {
@@ -106,7 +124,7 @@ export default function BookingPage() {
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={setDate}
+                    onSelect={handleDateSelect}
                     className="rounded-md border"
                     disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
                   />
@@ -124,9 +142,13 @@ export default function BookingPage() {
                               <SelectValue placeholder="Select a time" />
                           </SelectTrigger>
                           <SelectContent>
-                              {availableTimes.map(time => (
-                                  <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
-                              ))}
+                              {availableTimes.length > 0 ? (
+                                availableTimes.map(time => (
+                                    <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
+                                ))
+                              ) : (
+                                <SelectItem value="no-times" disabled>No available times</SelectItem>
+                              )}
                           </SelectContent>
                       </Select>
                   </div>
