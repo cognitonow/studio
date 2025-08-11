@@ -12,8 +12,7 @@ import { Label } from '@/components/ui/label';
 import { CreditCard } from 'lucide-react';
 import { Chat } from '@/components/chat';
 
-export default function BookingPage({ params }: { params: { providerId: string } }) {
-  const { providerId } = params;
+export default function BookingPage({ params: { providerId } }: { params: { providerId: string } }) {
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('service');
   
