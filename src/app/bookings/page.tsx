@@ -107,7 +107,7 @@ export default function ClientBookingsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                           <Button variant="secondary" size="sm" asChild>
-                            <Link href={`/book/${booking.providerId}?service=${booking.serviceIds[0]}`}>Book Again</Link>
+                            <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
                           </Button>
                       </TableCell>
                     </TableRow>
