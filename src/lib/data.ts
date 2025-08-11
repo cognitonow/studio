@@ -219,7 +219,8 @@ export const getBookings = () => {
 };
 
 export const getProviderBookings = () => {
-    return bookings.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Return a new array to ensure React state updates trigger re-renders
+    return [...bookings].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
 export const updateBookingStatus = (bookingId: string, status: Booking['status']) => {
