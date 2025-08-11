@@ -59,16 +59,16 @@ function ExploreCarousel() {
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-between items-center">
                   <div className="flex gap-4">
-                      <Button variant="outline" size="icon" className="rounded-full h-14 w-14" aria-label="Save to list">
-                          <Heart className="h-7 w-7" />
+                      <Button variant="outline" size="icon" className="rounded-full h-16 w-16" aria-label="Save to list">
+                          <Heart className="h-8 w-8" />
                       </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-14 w-14" aria-label="Open chat">
-                          <MessageCircle className="h-7 w-7" />
+                      <Button variant="outline" size="icon" className="rounded-full h-16 w-16" aria-label="Open chat">
+                          <MessageCircle className="h-8 w-8" />
                       </Button>
                   </div>
-                  <Button asChild variant="outline" size="icon" className="rounded-full h-14 w-14">
+                  <Button asChild variant="outline" size="icon" className="rounded-full h-16 w-16">
                     <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                        <ChevronRight className="h-7 w-7" />
+                        <ChevronRight className="h-8 w-8" />
                     </Link>
                  </Button>
               </div>
