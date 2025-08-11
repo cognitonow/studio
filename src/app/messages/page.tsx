@@ -25,19 +25,20 @@ export default function MessagesPage() {
         const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
         setActiveConversation(updatedActiveConvo);
     } else if (convos.length > 0) {
+        // Automatically select the first conversation with unread messages, or the very first one
         const initialConvo = convos.find(c => c.unread > 0) || convos[0];
         if (initialConvo) {
             handleConversationSelect(initialConvo);
-        } else {
-             setActiveConversation(convos[0]);
         }
     }
-  }, [activeConversation]); // Dependency array needs activeConversation to avoid stale closures
+  }, [activeConversation]); // Re-create this function if activeConversation changes
 
   useEffect(() => {
+    // Initial fetch
     fetchAndUpdateState();
     setMessages(getMessages());
     
+    // Set up polling to check for new messages
     const interval = setInterval(fetchAndUpdateState, 2000); 
 
     return () => clearInterval(interval);
@@ -46,8 +47,10 @@ export default function MessagesPage() {
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
+    // Mark messages as read in the data source
     markAllMessagesAsRead(convo.id);
-    setConversations(getConversations()); // Re-fetch conversations to update the UI immediately
+    // Re-fetch conversations to update the UI with the new 'read' status
+    setConversations(getConversations());
   }
 
 
@@ -90,7 +93,9 @@ export default function MessagesPage() {
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
                           <p className="text-xs text-muted-foreground">{convo.time}</p>
-                          {convo.unread > 0 && <span className="w-5 h-5 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>}
+                          {convo.unread > 0 && (
+                            <span className="w-5 h-5 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>
+                          )}
                         </div>
                     </button>
                 ))}
