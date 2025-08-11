@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react';
@@ -97,9 +98,11 @@ export default function DiscoverPage() {
               Select a category or use advanced search to find providers.
             </p>
           </div>
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            <PlaylistResults />
-            <div className="space-y-8">
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-1">
+              <PlaylistResults />
+            </div>
+            <div className="lg:col-span-2 space-y-8">
                 {/* Circular Menu */}
                 <div className="flex justify-center items-center">
                   <div className="relative w-[500px] h-[500px]">
@@ -142,7 +145,7 @@ export default function DiscoverPage() {
                   </div>
                 </div>
                 {/* Advanced Search */}
-                <div className="w-full">
+                <div className="w-4/5 mx-auto">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
@@ -280,3 +283,5 @@ export default function DiscoverPage() {
     </div>
   );
 }
+
+    
