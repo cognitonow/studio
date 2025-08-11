@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { getProviderById, services as allServices } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,9 +11,11 @@ import { Label } from '@/components/ui/label';
 import { CreditCard, MessageSquare, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PaymentPage({ params: { providerId } }: { params: { providerId: string } }) {
+export default function PaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const providerId = params.providerId as string;
   const serviceId = searchParams.get('service');
   const dateStr = searchParams.get('date');
 
