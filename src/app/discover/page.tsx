@@ -99,7 +99,7 @@ export default function DiscoverPage() {
             </p>
           </div>
           <div className="grid lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-1">
+             <div className="lg:col-span-1">
               <PlaylistResults />
             </div>
             <div className="lg:col-span-2 space-y-8">
@@ -153,7 +153,7 @@ export default function DiscoverPage() {
                     <CardContent className="space-y-4 pb-8">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="category">Category</Label>
+                           <Label htmlFor="category" className="flex items-center h-5">Category</Label>
                           <Select value={selectedCategory} onValueChange={handleCategorySelect}>
                             <SelectTrigger id="category">
                               <SelectValue placeholder="Select a category" />
@@ -168,7 +168,7 @@ export default function DiscoverPage() {
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="service" className="flex items-center">
+                          <Label htmlFor="service" className="flex items-center h-5">
                             <span>Service</span>
                             {selectedCategory && (
                               <span className="ml-2 text-xs text-muted-foreground font-normal">
@@ -206,7 +206,7 @@ export default function DiscoverPage() {
                             </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="location">Location</Label>
+                          <Label htmlFor="location" className="flex items-center h-5">Location</Label>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="outline" className="w-full justify-between">
