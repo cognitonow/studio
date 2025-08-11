@@ -63,22 +63,30 @@ function ExploreStack() {
       return { opacity: 0, zIndex: 0, transform: 'scale(0.5)', position: 'absolute', width: '100%', height: '100%' };
     }
     
-    let transform = `translateY(${offset * 10}px) scale(${1 - Math.abs(offset) * 0.05})`;
+    // Invert the stacking: top card (offset 0) is smallest, bottom cards (offset > 0) are larger.
+    const scale = 1 - offset * 0.1;
+    const translateY = -offset * 20;
+    
+    let transform = `translateY(${translateY}px) scale(${scale})`;
     let opacity = 1;
-    let zIndex = providers.length - Math.abs(offset);
+    let zIndex = providers.length - offset; // Higher offset (further back) gets lower z-index
 
-    if (offset === 0) { // Active card
-        zIndex = providers.length + 1;
-        if (direction === 'right') {
-            transform = 'translateX(100%) rotate(15deg) scale(1)';
-        } else if (direction === 'left') {
-            transform = 'translateX(-100%) rotate(-15deg) scale(1)';
-        } else if (direction === 'up') {
-            transform = 'translateY(-100%) rotate(0deg) scale(1)';
-        }
-    } else if (offset < 0) { // Cards that have been swiped past
+    if (offset < 0) { // Cards that have been swiped past
       opacity = 0;
+      transform = `translateY(0px) scale(1)`;
+    } else if (offset === 0) { // Active card
+        zIndex = providers.length + 1; // Always on top
+        if (direction === 'right') {
+            transform = 'translateX(100%) rotate(15deg) scale(0.9)';
+        } else if (direction === 'left') {
+            transform = 'translateX(-100%) rotate(-15deg) scale(0.9)';
+        } else if (direction === 'up') {
+            transform = 'translateY(-100%) rotate(0deg) scale(0.9)';
+        } else {
+            transform = `translateY(${translateY}px) scale(${scale})`;
+        }
     }
+
 
     return {
         transition: 'all 0.3s ease-in-out',
