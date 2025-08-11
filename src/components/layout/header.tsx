@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard, ChevronDown, Eye, Briefcase } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +25,7 @@ function getNavLinks(role: string) {
             mobile: [
                 { href: '/discover', label: 'Discover' },
                 { href: '/signup', label: 'Sign Up' },
+                { href: '/', label: 'Home' },
             ],
         },
         client: {
@@ -98,7 +99,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 max-w-7xl items-center">
-        <div className="mr-4 hidden md:flex">
+        <div className="mr-4 hidden md:flex items-center">
           <Link href="/" className="mr-2 flex items-center space-x-2">
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
@@ -113,6 +114,12 @@ export function Header() {
             <DropdownMenuContent>
                 <DropdownMenuLabel>Switch View</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                 <DropdownMenuItem asChild>
+                    <Link href="/">
+                        <Globe className="mr-2 h-4 w-4"/>
+                        Guest View
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link href="/discover">
                         <Eye className="mr-2 h-4 w-4"/>
