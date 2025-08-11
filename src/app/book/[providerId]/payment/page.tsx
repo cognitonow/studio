@@ -2,7 +2,7 @@
 'use client'
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { getProviderById, services as allServices, addBooking } from '@/lib/data';
+import { getProviderById, getServicesByIds, addBooking, services as allServices } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,31 +29,28 @@ export default function PaymentPage() {
   }, [dateStr]);
 
   const provider = getProviderById(providerId);
-  const service = allServices.find(s => s.id === serviceId);
+  // In a multi-service booking, you might get an array of IDs
+  const serviceIds = serviceId ? [serviceId] : [];
+  const services = getServicesByIds(serviceIds);
+  const totalCost = services.reduce((acc, service) => acc + service.price, 0);
 
-  if (!provider || !service || !date) {
-    // Return a loading state or null while date is being set
-    // to avoid trying to render with an undefined date.
-    // Or, you can show a loading spinner.
-    // For now, notFound() is fine if the params are essential.
-    if (!provider || !service || !dateStr) {
+  if (!provider || services.length === 0 || !date) {
+    if (!provider || !dateStr) {
       notFound();
     }
     return null; 
   }
   
   const handleConfirmBooking = () => {
-    if (!provider || !service || !date) return;
+    if (!provider || services.length === 0 || !date) return;
 
     addBooking({
         providerId: provider.id,
-        provider: provider.name,
-        serviceId: service.id,
-        service: service.name,
+        providerName: provider.name,
+        serviceIds: services.map(s => s.id),
         date: date.toISOString(),
     });
 
-    console.log('Booking request sent!');
     router.push('/bookings');
   };
   
@@ -81,8 +78,15 @@ export default function PaymentPage() {
                 <CardDescription>with {provider.name}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                    <p className="font-semibold">{service.name}</p>
+                <div className="space-y-4">
+                    {services.map(service => (
+                        <div key={service.id} className="flex justify-between">
+                            <span>{service.name}</span>
+                            <span>${service.price}</span>
+                        </div>
+                    ))}
+                </div>
+                 <div className="mt-4 pt-4 border-t space-y-2">
                     <p className="text-muted-foreground">
                         {date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
@@ -92,7 +96,7 @@ export default function PaymentPage() {
                 </div>
                  <div className="mt-4 pt-4 border-t flex justify-between items-center font-bold text-xl">
                     <span>Total</span>
-                    <span>${service.price}</span>
+                    <span>${totalCost.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -133,12 +137,10 @@ export default function PaymentPage() {
                 </div>
               </CardContent>
             </Card>
-            <Button size="lg" className="w-full" onClick={handleConfirmBooking}>Confirm & Book for ${service.price}</Button>
+            <Button size="lg" className="w-full" onClick={handleConfirmBooking}>Confirm & Book for ${totalCost.toFixed(2)}</Button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-    

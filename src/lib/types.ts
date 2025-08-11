@@ -63,11 +63,9 @@ export type BookingHistory = {
 export type Booking = {
     id: string;
     providerId: string;
-    provider: string;
-    serviceId: string;
-    service: string;
+    providerName: string;
+    serviceIds: string[];
     date: string;
     status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
+    clientName?: string; // Optional client name for provider view
 };
-
-    

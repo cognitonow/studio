@@ -1,10 +1,9 @@
 
-
 'use client'
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { providers, services as allServices, getBookingById, updateBooking } from '@/lib/data';
+import { providers, services as allServices, getBookingById, updateBooking, getServicesByIds } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,32 +37,23 @@ export default function ManageBookingPage() {
   const bookingId = params.bookingId as string;
 
   const [booking, setBooking] = useState<Booking | null | undefined>(undefined);
+  const [bookedServices, setBookedServices] = useState<Service[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   
   useEffect(() => {
     if (bookingId) {
       const foundBooking = getBookingById(bookingId);
       setBooking(foundBooking);
+      if (foundBooking) {
+        setBookedServices(getServicesByIds(foundBooking.serviceIds));
+        setSelectedDate(new Date(foundBooking.date));
+      }
     }
   }, [bookingId]);
   
   const provider = providers.find(p => p.id === booking?.providerId);
   
-  // Initialize services with an empty array or based on the fetched booking
-  const [bookedServices, setBookedServices] = useState<Service[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-
-  useEffect(() => {
-    if (booking) {
-      // Assuming a booking has one service for now, as per current data structure
-      const initialService = allServices.find(s => s.id === booking.serviceId);
-      setBookedServices(initialService ? [initialService] : []);
-      setSelectedDate(new Date(booking.date));
-    }
-  }, [booking]);
-
-
   if (booking === undefined) {
-    // We are still loading the booking
     return <div>Loading...</div>;
   }
 
@@ -92,15 +82,15 @@ export default function ManageBookingPage() {
   
   const handleSaveChanges = () => {
     if (booking && selectedDate) {
-      // For now, we'll just update the date.
-      // In a real app, you might update services too.
-      updateBooking(booking.id, { date: selectedDate.toISOString() });
+      updateBooking(booking.id, { 
+          date: selectedDate.toISOString(),
+          serviceIds: bookedServices.map(s => s.id),
+      });
       toast({
         title: "Booking Updated!",
         description: "Your appointment details have been successfully saved.",
       });
       // A bit of a hack to determine where to go back.
-      // In a real app, you might have user roles to determine this.
       // For now, we'll assume if they can get here they are a provider or client
       // who knows where they came from. A better solution might be router.back()
       // but let's send to provider dashboard for this case.
@@ -145,7 +135,7 @@ export default function ManageBookingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {bookedServices.map(service => (
+                  {bookedServices.length > 0 ? bookedServices.map(service => (
                     <div key={service.id} className="flex justify-between items-center">
                       <div>
                         <p className="font-semibold">{service.name}</p>
@@ -155,7 +145,9 @@ export default function ManageBookingPage() {
                         <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>
                     </div>
-                  ))}
+                  )) : (
+                    <p className="text-muted-foreground text-center py-4">No services selected.</p>
+                  )}
                 </div>
                 <Separator className="my-6" />
                 <AddServiceDialog 
@@ -218,7 +210,7 @@ export default function ManageBookingPage() {
             </Card>
 
             <div className="flex flex-col gap-4">
-               <Button size="lg" className="w-full" onClick={handleSaveChanges}>
+               <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
                 </Button>

@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus } from '@/lib/data';
+import { getProviderBookings, updateBookingStatus, getServicesByIds } from '@/lib/data';
 import type { Booking } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -133,6 +133,17 @@ export default function ProviderDashboardPage() {
         return null;
     }
   };
+  
+  const renderServices = (serviceIds: string[]) => {
+    const services = getServicesByIds(serviceIds);
+    if (services.length === 0) return 'N/A';
+    if (services.length === 1) return services[0].name;
+    return (
+        <span title={services.map(s => s.name).join(', ')}>
+            {`${services.length} services`}
+        </span>
+    );
+  }
 
 
   return (
@@ -202,7 +213,7 @@ export default function ProviderDashboardPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Client</TableHead>
-                    <TableHead>Service</TableHead>
+                    <TableHead>Service(s)</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
@@ -211,8 +222,8 @@ export default function ProviderDashboardPage() {
                 <TableBody>
                   {bookings.map(booking => (
                     <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.provider}</TableCell>
-                      <TableCell>{booking.service}</TableCell>
+                      <TableCell className="font-medium">{booking.clientName}</TableCell>
+                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
                       <TableCell>
                         {getStatusBadge(booking.status)}

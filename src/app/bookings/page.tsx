@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { getBookings } from "@/lib/data"
+import { getBookings, getServicesByIds, services as allServices } from "@/lib/data"
 import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
 
@@ -28,6 +28,10 @@ export default function ClientBookingsPage() {
     setPastBookings(past);
   }, []);
 
+  const renderServices = (serviceIds: string[]) => {
+    const services = getServicesByIds(serviceIds);
+    return services.map(s => s.name).join(', ');
+  }
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -48,7 +52,7 @@ export default function ClientBookingsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Provider</TableHead>
-                    <TableHead>Service</TableHead>
+                    <TableHead>Service(s)</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
@@ -57,8 +61,8 @@ export default function ClientBookingsPage() {
                 <TableBody>
                   {upcomingBookings.map(booking => (
                     <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.provider}</TableCell>
-                      <TableCell>{booking.service}</TableCell>
+                      <TableCell className="font-medium">{booking.providerName}</TableCell>
+                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">{booking.status}</Badge>
@@ -86,7 +90,7 @@ export default function ClientBookingsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Provider</TableHead>
-                    <TableHead>Service</TableHead>
+                    <TableHead>Service(s)</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
@@ -95,15 +99,15 @@ export default function ClientBookingsPage() {
                 <TableBody>
                   {pastBookings.map(booking => (
                     <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.provider}</TableCell>
-                      <TableCell>{booking.service}</TableCell>
+                      <TableCell className="font-medium">{booking.providerName}</TableCell>
+                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Badge>{booking.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
                           <Button variant="secondary" size="sm" asChild>
-                            <Link href={`/book/${booking.providerId}?service=${booking.serviceId}`}>Book Again</Link>
+                            <Link href={`/book/${booking.providerId}?service=${booking.serviceIds[0]}`}>Book Again</Link>
                           </Button>
                       </TableCell>
                     </TableRow>
@@ -117,5 +121,3 @@ export default function ClientBookingsPage() {
     </div>
   )
 }
-
-    

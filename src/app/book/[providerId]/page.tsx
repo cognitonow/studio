@@ -38,7 +38,9 @@ export default function BookingPage() {
   const [date, setDate] = useState<Date | undefined>();
 
   useEffect(() => {
-    setDate(new Date());
+    const newDate = new Date();
+    newDate.setHours(9,0,0,0);
+    setDate(newDate);
   }, []);
 
 
@@ -89,7 +91,7 @@ export default function BookingPage() {
                 )}
               </CardContent>
             </Card>
-            <Button size="lg" className="w-full" onClick={handleProceedToPayment}>
+            <Button size="lg" className="w-full" onClick={handleProceedToPayment} disabled={!date}>
                 Proceed to Payment
                 <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
