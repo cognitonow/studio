@@ -309,10 +309,14 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
                 conversationId: conversation.id,
                 sender: 'provider',
                 text: response.message,
+                isAi: true,
             });
             conversation.lastMessage = response.message;
             conversation.time = 'Just now';
-            conversation.unread = (conversation.unread || 0) + 1;
+            // Increment unread only for post-completion messages to simulate a new message
+            if (booking.status === 'Completed') {
+                conversation.unread = (conversation.unread || 0) + 1;
+            }
         }
     } catch (e) {
         console.error("Failed to draft automated message:", e);

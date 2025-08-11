@@ -96,4 +96,5 @@ export type Message = {
   conversationId: number;
   sender: 'user' | 'provider';
   text: string;
+  isAi?: boolean;
 };
