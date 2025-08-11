@@ -223,19 +223,19 @@ export default function DiscoverPage() {
             </div>
             {/* Circular Menu */}
             <div className="lg:col-span-2 flex justify-center items-center">
-              <div className="relative w-[600px] h-[600px]">
+              <div className="relative w-[500px] h-[500px]">
                   {/* Dotted Circle */}
                   <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
 
                   {/* Central Image */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
                       <Image src="https://placehold.co/400x400.png" alt="Skincare" layout="fill" objectFit="cover" data-ai-hint="woman face beauty" />
                   </div>
 
                   {/* Menu Items */}
                   {currentServiceCategories.map((category, index) => {
                     const angle = (index / currentServiceCategories.length) * 2 * Math.PI - (Math.PI / 2);
-                    const radius = 300; // This should be half of the container's width/height
+                    const radius = 250; // This should be half of the container's width/height
 
                     const x = radius * Math.cos(angle);
                     const y = radius * Math.sin(angle);
