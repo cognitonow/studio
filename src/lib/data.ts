@@ -313,10 +313,7 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
             });
             conversation.lastMessage = response.message;
             conversation.time = 'Just now';
-            // Increment unread only for post-completion messages to simulate a new message
-            if (booking.status === 'Completed') {
-                conversation.unread = (conversation.unread || 0) + 1;
-            }
+            conversation.unread = (conversation.unread || 0) + 1;
         }
     } catch (e) {
         console.error("Failed to draft automated message:", e);
