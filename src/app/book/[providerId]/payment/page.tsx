@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard, MessageSquare, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -19,12 +20,26 @@ export default function PaymentPage() {
   const serviceId = searchParams.get('service');
   const dateStr = searchParams.get('date');
 
+  const [date, setDate] = useState<Date | undefined>();
+
+  useEffect(() => {
+    if (dateStr) {
+      setDate(new Date(dateStr));
+    }
+  }, [dateStr]);
+
   const provider = getProviderById(providerId);
   const service = allServices.find(s => s.id === serviceId);
-  const date = dateStr ? new Date(dateStr) : undefined;
 
   if (!provider || !service || !date) {
-    notFound();
+    // Return a loading state or null while date is being set
+    // to avoid trying to render with an undefined date.
+    // Or, you can show a loading spinner.
+    // For now, notFound() is fine if the params are essential.
+    if (!provider || !service || !dateStr) {
+      notFound();
+    }
+    return null; 
   }
   
   const handleConfirmBooking = () => {
