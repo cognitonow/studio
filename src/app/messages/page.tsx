@@ -17,34 +17,37 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
 
-  const fetchConversations = useCallback(() => {
+  const fetchAndUpdateState = useCallback(() => {
     const convos = getConversations();
     setConversations(convos);
 
-    // Update active conversation data if it exists
     if (activeConversation) {
         const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
         setActiveConversation(updatedActiveConvo);
     } else if (convos.length > 0) {
-        // Set initial active conversation and mark its messages as read
-        const initialConvo = convos[1] || convos[0];
+        const initialConvo = convos.find(c => c.unread > 0) || convos[0];
         setActiveConversation(initialConvo);
-        markAllMessagesAsRead(initialConvo.id); // Mark initial active convo as read
+        if (initialConvo) {
+            markAllMessagesAsRead(initialConvo.id);
+            // After marking as read, fetch again to get the "0 unread" state
+            setConversations(getConversations());
+        }
     }
   }, [activeConversation]);
 
 
   useEffect(() => {
-    fetchConversations();
-    const msgs = getMessages();
-    setMessages(msgs);
+    fetchAndUpdateState();
+    setMessages(getMessages());
     
     // Poll for new messages to update unread counts
-    const interval = setInterval(fetchConversations, 2000); 
+    const interval = setInterval(() => {
+        setConversations(getConversations());
+    }, 2000); 
 
     return () => clearInterval(interval);
 
-  }, [fetchConversations]);
+  }, []);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
@@ -57,7 +60,7 @@ export default function MessagesPage() {
   if (!activeConversation) {
     return (
         <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
-            <p className="text-muted-foreground">No conversations found.</p>
+            <p className="text-muted-foreground">Loading conversations...</p>
         </div>
     )
   }
@@ -88,7 +91,7 @@ export default function MessagesPage() {
                             {convo.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></div>}
                         </div>
                         <div className="flex-grow overflow-hidden">
-                            <p className={cn("font-semibold truncate", convo.unread > 0 && "text-primary font-bold")}>{convo.name}</p>
+                            <p className={cn("font-semibold truncate", convo.unread > 0 && "font-bold text-primary")}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
@@ -172,3 +175,5 @@ export default function MessagesPage() {
     </div>
   )
 }
+
+    
