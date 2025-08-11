@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getFeaturedProviders } from '@/lib/data';
-import { ProviderCard } from './provider-card';
+import { PlaylistProviderCard } from './playlist-provider-card';
 import { ListMusic } from 'lucide-react';
 
 export function PlaylistResults() {
@@ -19,11 +19,11 @@ export function PlaylistResults() {
         <ScrollArea className="h-full">
           <div className="space-y-4 pr-4">
             {playlistProviders.map(provider => (
-              <ProviderCard key={provider.id} provider={provider} />
+              <PlaylistProviderCard key={provider.id} provider={provider} />
             ))}
             {/* Add more for scrolling effect */}
             {playlistProviders.map(provider => (
-              <ProviderCard key={`${provider.id}-clone`} provider={provider} />
+              <PlaylistProviderCard key={`${provider.id}-clone`} provider={provider} />
             ))}
           </div>
         </ScrollArea>
@@ -31,5 +31,3 @@ export function PlaylistResults() {
     </Card>
   );
 }
-
-    
