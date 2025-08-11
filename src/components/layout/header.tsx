@@ -2,10 +2,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, Bell, User, Search, LogIn, LayoutDashboard } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, LogIn, LayoutDashboard } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
-const userRole = 'looker'; // 'provider' | 'guest' | 'client'
+const userRole = 'client'; // 'provider' | 'guest' | 'client'
 
 function getNavLinks(role: string) {
     const navConfig = {
@@ -22,11 +22,13 @@ function getNavLinks(role: string) {
         client: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/looker-dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
+                { href: '/looker-dashboard', label: 'Dashboard' },
                 { href: '/my-lists', label: 'My Lists' },
                 { href: '/bookings', label: 'Bookings' },
                 { href: '/messages', label: 'Messages' },
@@ -42,16 +44,6 @@ function getNavLinks(role: string) {
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
-                { href: '/account', label: 'Account' },
-            ]
-        },
-        looker: {
-            desktop: [
-                { href: '/looker-dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                { href: '/account', label: 'Account', icon: User },
-            ],
-            mobile: [
-                { href: '/looker-dashboard', label: 'Dashboard' },
                 { href: '/account', label: 'Account' },
             ]
         }
