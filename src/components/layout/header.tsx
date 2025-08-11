@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout } from 'lucide-react';
+import { Menu, Sprout, MessageSquare } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
 const userRole = 'client'; // 'provider' | 'guest'
@@ -26,6 +26,7 @@ const ClientLinks = () => (
     <>
       <Link href="/bookings" className="transition-colors hover:text-foreground/80 text-foreground/60">My Bookings</Link>
       <Link href="/my-lists" className="transition-colors hover:text-foreground/80 text-foreground/60">My Lists</Link>
+      <Link href="/messages" className="transition-colors hover:text-foreground/80 text-foreground/60">Messages</Link>
       <Button asChild>
         <Link href="/account">Account</Link>
       </Button>
@@ -35,6 +36,7 @@ const ClientLinks = () => (
 const ProviderLinks = () => (
   <>
     <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">Dashboard</Link>
+    <Link href="/messages" className="transition-colors hover:text-foreground/80 text-foreground/60">Messages</Link>
     <Button asChild>
       <Link href="/account">Account</Link>
     </Button>
@@ -62,11 +64,15 @@ const MobileClientLinks = () => (
     <>
       <Link href="/bookings" className="text-foreground/60 transition-colors hover:text-foreground/80">My Bookings</Link>
       <Link href="/my-lists" className="text-foreground/60 transition-colors hover:text-foreground/80">My Lists</Link>
+      <Link href="/messages" className="text-foreground/60 transition-colors hover:text-foreground/80">Messages</Link>
     </>
   );
 
 const MobileProviderLinks = () => (
-  <Link href="/dashboard" className="text-foreground/60 transition-colors hover:text-foreground/80">Dashboard</Link>
+    <>
+        <Link href="/dashboard" className="text-foreground/60 transition-colors hover:text-foreground/80">Dashboard</Link>
+        <Link href="/messages" className="text-foreground/60 transition-colors hover:text-foreground/80">Messages</Link>
+    </>
 );
 
 
