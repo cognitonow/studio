@@ -1,8 +1,8 @@
 
-
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
+import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -285,6 +285,35 @@ const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'
     notifications.unshift(newNotification);
 };
 
+const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: any) => Promise<{ message: string }>) => {
+    const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
+    const bookingDateTime = format(new Date(booking.date), "PPP p");
+
+    try {
+        const response = await messageGenerator({
+            clientName: booking.clientName || 'Valued Client',
+            providerName: booking.providerName,
+            serviceName: serviceNames,
+            bookingDate: bookingDateTime, // This might not be needed for post-booking message but we pass it anyway
+        });
+
+        const conversation = conversations.find(c => c.name === booking.providerName);
+
+        if (conversation) {
+             messages.push({
+                id: messages.length + 1,
+                conversationId: conversation.id,
+                sender: 'provider',
+                text: response.message,
+            });
+            conversation.lastMessage = response.message;
+            conversation.time = 'Just now';
+        }
+    } catch (e) {
+        console.error("Failed to draft automated message:", e);
+    }
+}
+
 export const updateBookingStatus = async (bookingId: string, status: Booking['status']) => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
@@ -304,35 +333,10 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     title: 'Booking Confirmed!',
                     description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`
                 });
-                
-                // Draft and "send" confirmation message
-                const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
-                const bookingDateTime = format(new Date(booking.date), "PPP p");
-
-                try {
-                    const confirmation = await draftBookingConfirmation({
-                        clientName: booking.clientName || 'Valued Client',
-                        providerName: booking.providerName,
-                        serviceName: serviceNames,
-                        bookingDate: bookingDateTime,
-                    });
-
-                    const provider = providers.find(p => p.name === booking.providerName);
-                    const conversation = conversations.find(c => c.name === booking.providerName);
-
-                    if (conversation) {
-                         messages.push({
-                            id: messages.length + 1,
-                            conversationId: conversation.id,
-                            sender: 'provider',
-                            text: confirmation.message,
-                        });
-                        conversation.lastMessage = confirmation.message;
-                        conversation.time = 'Just now';
-                    }
-                } catch (e) {
-                    console.error("Failed to draft confirmation message:", e);
-                }
+                await sendAutomatedMessage(booking, draftBookingConfirmation);
+            } else if (status === 'Completed') {
+                // We could add a different notification type for completion if desired
+                await sendAutomatedMessage(booking, draftPostBookingMessage);
             }
         }
     }
