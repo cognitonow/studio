@@ -34,7 +34,7 @@ export default function ClientBookingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Upcoming Appointments</CardTitle>
-              <CardDescription>Here are your confirmed future bookings.</CardDescription>
+              <CardDescription>Here are your confirmed future bookings. You can amend or cancel them here.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
