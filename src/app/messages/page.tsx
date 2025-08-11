@@ -26,34 +26,28 @@ export default function MessagesPage() {
         setActiveConversation(updatedActiveConvo);
     } else if (convos.length > 0) {
         const initialConvo = convos.find(c => c.unread > 0) || convos[0];
-        setActiveConversation(initialConvo);
         if (initialConvo) {
-            markAllMessagesAsRead(initialConvo.id);
-            // After marking as read, fetch again to get the "0 unread" state
-            setConversations(getConversations());
+            handleConversationSelect(initialConvo);
+        } else {
+             setActiveConversation(convos[0]);
         }
     }
-  }, [activeConversation]);
-
+  }, [activeConversation]); // Dependency array needs activeConversation to avoid stale closures
 
   useEffect(() => {
     fetchAndUpdateState();
     setMessages(getMessages());
     
-    // Poll for new messages to update unread counts
-    const interval = setInterval(() => {
-        setConversations(getConversations());
-    }, 2000); 
+    const interval = setInterval(fetchAndUpdateState, 2000); 
 
     return () => clearInterval(interval);
 
-  }, []);
+  }, [fetchAndUpdateState]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
-    markAllMessagesAsRead(convo.id); // Mark selected conversation's messages as read
-    // Manually trigger a refresh of conversations to update UI immediately
-    setConversations(getConversations());
+    markAllMessagesAsRead(convo.id);
+    setConversations(getConversations()); // Re-fetch conversations to update the UI immediately
   }
 
 
@@ -175,5 +169,3 @@ export default function MessagesPage() {
     </div>
   )
 }
-
-    
