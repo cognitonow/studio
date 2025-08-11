@@ -28,6 +28,11 @@ export function ServiceManagementCard() {
                 duration: typeof duration === 'number' ? duration : serviceToAdd.duration,
             };
             setProviderServices(prev => [...prev, newService]);
+            // Reset form
+            setSelectedCategory('');
+            setSelectedServiceId('');
+            setPrice('');
+            setDuration('');
         }
     };
 
@@ -48,6 +53,14 @@ export function ServiceManagementCard() {
         }
     }
 
+    const handleCategoryChange = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+        // Reset service selection when category changes
+        setSelectedServiceId('');
+        setPrice('');
+        setDuration('');
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -60,7 +73,7 @@ export function ServiceManagementCard() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Category</Label>
-                            <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+                            <Select onValueChange={handleCategoryChange} value={selectedCategory}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
@@ -128,5 +141,3 @@ export function ServiceManagementCard() {
         </Card>
     );
 }
-
-    
