@@ -8,14 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, MessageCircle, Calendar, Send } from 'lucide-react';
+import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, Send } from 'lucide-react';
 import type { Metadata, ResolvingMetadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProviderChatHistory } from '@/components/provider-chat-history';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
  
 type Props = {
   params: { id: string }
