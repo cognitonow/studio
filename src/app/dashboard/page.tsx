@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -26,7 +27,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { BadgeSuggester } from '@/components/badge-suggester';
+import { BadgeProgress } from '@/components/badge-progress';
   
 
 export default function ProviderDashboardPage() {
@@ -273,7 +274,7 @@ export default function ProviderDashboardPage() {
                 </Card>
 
                 {/* Badge Suggester Card */}
-                <BadgeSuggester />
+                <BadgeProgress />
 
             </div>
             {/* Right Column */}
@@ -381,3 +382,5 @@ export default function ProviderDashboardPage() {
     </div>
   )
 }
+
+    
