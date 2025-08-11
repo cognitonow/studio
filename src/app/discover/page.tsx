@@ -58,17 +58,17 @@ function ExploreCarousel() {
             <div className="w-full max-w-md">
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-between items-center">
-                  <div className="flex gap-2">
-                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Save to list">
-                          <Heart className="h-6 w-6" />
+                  <div className="flex gap-4">
+                      <Button variant="outline" size="icon" className="rounded-full h-14 w-14" aria-label="Save to list">
+                          <Heart className="h-7 w-7" />
                       </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12" aria-label="Open chat">
-                          <MessageCircle className="h-6 w-6" />
+                      <Button variant="outline" size="icon" className="rounded-full h-14 w-14" aria-label="Open chat">
+                          <MessageCircle className="h-7 w-7" />
                       </Button>
                   </div>
-                  <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12">
+                  <Button asChild variant="outline" size="icon" className="rounded-full h-14 w-14">
                     <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                        <ChevronRight className="h-6 w-6" />
+                        <ChevronRight className="h-7 w-7" />
                     </Link>
                  </Button>
               </div>
