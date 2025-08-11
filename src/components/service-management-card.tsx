@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { List, PlusCircle, Trash2 } from 'lucide-react';
 import { services as allServices, serviceCategories, providerServices as initialProviderServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
+import { Textarea } from './ui/textarea';
 
 export function ServiceManagementCard() {
     const [providerServices, setProviderServices] = useState<Service[]>(initialProviderServices);
@@ -18,6 +19,7 @@ export function ServiceManagementCard() {
     const [selectedServiceId, setSelectedServiceId] = useState<string>('');
     const [price, setPrice] = useState<number | string>('');
     const [duration, setDuration] = useState<number | string>('');
+    const [description, setDescription] = useState<string>('');
 
     const handleAddService = () => {
         const serviceToAdd = allServices.find(s => s.id === selectedServiceId);
@@ -26,6 +28,7 @@ export function ServiceManagementCard() {
                 ...serviceToAdd,
                 price: typeof price === 'number' ? price : serviceToAdd.price,
                 duration: typeof duration === 'number' ? duration : serviceToAdd.duration,
+                description: description || serviceToAdd.description,
             };
             setProviderServices(prev => [...prev, newService]);
             // Reset form
@@ -33,6 +36,7 @@ export function ServiceManagementCard() {
             setSelectedServiceId('');
             setPrice('');
             setDuration('');
+            setDescription('');
         }
     };
 
@@ -50,6 +54,7 @@ export function ServiceManagementCard() {
         if (service) {
             setPrice(service.price);
             setDuration(service.duration);
+            setDescription(service.description);
         }
     }
 
@@ -59,6 +64,7 @@ export function ServiceManagementCard() {
         setSelectedServiceId('');
         setPrice('');
         setDuration('');
+        setDescription('');
     }
 
     return (
@@ -106,7 +112,11 @@ export function ServiceManagementCard() {
                             <Input id="duration" type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} />
                         </div>
                     </div>
-                     <Button onClick={handleAddService} disabled={!selectedServiceId}>
+                     <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter a description for the service." />
+                    </div>
+                     <Button onClick={handleAddService} disabled={!selectedServiceId} className="mt-2">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Service
                     </Button>
