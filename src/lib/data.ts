@@ -201,6 +201,9 @@ let bookings: Booking[] = [
     { id: "2", providerId: "2", provider: "Glow & Go Esthetics", serviceId: "facials-1", service: "Signature Facial", date: "2024-07-16T10:00:00.000Z", status: "Completed" },
     { id: "3", providerId: "1", provider: "Olivia's Nail Studio", serviceId: "nails-1", service: "Classic Manicure", date: "2024-08-18T11:00:00.000Z", status: "Confirmed" },
     { id: "4", providerId: "4", provider: "Bridal Beauty Co.", serviceId: "makeup-2", service: "Bridal Makeup", date: "2024-06-01T09:00:00.000Z", status: "Completed" },
+    { id: "5", providerId: '3', provider: 'Alex Ray', serviceId: 'hair-1', service: 'Balayage', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending' },
+    { id: "6", providerId: '3', provider: 'Taylor Swift', serviceId: 'makeup-2', service: 'Bridal Makeup', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
+
 ];
 
 export const getBookings = () => {
@@ -209,15 +212,28 @@ export const getBookings = () => {
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = bookings
-        .filter(b => new Date(b.date) < new Date() || b.status !== 'Confirmed')
+        .filter(b => new Date(b.date) < new Date() || ['Completed', 'Cancelled'].includes(b.status))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         
     return { upcoming, past };
 };
 
-export const addBooking = (booking: Omit<Booking, 'id'>) => {
+export const getProviderBookings = () => {
+    return bookings.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
+export const updateBookingStatus = (bookingId: string, status: Booking['status']) => {
+    const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+    if (bookingIndex !== -1) {
+        bookings[bookingIndex].status = status;
+    }
+};
+
+
+export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
+        status: 'Pending',
         ...booking,
     };
     bookings.push(newBooking);

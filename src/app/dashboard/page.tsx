@@ -1,3 +1,7 @@
+
+'use client'
+
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, DollarSign, Users, Award, Bell, CheckCircle, MessageSquare, XCircle } from "lucide-react"
@@ -12,13 +16,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-
-const bookings = [
-  { id: "1", client: "Alex Ray", service: "Balayage", date: "2024-08-15", status: "Confirmed" },
-  { id: "2", client: "Kate Winslet", service: "Signature Facial", date: "2024-08-16", status: "Completed" },
-  { id: "3", client: "Jordan Peele", service: "Classic Manicure", date: "2024-08-18", status: "Confirmed" },
-  { id: "4", client: "Taylor Swift", service: "Bridal Makeup", date: "2024-09-01", status: "Cancelled" },
-]
+import { getProviderBookings, updateBookingStatus } from '@/lib/data';
+import type { Booking } from '@/lib/types';
+import { format } from 'date-fns';
 
 const notifications = [
     {
@@ -78,13 +78,62 @@ const NotificationList = ({ items }: { items: typeof notifications }) => (
   );
 
 export default function ProviderDashboardPage() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    setBookings(getProviderBookings());
+  }, []);
+
+  const handleStatusChange = (bookingId: string, status: Booking['status']) => {
+    updateBookingStatus(bookingId, status);
+    setBookings(getProviderBookings());
+  };
+
+  const getStatusBadge = (status: Booking['status']) => {
+    switch (status) {
+      case 'Pending':
+        return <Badge variant="secondary">Pending</Badge>;
+      case 'Confirmed':
+        return <Badge className="bg-blue-500 text-white hover:bg-blue-600">Confirmed</Badge>;
+      case 'Completed':
+        return <Badge className="bg-green-500 text-white hover:bg-green-600">Completed</Badge>;
+      case 'Cancelled':
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  const getBookingActions = (booking: Booking) => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    
+    switch (booking.status) {
+      case 'Pending':
+        return (
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>
+            <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
+          </div>
+        );
+      case 'Confirmed':
+        if (bookingDate <= now) {
+          return <Button size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>;
+        }
+        return <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>;
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">Provider Dashboard</h1>
-      <Tabs defaultValue="stats" className="space-y-4">
+      <Tabs defaultValue="bookings" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="bookings">Booking Management</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
@@ -148,18 +197,20 @@ export default function ProviderDashboardPage() {
                     <TableHead>Service</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {bookings.map(booking => (
                     <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.client}</TableCell>
+                      <TableCell className="font-medium">{booking.provider}</TableCell>
                       <TableCell>{booking.service}</TableCell>
-                      <TableCell>{booking.date}</TableCell>
+                      <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
                       <TableCell>
-                        <Badge variant={booking.status === 'Cancelled' ? 'destructive' : booking.status === 'Completed' ? 'default' : 'secondary'}>
-                          {booking.status}
-                        </Badge>
+                        {getStatusBadge(booking.status)}
+                      </TableCell>
+                       <TableCell className="text-right">
+                        {getBookingActions(booking)}
                       </TableCell>
                     </TableRow>
                   ))}

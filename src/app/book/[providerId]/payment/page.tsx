@@ -51,10 +51,9 @@ export default function PaymentPage() {
         serviceId: service.id,
         service: service.name,
         date: date.toISOString(),
-        status: 'Confirmed'
     });
 
-    console.log('Booking confirmed!');
+    console.log('Booking request sent!');
     router.push('/bookings');
   };
   

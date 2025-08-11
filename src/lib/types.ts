@@ -67,7 +67,7 @@ export type Booking = {
     serviceId: string;
     service: string;
     date: string;
-    status: 'Confirmed' | 'Completed' | 'Cancelled';
+    status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 };
 
     
