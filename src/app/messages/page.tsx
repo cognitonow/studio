@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Sparkles } from "lucide-react"
+import { Search, Send, Sparkles, User } from "lucide-react"
 import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
 import { useState, useEffect, useCallback } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -20,12 +21,12 @@ export default function MessagesPage() {
   const fetchAndUpdateState = useCallback(() => {
     const convos = getConversations();
     setConversations(convos);
+    // console.log('Fetched conversations:', convos);
 
     if (activeConversation) {
         const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
         setActiveConversation(updatedActiveConvo);
     } else if (convos.length > 0) {
-        // Automatically select the first conversation with unread messages, or the very first one
         const initialConvo = convos.find(c => c.unread > 0) || convos[0];
         if (initialConvo) {
             handleConversationSelect(initialConvo);
@@ -34,11 +35,9 @@ export default function MessagesPage() {
   }, [activeConversation]); // Re-create this function if activeConversation changes
 
   useEffect(() => {
-    // Initial fetch
     fetchAndUpdateState();
     setMessages(getMessages());
     
-    // Set up polling to check for new messages
     const interval = setInterval(fetchAndUpdateState, 2000); 
 
     return () => clearInterval(interval);
@@ -47,11 +46,11 @@ export default function MessagesPage() {
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
-    // Mark messages as read in the data source
     markAllMessagesAsRead(convo.id);
-    // Re-fetch conversations to update the UI with the new 'read' status
     const updatedConvos = getConversations();
     setConversations(updatedConvos);
+    // console.log(`Selected conversation ${convo.id}. Unread: ${convo.unread}`);
+    // console.log('Updated conversations state:', updatedConvos);
   }
 
 
@@ -115,6 +114,14 @@ export default function MessagesPage() {
                     <div>
                         <p className="font-bold text-lg">{activeConversation.name}</p>
                     </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={`/provider/${activeConversation.providerId}`}>
+                            <User className="mr-2 h-4 w-4" />
+                            View Profile
+                        </Link>
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-6 overflow-hidden">

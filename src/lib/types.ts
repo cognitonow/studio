@@ -82,6 +82,7 @@ export type Notification = {
 
 export type Conversation = {
   id: number;
+  providerId: string;
   name: string;
   avatar: string;
   dataAiHint?: string;
