@@ -209,14 +209,14 @@ let bookings: Booking[] = [
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
 ];
 
-export let conversations: Conversation[] = [
+let conversations: Conversation[] = [
   { id: 1, name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0, online: true },
   { id: 2, name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2, online: false },
   { id: 3, name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0, online: false },
   { id: 4, name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0, online: true },
 ]
 
-export let messages: Message[] = [
+let messages: Message[] = [
     { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.' },
     { id: 2, conversationId: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
     { id: 3, conversationId: 2, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
@@ -394,6 +394,17 @@ export const markNotificationAsRead = (id: number) => {
 export const markAllNotificationsAsRead = () => {
     notifications.forEach(n => n.read = true);
 }
+
+export const getConversations = () => [...conversations];
+export const getMessages = () => [...messages];
+
+export const getUnreadMessageCount = () => {
+    return conversations.reduce((count, convo) => count + convo.unread, 0);
+};
+
+export const markAllMessagesAsRead = () => {
+    conversations.forEach(convo => convo.unread = 0);
+};
 
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);

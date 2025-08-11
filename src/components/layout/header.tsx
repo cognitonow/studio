@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import React, { useState, useEffect } from 'react';
-import { getNotifications } from '@/lib/data';
+import { getNotifications, getUnreadMessageCount } from '@/lib/data';
 
 type UserRole = 'guest' | 'client' | 'provider';
 
@@ -68,7 +68,7 @@ function getNavLinks(role: UserRole) {
 }
 
 
-const DesktopNavLinks = ({ role, hasUnreadNotifications }: { role: UserRole, hasUnreadNotifications: boolean }) => {
+const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean }) => {
     const { desktop } = getNavLinks(role);
 
     return (
@@ -77,6 +77,9 @@ const DesktopNavLinks = ({ role, hasUnreadNotifications }: { role: UserRole, has
                  <Link key={`${href}-${label}`} href={href} passHref>
                     <Button variant="outline" size="icon" className="rounded-full relative">
                         {label === 'Notifications' && hasUnreadNotifications && (
+                             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
+                        )}
+                        {label === 'Messages' && hasUnreadMessages && (
                              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
                         )}
                         <Icon className="h-5 w-5" />
@@ -107,17 +110,21 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 export function Header() {
   const [userRole, setUserRole] = useState<UserRole>('provider');
   const [hasUnread, setHasUnread] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
   useEffect(() => {
-    const checkUnread = () => {
+    const checkUnreads = () => {
         const notifications = getNotifications();
         setHasUnread(notifications.some(n => !n.read));
+
+        const unreadMessagesCount = getUnreadMessageCount();
+        setHasUnreadMessages(unreadMessagesCount > 0);
     };
 
-    checkUnread();
+    checkUnreads();
     
-    // Periodically check for new notifications as we don't have a real-time system
-    const interval = setInterval(checkUnread, 5000); 
+    // Periodically check for new updates as we don't have a real-time system
+    const interval = setInterval(checkUnreads, 5000); 
 
     return () => clearInterval(interval);
   }, []);
@@ -194,7 +201,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-                <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} />
+                <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />
             </nav>
         </div>
       </div>

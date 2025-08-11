@@ -7,11 +7,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Phone, Video } from "lucide-react"
-import { conversations, messages } from "@/lib/data"
-import { useState } from "react"
+import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
+import { useState, useEffect } from "react"
+import type { Conversation, Message } from "@/lib/types"
 
 export default function MessagesPage() {
-  const [activeConversation, setActiveConversation] = useState(conversations[1]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
+
+  useEffect(() => {
+    // Mark all as read when the page loads
+    markAllMessagesAsRead();
+    
+    const convos = getConversations();
+    const msgs = getMessages();
+    setConversations(convos);
+    setMessages(msgs);
+    if (convos.length > 0) {
+      setActiveConversation(convos[1] || convos[0]);
+    }
+  }, []);
+
+  if (!activeConversation) {
+    return (
+        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
+            <p className="text-muted-foreground">No conversations found.</p>
+        </div>
+    )
+  }
 
   return (
     <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)]">
@@ -42,7 +66,10 @@ export default function MessagesPage() {
                             <p className="font-semibold truncate">{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
-                        <div className="text-xs text-muted-foreground shrink-0">{convo.time}</div>
+                        <div className="flex flex-col items-end shrink-0 gap-1">
+                          <p className="text-xs text-muted-foreground">{convo.time}</p>
+                          {convo.unread > 0 && <span className="w-4 h-4 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>}
+                        </div>
                     </button>
                 ))}
               </div>
