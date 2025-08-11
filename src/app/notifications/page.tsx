@@ -5,12 +5,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Bell, CheckCircle, MessageSquare, XCircle } from "lucide-react"
-import { getNotifications } from '@/lib/data';
+import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/lib/data';
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const NotificationList = ({ items }: { items: Notification[] }) => {
+const NotificationList = ({ items, onItemClick }: { items: Notification[], onItemClick: (id: number) => void }) => {
     const getIcon = (icon: Notification['icon']) => {
         switch (icon) {
             case 'new-booking':
@@ -41,7 +41,12 @@ const NotificationList = ({ items }: { items: Notification[] }) => {
       {items.length > 0 ? items.map((notification) => {
         const isClickable = notification.bookingId || notification.icon === 'message';
         const Wrapper = isClickable ? Link : 'div';
-        const wrapperProps = isClickable ? { href: getNotificationLink(notification) } : {};
+        
+        const wrapperProps = isClickable ? { 
+            href: getNotificationLink(notification),
+            onClick: () => onItemClick(notification.id),
+        } : {};
+
 
         return (
             <Wrapper key={notification.id} {...wrapperProps} className="block">
@@ -79,8 +84,14 @@ export default function NotificationsPage() {
         setNotifications(getNotifications());
     }, []);
 
-    const markAllAsRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    const handleMarkAllAsRead = () => {
+        markAllNotificationsAsRead();
+        setNotifications(getNotifications());
+    }
+
+    const handleItemClick = (id: number) => {
+        markNotificationAsRead(id);
+        setNotifications(getNotifications());
     }
 
     return (
@@ -96,11 +107,11 @@ export default function NotificationsPage() {
                                 </CardTitle>
                                 <CardDescription>Stay up-to-date with your bookings and messages.</CardDescription>
                             </div>
-                            <Button variant="outline" size="sm" onClick={markAllAsRead}>Mark all as read</Button>
+                            <Button variant="outline" size="sm" onClick={handleMarkAllAsRead}>Mark all as read</Button>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <NotificationList items={notifications} />
+                        <NotificationList items={notifications} onItemClick={handleItemClick} />
                     </CardContent>
                 </Card>
             </div>

@@ -384,6 +384,17 @@ export const getNotifications = () => {
     return [...notifications];
 }
 
+export const markNotificationAsRead = (id: number) => {
+    const notification = notifications.find(n => n.id === id);
+    if (notification) {
+        notification.read = true;
+    }
+}
+
+export const markAllNotificationsAsRead = () => {
+    notifications.forEach(n => n.read = true);
+}
+
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getBookingById = (id: string) => bookings.find(b => b.id === id);
