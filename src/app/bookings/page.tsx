@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 const upcomingBookings = [
   { id: "1", provider: "Chloe's Hair Haven", service: "Balayage", date: "2024-08-15", status: "Confirmed" },
@@ -57,7 +58,9 @@ export default function ClientBookingsPage() {
                         <Badge variant="secondary">{booking.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                          <Button variant="outline" size="sm">Manage</Button>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                          </Button>
                       </TableCell>
                     </TableRow>
                   ))}
