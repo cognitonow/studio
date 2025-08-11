@@ -12,6 +12,8 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, AlertTriangle, Save } from 'lucide-react';
 import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Mock data - in a real app, this would be fetched from a database
 const mockBooking = {
@@ -20,6 +22,11 @@ const mockBooking = {
   serviceIds: ["hair-22"],
   date: new Date("2024-08-15T14:00:00"),
 };
+
+const availableTimes = [
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
+];
 
 export default function ManageBookingPage() {
   const params = useParams();
@@ -38,6 +45,15 @@ export default function ManageBookingPage() {
   if (!booking || !provider) {
     notFound();
   }
+  
+  const handleTimeSelect = (time: string) => {
+    if (selectedDate) {
+      const [hours, minutes] = time.split(':').map(Number);
+      const newDate = new Date(selectedDate);
+      newDate.setHours(hours, minutes, 0, 0);
+      setSelectedDate(newDate);
+    }
+  };
 
   const handleAddService = (service: Service) => {
     if (!bookedServices.find(s => s.id === service.id)) {
@@ -125,7 +141,7 @@ export default function ManageBookingPage() {
                 <CardTitle>Amend Date & Time</CardTitle>
                 <CardDescription>Select a new time for your appointment.</CardDescription>
               </CardHeader>
-              <CardContent className="flex justify-center">
+              <CardContent className="flex flex-col items-center gap-4">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -133,6 +149,26 @@ export default function ManageBookingPage() {
                   className="rounded-md border"
                   disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                 />
+                <div className="w-full max-w-sm space-y-2">
+                    <Label htmlFor="time" className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>Appointment Time</span>
+                    </Label>
+                    <Select 
+                        onValueChange={handleTimeSelect}
+                        value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
+                        disabled={!selectedDate}
+                    >
+                        <SelectTrigger id="time">
+                            <SelectValue placeholder="Select a time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableTimes.map(time => (
+                                <SelectItem key={time} value={time}>{time}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
               </CardContent>
             </Card>
 
