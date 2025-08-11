@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useSearchParams } from 'next/navigation';
@@ -9,8 +10,22 @@ import { Calendar } from '@/components/ui/calendar';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Clock } from 'lucide-react';
 import { Chat } from '@/components/chat';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const availableTimes = [
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
+];
+
+// Helper to format time to AM/PM
+const formatToAmPm = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    return `${String(formattedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
+};
 
 export default function BookingPage({ params: { providerId } }: { params: { providerId: string } }) {
   const searchParams = useSearchParams();
@@ -24,6 +39,15 @@ export default function BookingPage({ params: { providerId } }: { params: { prov
   if (!provider || !service) {
     notFound();
   }
+
+  const handleTimeSelect = (time: string) => {
+    if (date) {
+      const [hours, minutes] = time.split(':').map(Number);
+      const newDate = new Date(date);
+      newDate.setHours(hours, minutes, 0, 0);
+      setDate(newDate);
+    }
+  };
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -40,6 +64,11 @@ export default function BookingPage({ params: { providerId } }: { params: { prov
                 <p className="font-bold text-2xl mb-2">${service.price}</p>
                 <p className="text-muted-foreground">{service.duration} minutes</p>
                 <p className="mt-4">{service.description}</p>
+                 {date && (
+                    <p className="mt-4 font-semibold">
+                        Selected: {date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                    </p>
+                )}
               </CardContent>
             </Card>
 
@@ -48,12 +77,35 @@ export default function BookingPage({ params: { providerId } }: { params: { prov
                 <CardTitle className="font-headline">Select Date & Time</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="rounded-md border"
-                />
+                 <div className="flex flex-col items-center gap-4">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      className="rounded-md border"
+                      disabled={(d) => d < new Date(new Date().setDate(new Date().getDate() - 1))}
+                    />
+                    <div className="w-full space-y-2">
+                        <Label htmlFor="time" className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            <span>Appointment Time</span>
+                        </Label>
+                        <Select 
+                            onValueChange={handleTimeSelect}
+                            value={date ? `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`: ''}
+                            disabled={!date}
+                        >
+                            <SelectTrigger id="time">
+                                <SelectValue placeholder="Select a time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableTimes.map(time => (
+                                    <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
               </CardContent>
             </Card>
           </div>
