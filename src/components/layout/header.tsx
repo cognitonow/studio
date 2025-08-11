@@ -1,104 +1,95 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, Bell, User } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, Sprout, MessageSquare, Bell, User, Search, List, Heart } from 'lucide-react';
 
 // TODO: Replace with actual authentication logic
 const userRole = 'client'; // 'provider' | 'guest'
 
-const CommonLinks = () => (
-  <>
-    <Link href="/discover" className="transition-colors hover:text-primary text-foreground">Discover</Link>
-  </>
-)
+const navLinks = {
+  common: [
+    { href: '/discover', label: 'Discover', icon: Search },
+  ],
+  guest: [
+    { href: '/signup', label: 'Sign Up', isButton: true },
+  ],
+  client: [
+    { href: '/my-lists', label: 'My Lists', icon: Heart },
+    { href: '/bookings', label: 'Bookings', icon: Bell },
+    { href: '/account', label: 'Account', icon: User },
+  ],
+  provider: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/messages', label: 'Messages', icon: MessageSquare },
+    { href: '/notifications', label: 'Notifications', icon: Bell },
+    { href: '/account', label: 'Account', icon: User },
+  ],
+};
 
-const GuestLinks = () => (
-  <>
-    <Button asChild>
-      <Link href="/signup">Sign Up</Link>
-    </Button>
-  </>
-);
+const DesktopNavLinks = () => {
+    const links = [
+        ...navLinks.common,
+        ...(userRole === 'client' ? navLinks.client : []),
+        ...(userRole === 'provider' ? navLinks.provider : []),
+        ...(userRole === 'guest' ? navLinks.guest : []),
+    ];
 
-const ClientLinks = () => (
-    <>
-      <Button variant="outline" size="icon" className="rounded-full" asChild>
-        <Link href="/my-lists">
-          <MessageSquare className="h-5 w-5" />
-          <span className="sr-only">My Lists</span>
-        </Link>
-      </Button>
-       <Button variant="outline" size="icon" className="rounded-full" asChild>
-        <Link href="/bookings">
-          <Bell className="h-5 w-5" />
-          <span className="sr-only">My Bookings</span>
-        </Link>
-      </Button>
-      <Button variant="outline" size="icon" className="rounded-full" asChild>
-        <Link href="/account">
-          <User className="h-5 w-5" />
-          <span className="sr-only">Account</span>
-        </Link>
-      </Button>
-    </>
-  );
-
-const ProviderLinks = () => (
-  <>
-    <Link href="/dashboard" className="transition-colors hover:text-primary text-foreground">Dashboard</Link>
-    <Button variant="outline" size="icon" className="rounded-full" asChild>
-        <Link href="/messages">
-          <MessageSquare className="h-5 w-5" />
-          <span className="sr-only">Messages</span>
-        </Link>
-    </Button>
-    <Button variant="outline" size="icon" className="rounded-full" asChild>
-        <Link href="/notifications">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
-        </Link>
-    </Button>
-    <Button variant="outline" size="icon" className="rounded-full" asChild>
-      <Link href="/account">
-        <User className="h-5 w-5" />
-        <span className="sr-only">Account</span>
-      </Link>
-    </Button>
-  </>
-);
+    return (
+        <>
+            {links.map(({ href, label, icon: Icon, isButton }) => {
+                if (isButton) {
+                    return (
+                        <Button key={href} asChild>
+                            <Link href={href}>{label}</Link>
+                        </Button>
+                    );
+                }
+                if (Icon) {
+                    return (
+                        <Button key={href} variant="outline" size="icon" className="rounded-full" asChild>
+                           <Link href={href}>
+                                <Icon className="h-5 w-5" />
+                                <span className="sr-only">{label}</span>
+                            </Link>
+                        </Button>
+                    );
+                }
+                return (
+                    <Link key={href} href={href} className="transition-colors hover:text-primary text-foreground font-medium">
+                        {label}
+                    </Link>
+                );
+            })}
+        </>
+    );
+};
 
 
-const MobileCommonLinks = () => (
-    <>
-      <Link href="/discover" className="text-foreground transition-colors hover:text-primary">Discover</Link>
-    </>
-  )
+const MobileNavLinks = () => {
+    const links = [
+        ...navLinks.common,
+        ...(userRole === 'client' ? navLinks.client : []),
+        ...(userRole === 'provider' ? navLinks.provider : []),
+    ];
 
-const MobileGuestLinks = () => (
-    <div className="mt-4">
-        <Button asChild className="w-full">
-            <Link href="/signup">Sign Up</Link>
-        </Button>
-    </div>
-);
-
-const MobileClientLinks = () => (
-    <>
-      <Link href="/my-lists" className="text-foreground transition-colors hover:text-primary">My Lists</Link>
-      <Link href="/bookings" className="text-foreground transition-colors hover:text-primary">My Bookings</Link>
-      <Link href="/account" className="text-foreground transition-colors hover:text-primary">Account</Link>
-    </>
-  );
-
-const MobileProviderLinks = () => (
-    <>
-        <Link href="/dashboard" className="text-foreground transition-colors hover:text-primary">Dashboard</Link>
-        <Link href="/messages" className="text-foreground transition-colors hover:text-primary">Messages</Link>
-        <Link href="/notifications" className="text-foreground transition-colors hover:text-primary">Notifications</Link>
-        <Link href="/account" className="text-foreground transition-colors hover:text-primary">Account</Link>
-    </>
-);
+    return (
+        <div className="flex flex-col space-y-3">
+            {links.map(({ href, label }) => (
+                <Link key={href} href={href} className="text-foreground transition-colors hover:text-primary">
+                    {label}
+                </Link>
+            ))}
+            {userRole === 'guest' && (
+                <div className="mt-4 pt-4 border-t">
+                    <Button asChild className="w-full">
+                        <Link href="/signup">Sign Up</Link>
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+};
 
 
 export function Header() {
@@ -110,12 +101,9 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg">Beauty Book</span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <CommonLinks />
-          </nav>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Trigger */}
         <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
@@ -125,28 +113,24 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="pr-0">
+                 <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+                </SheetHeader>
                 <Link href="/" className="mr-6 flex items-center space-x-2 p-4">
                   <Sprout className="h-6 w-6 text-primary" />
                   <span className="font-bold text-lg">Beauty Book</span>
                 </Link>
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                  <div className="flex flex-col space-y-3">
-                    <MobileCommonLinks />
-                    <div className="flex flex-col space-y-3 pt-6 border-t">
-                        {userRole === 'guest' && <MobileGuestLinks />}
-                        {userRole === 'client' && <MobileClientLinks />}
-                        {userRole === 'provider' && <MobileProviderLinks />}
-                    </div>
-                  </div>
+                  <MobileNavLinks />
                 </div>
               </SheetContent>
             </Sheet>
           </div>
         
         <div className="flex flex-1 items-center justify-end space-x-2">
-            {userRole === 'guest' && <GuestLinks />}
-            {userRole === 'client' && <ClientLinks />}
-            {userRole === 'provider' && <ProviderLinks />}
+            <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
+                <DesktopNavLinks />
+            </nav>
         </div>
       </div>
     </header>
