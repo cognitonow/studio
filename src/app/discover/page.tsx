@@ -66,8 +66,9 @@ function ExploreStack() {
     // Invert the stacking: top card (offset 0) is smallest, bottom cards (offset > 0) are larger.
     const scale = 1 - offset * 0.05;
     const translateY = offset * -40;
+    const translateX = offset * -20;
     
-    let transform = `translateY(${translateY}px) scale(${scale})`;
+    let transform = `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`;
     let opacity = 1;
     let zIndex = providers.length - offset; // Higher offset (further back) gets lower z-index
 
@@ -83,7 +84,7 @@ function ExploreStack() {
         } else if (direction === 'up') {
             transform = 'translateY(-100%) rotate(0deg) scale(0.9)';
         } else {
-            transform = `translateY(${translateY}px) scale(${scale})`;
+            transform = `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`;
         }
     }
 
