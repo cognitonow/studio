@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState } from 'react';
@@ -17,7 +18,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectGroup, SelectLabel } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectGroup } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -135,11 +136,12 @@ export default function DiscoverPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {selectedCategory ? (
-                            <>
+                            <SelectGroup>
+                               <SelectItem value={selectedCategory} className="font-bold text-primary">{serviceCategories.find(c => c.id === selectedCategory)?.name}</SelectItem>
                               {filteredServices.map(service => (
-                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
                               ))}
-                            </>
+                            </SelectGroup>
                           ) : (
                             allServicesGrouped.map(group => (
                               group.services.length > 0 && (
