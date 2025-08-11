@@ -1,7 +1,9 @@
 
 
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification } from './types';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
+import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
+import { messages as chatMessages, conversations } from '@/app/messages/page';
 
 
 export const serviceCategories: ServiceCategory[] = [
@@ -270,7 +272,7 @@ const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'
     notifications.unshift(newNotification);
 };
 
-export const updateBookingStatus = (bookingId: string, status: Booking['status']) => {
+export const updateBookingStatus = async (bookingId: string, status: Booking['status']) => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
         const booking = bookings[bookingIndex];
@@ -284,11 +286,38 @@ export const updateBookingStatus = (bookingId: string, status: Booking['status']
                     description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`
                 });
             } else if (status === 'Confirmed') {
-                 addNotification({
+                addNotification({
                     icon: 'confirmation',
                     title: 'Booking Confirmed!',
                     description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`
                 });
+                
+                // Draft and "send" confirmation message
+                const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
+                const bookingDateTime = format(new Date(booking.date), "PPP p");
+
+                try {
+                    const confirmation = await draftBookingConfirmation({
+                        clientName: booking.clientName || 'Valued Client',
+                        providerName: booking.providerName,
+                        serviceName: serviceNames,
+                        bookingDate: bookingDateTime,
+                    });
+
+                    // In a real app, this would be sent via a messaging service.
+                    // For now, we'll add it to our mock data.
+                    const conversation = conversations.find(c => c.name === booking.providerName);
+                    if (conversation) {
+                         chatMessages.push({
+                            id: chatMessages.length + 1,
+                            sender: 'provider',
+                            text: confirmation.message,
+                        });
+                        conversation.lastMessage = confirmation.message;
+                    }
+                } catch (e) {
+                    console.error("Failed to draft confirmation message:", e);
+                }
             }
         }
     }

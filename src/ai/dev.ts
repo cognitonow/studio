@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/suggest-skill-badges.ts';
 import '@/ai/flows/draft-chat-response.ts';
+import '@/ai/flows/draft-booking-confirmation.ts';

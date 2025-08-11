@@ -107,15 +107,18 @@ export default function ProviderDashboardPage() {
     switch (booking.status) {
       case 'Pending':
         actions.push(
-             <Button key="manage" size="sm" variant="outline" asChild>
+            <Button key="manage" size="sm" variant="outline" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
             </Button>,
-            <Button key="confirm" size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>,
+            <Button key="confirm" size="sm" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>,
             <Button key="cancel" size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
         );
         break;
       case 'Confirmed':
         if (bookingDate <= now) {
+            actions.push(<Button key="manage" size="sm" variant="outline" asChild>
+                <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+            </Button>);
             actions.push(<Button key="complete" size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
         }
         
