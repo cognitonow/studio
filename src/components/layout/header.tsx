@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 // TODO: Replace with actual authentication logic
-const userRole = 'guest'; // 'provider' | 'guest' | 'client'
+const userRole = 'client'; // 'provider' | 'guest' | 'client'
 
 function getNavLinks(role: string) {
     const navConfig = {
