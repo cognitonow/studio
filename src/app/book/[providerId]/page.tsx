@@ -13,10 +13,11 @@ import { CreditCard } from 'lucide-react';
 import { Chat } from '@/components/chat';
 
 export default function BookingPage({ params }: { params: { providerId: string } }) {
+  const { providerId } = params;
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('service');
   
-  const provider = getProviderById(params.providerId);
+  const provider = getProviderById(providerId);
   const service = allServices.find(s => s.id === serviceId);
 
   const [date, setDate] = useState<Date | undefined>(new Date());
