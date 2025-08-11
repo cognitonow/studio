@@ -3,7 +3,7 @@
 'use client'
 
 import { useState } from 'react';
-import { playlists, providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts } from '@/lib/data';
+import { providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts } from '@/lib/data';
 import { ProviderCard } from '@/components/provider-card';
 import {
   Carousel,
@@ -85,7 +85,7 @@ export default function DiscoverPage() {
               Select a category or use advanced search to find providers.
             </p>
           </div>
-          <div className="grid lg:grid-cols-3 gap-8 items-center">
+          <div className="grid lg:grid-cols-3 gap-8 items-start">
             {/* Advanced Search */}
             <div className="lg:col-span-1">
               <Card>
@@ -201,7 +201,7 @@ export default function DiscoverPage() {
                       <div
                         key={category.id}
                         onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
-                        className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
+                        className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30 text-center"
                         style={{
                           left: `calc(50% + ${x}px)`,
                           top: `calc(50% + ${y}px)`,
