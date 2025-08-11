@@ -31,6 +31,7 @@ import * as React from 'react';
 function ExploreCarousel() {
   const [api, setApi] = React.useState<ReturnType<typeof useCarousel>[1]>();
   const [current, setCurrent] = React.useState(0);
+  const { scrollNext } = useCarousel()
 
   React.useEffect(() => {
     if (!api) {
@@ -59,16 +60,16 @@ function ExploreCarousel() {
               <ExploreProviderCard provider={provider} />
               <div className="p-6 pt-4 flex justify-center items-center">
                   <div className="flex justify-center items-center gap-6">
-                      <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Save to list">
-                          <Heart className="h-80 w-80 fill-primary text-primary" />
+                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md" aria-label="Save to list">
+                          <Heart className="h-6 w-6 fill-primary text-primary" />
                       </Button>
-                       <Button asChild variant="outline" size="icon" className="rounded-full h-28 w-28">
+                       <Button asChild variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md">
                         <Link href={`/provider/${provider.id}`} aria-label="View profile">
-                            <User className="h-80 w-80 text-primary" />
+                            <User className="h-6 w-6 text-primary" />
                         </Link>
                      </Button>
-                      <Button variant="outline" size="icon" className="rounded-full h-28 w-28" aria-label="Open chat">
-                          <MessageCircle className="h-80 w-80 fill-primary text-primary" />
+                      <Button variant="outline" size="icon" className="rounded-full h-12 w-12 shadow-md" aria-label="Open chat">
+                          <MessageCircle className="h-6 w-6 fill-primary text-primary" />
                       </Button>
                   </div>
               </div>
