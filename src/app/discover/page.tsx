@@ -151,97 +151,99 @@ export default function DiscoverPage() {
                       <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 pb-8">
-                      <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Select value={selectedCategory} onValueChange={handleCategorySelect}>
-                          <SelectTrigger id="category">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {serviceCategories.map(cat => (
-                              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                            ))}
-                            <SelectSeparator />
-                            <SelectItem value="all">All</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="service" className="flex items-center">
-                          <span>Service</span>
-                          {selectedCategory && (
-                            <span className="ml-2 text-xs text-muted-foreground font-normal">
-                              - {serviceCategories.find(c => c.id === selectedCategory)?.name}
-                            </span>
-                          )}
-                        </Label>
-                        <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory && !allServicesGrouped.length}>
-                            <SelectTrigger id="service">
-                              <SelectValue placeholder="Select a service" />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="category">Category</Label>
+                          <Select value={selectedCategory} onValueChange={handleCategorySelect}>
+                            <SelectTrigger id="category">
+                              <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
                             <SelectContent>
-                              {selectedCategory ? (
-                                <SelectGroup>
-                                  <SelectItem value={selectedCategory} className="font-bold text-primary">{serviceCategories.find(c => c.id === selectedCategory)?.name}</SelectItem>
-                                  {filteredServices.map(service => (
-                                    <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              ) : (
-                                allServicesGrouped.map(group => (
-                                  group.services.length > 0 && (
-                                    <SelectGroup key={`group-${group.id}`}>
-                                      <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
-                                      {group.services.map(service => (
-                                        <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
-                                      ))}
-                                    </SelectGroup>
-                                  )
-                                ))
-                              )}
+                              {serviceCategories.map(cat => (
+                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                              ))}
                               <SelectSeparator />
                               <SelectItem value="all">All</SelectItem>
                             </SelectContent>
                           </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between">
-                              <span>{getSelectedLocationsText()}</span>
-                              <ChevronDown className="h-4 w-4 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64">
-                            <DropdownMenuLabel>Dublin Districts</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {dublinDistricts.map(district => (
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="service" className="flex items-center">
+                            <span>Service</span>
+                            {selectedCategory && (
+                              <span className="ml-2 text-xs text-muted-foreground font-normal">
+                                - {serviceCategories.find(c => c.id === selectedCategory)?.name}
+                              </span>
+                            )}
+                          </Label>
+                          <Select value={selectedService} onValueChange={setSelectedService} disabled={!selectedCategory && !allServicesGrouped.length}>
+                              <SelectTrigger id="service">
+                                <SelectValue placeholder="Select a service" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {selectedCategory ? (
+                                  <SelectGroup>
+                                    <SelectItem value={selectedCategory} className="font-bold text-primary">{serviceCategories.find(c => c.id === selectedCategory)?.name}</SelectItem>
+                                    {filteredServices.map(service => (
+                                      <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                ) : (
+                                  allServicesGrouped.map(group => (
+                                    group.services.length > 0 && (
+                                      <SelectGroup key={`group-${group.id}`}>
+                                        <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
+                                        {group.services.map(service => (
+                                          <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
+                                        ))}
+                                      </SelectGroup>
+                                    )
+                                  ))
+                                )}
+                                <SelectSeparator />
+                                <SelectItem value="all">All</SelectItem>
+                              </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="location">Location</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between">
+                                <span>{getSelectedLocationsText()}</span>
+                                <ChevronDown className="h-4 w-4 opacity-50" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-64">
+                              <DropdownMenuLabel>Dublin Districts</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              {dublinDistricts.map(district => (
+                                <DropdownMenuCheckboxItem
+                                  key={district.id}
+                                  checked={selectedLocations.has(district.id)}
+                                  onSelect={(e) => e.preventDefault()} // prevent menu from closing
+                                  onPointerDown={() => handleLocationSelect(district.id)}
+                                >
+                                  {district.name}
+                                </DropdownMenuCheckboxItem>
+                              ))}
+                              <DropdownMenuSeparator />
                               <DropdownMenuCheckboxItem
-                                key={district.id}
-                                checked={selectedLocations.has(district.id)}
-                                onSelect={(e) => e.preventDefault()} // prevent menu from closing
-                                onPointerDown={() => handleLocationSelect(district.id)}
-                              >
-                                {district.name}
-                              </DropdownMenuCheckboxItem>
-                            ))}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuCheckboxItem
-                                onSelect={(e) => {
-                                    e.preventDefault();
-                                    if (selectedLocations.size === dublinDistricts.length) {
-                                        setSelectedLocations(new Set());
-                                    } else {
-                                        setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
-                                    }
-                                }}
-                                checked={selectedLocations.size === dublinDistricts.length}
-                              >
-                                All Districts
-                              </DropdownMenuCheckboxItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                                  onSelect={(e) => {
+                                      e.preventDefault();
+                                      if (selectedLocations.size === dublinDistricts.length) {
+                                          setSelectedLocations(new Set());
+                                      } else {
+                                          setSelectedLocations(new Set(dublinDistricts.map(d => d.id)));
+                                      }
+                                  }}
+                                  checked={selectedLocations.size === dublinDistricts.length}
+                                >
+                                  All Districts
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                       <Button className="w-full">
                         <Search className="mr-2 h-4 w-4" />
