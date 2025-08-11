@@ -70,11 +70,11 @@ export default function ManageBookingPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4 text-sm">
                   <CalendarIcon className="w-5 h-5 text-muted-foreground" />
-                  <span>{selectedDate ? selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'No date selected'}</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm">
-                  <Clock className="w-5 h-5 text-muted-foreground" />
-                  <span>{selectedDate ? selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'No time selected'}</span>
+                  <span>
+                    {selectedDate 
+                      ? `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
+                      : 'No date selected'}
+                  </span>
                 </div>
               </CardContent>
             </Card>
