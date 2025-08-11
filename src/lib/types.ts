@@ -97,4 +97,5 @@ export type Message = {
   sender: 'user' | 'provider';
   text: string;
   isAi?: boolean;
+  bookingId?: string;
 };

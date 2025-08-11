@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Sparkles, User } from "lucide-react"
+import { Search, Send, Sparkles, User, Phone, Video } from "lucide-react"
 import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
 import { useState, useEffect, useCallback } from "react"
 import type { Conversation, Message } from "@/lib/types"
@@ -21,7 +21,6 @@ export default function MessagesPage() {
   const fetchAndUpdateState = useCallback(() => {
     const convos = getConversations();
     setConversations(convos);
-    // console.log('Fetched conversations:', convos);
 
     if (activeConversation) {
         const updatedActiveConvo = convos.find(c => c.id === activeConversation.id);
@@ -47,10 +46,7 @@ export default function MessagesPage() {
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     markAllMessagesAsRead(convo.id);
-    const updatedConvos = getConversations();
-    setConversations(updatedConvos);
-    // console.log(`Selected conversation ${convo.id}. Unread: ${convo.unread}`);
-    // console.log('Updated conversations state:', updatedConvos);
+    setConversations(getConversations()); // Force re-render
   }
 
 
@@ -80,12 +76,10 @@ export default function MessagesPage() {
               <div className="space-y-1">
                 {conversations.map(convo => (
                     <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
-                        <div className="relative">
-                            <Avatar className="w-12 h-12">
-                                <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
-                                <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                        </div>
+                        <Avatar className="w-12 h-12">
+                            <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
+                            <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <div className="flex-grow overflow-hidden">
                             <p className={cn("truncate", convo.unread > 0 ? 'font-bold text-primary' : 'font-semibold')}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
@@ -127,37 +121,45 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {messages.filter(m => m.conversationId === activeConversation.id).map((message) => (
-                            <div key={message.id} className={cn("flex items-end gap-3", message.sender === 'user' ? 'justify-end' : '')}>
-                                {message.sender === 'provider' && (
-                                    <Avatar className="w-8 h-8">
-                                        <AvatarImage src={activeConversation.avatar} data-ai-hint={activeConversation.dataAiHint} />
-                                        <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                )}
-                                <div className="flex flex-col gap-1">
-                                    <div className={cn(
-                                        "rounded-lg px-4 py-2 max-w-[70%]",
-                                        message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted',
-                                        message.isAi && 'bg-purple-100 dark:bg-purple-900/50'
-                                        )}>
-                                        <p className="text-sm">{message.text}</p>
+                        {messages.filter(m => m.conversationId === activeConversation.id).map((message) => {
+                            const MessageWrapper = message.isAi && message.bookingId ? Link : 'div';
+                            const wrapperProps = message.isAi && message.bookingId ? { href: `/booking/manage/${message.bookingId}` } : {};
+
+                            return (
+                                <div key={message.id} className={cn("flex items-end gap-3", message.sender === 'user' ? 'justify-end' : '')}>
+                                    {message.sender === 'provider' && (
+                                        <Avatar className="w-8 h-8">
+                                            <AvatarImage src={activeConversation.avatar} data-ai-hint={activeConversation.dataAiHint} />
+                                            <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                    )}
+                                    <div className="flex flex-col gap-1">
+                                        <MessageWrapper {...wrapperProps}>
+                                            <div className={cn(
+                                                "rounded-lg px-4 py-2 max-w-[70%]",
+                                                message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted',
+                                                message.isAi && 'bg-purple-100 dark:bg-purple-900/50',
+                                                message.isAi && message.bookingId && 'hover:bg-purple-200 dark:hover:bg-purple-900/70 cursor-pointer'
+                                            )}>
+                                                <p className="text-sm">{message.text}</p>
+                                            </div>
+                                        </MessageWrapper>
+                                        {message.isAi && (
+                                            <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
+                                                <Sparkles className="w-3 h-3" />
+                                                <span>Sent by AI Assistant</span>
+                                            </div>
+                                        )}
                                     </div>
-                                    {message.isAi && (
-                                        <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
-                                            <Sparkles className="w-3 h-3" />
-                                            <span>Sent by AI Assistant</span>
-                                        </div>
+                                    {message.sender === 'user' && (
+                                        <Avatar className="w-8 h-8">
+                                            <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
+                                            <AvatarFallback>U</AvatarFallback>
+                                        </Avatar>
                                     )}
                                 </div>
-                                {message.sender === 'user' && (
-                                    <Avatar className="w-8 h-8">
-                                        <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
-                                        <AvatarFallback>U</AvatarFallback>
-                                    </Avatar>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </ScrollArea>
             </CardContent>

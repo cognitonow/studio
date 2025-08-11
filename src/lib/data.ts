@@ -217,7 +217,7 @@ let conversations: Conversation[] = [
 ]
 
 let messages: Message[] = [
-    { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.', isAi: true },
+    { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.', isAi: true, bookingId: '1' },
     { id: 2, conversationId: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
     { id: 3, conversationId: 2, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
     { id: 4, conversationId: 2, sender: 'user', text: "That's fantastic, thank you so much! "},
@@ -310,6 +310,7 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
                 sender: 'provider',
                 text: response.message,
                 isAi: true,
+                bookingId: booking.id,
             });
             conversation.lastMessage = response.message;
             conversation.time = 'Just now';
