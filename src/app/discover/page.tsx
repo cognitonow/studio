@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 export default function DiscoverPage() {
   const featuredProviders = getFeaturedProviders();
@@ -28,6 +29,11 @@ export default function DiscoverPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [selectedService, setSelectedService] = useState<string | undefined>();
   const [selectedLocations, setSelectedLocations] = useState<Set<string>>(new Set());
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setSelectedService(undefined);
+  }
 
   const filteredServices = selectedCategory ? allServices.filter(s => s.categoryId === selectedCategory) : [];
 
@@ -95,7 +101,7 @@ export default function DiscoverPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Select value={selectedCategory} onValueChange={(value) => { setSelectedCategory(value); setSelectedService(undefined); }}>
+                    <Select value={selectedCategory} onValueChange={handleCategorySelect}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
@@ -182,7 +188,7 @@ export default function DiscoverPage() {
             <div className="lg:col-span-2 flex justify-center items-center">
               <div className="relative w-[600px] h-[600px]">
                   {/* Dotted Circle */}
-                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full z-10"></div>
+                  <div className="absolute inset-0 border-2 border-dashed border-primary/50 rounded-full"></div>
 
                   {/* Central Image */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full overflow-hidden">
@@ -196,12 +202,17 @@ export default function DiscoverPage() {
 
                     const x = radius * Math.cos(angle);
                     const y = radius * Math.sin(angle);
+                    
+                    const isSelected = selectedCategory === category.id;
 
                     return (
                       <div
                         key={category.id}
-                        onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
-                        className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30 text-center"
+                        onClick={() => handleCategorySelect(category.id)}
+                        className={cn(
+                          "absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-all duration-300 z-20 text-center",
+                          isSelected && "bg-primary text-primary-foreground border-primary scale-110",
+                        )}
                         style={{
                           left: `calc(50% + ${x}px)`,
                           top: `calc(50% + ${y}px)`,
