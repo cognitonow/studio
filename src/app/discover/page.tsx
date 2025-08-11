@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState } from 'react';
@@ -92,10 +93,10 @@ export default function DiscoverPage() {
 
       {/* Tabs Section */}
       <section>
-        <Tabs defaultValue="featured">
+        <Tabs defaultValue="explore">
           <TabsList className="mb-6">
-            <TabsTrigger value="featured">Featured Providers</TabsTrigger>
             <TabsTrigger value="explore">Explore</TabsTrigger>
+            <TabsTrigger value="featured">Featured Providers</TabsTrigger>
           </TabsList>
           <TabsContent value="featured">
               <Carousel opts={{ align: 'start', loop: true }}>
@@ -111,11 +112,25 @@ export default function DiscoverPage() {
               </Carousel>
           </TabsContent>
           <TabsContent value="explore">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
-              {providers.map(provider => (
-                <ProviderCard key={provider.id} provider={provider} />
-              ))}
-            </div>
+             <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-xs mx-auto"
+            >
+              <CarouselContent>
+                {providers.map((provider) => (
+                  <CarouselItem key={provider.id}>
+                    <div className="p-1">
+                      <ProviderCard provider={provider} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </TabsContent>
         </Tabs>
       </section>
