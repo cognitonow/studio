@@ -193,48 +193,35 @@ export default function DiscoverPage() {
                     const angle = (index / currentServiceCategories.length) * 2 * Math.PI - (Math.PI / 2);
                     const radius = 300; // This should be half of the container's width/height
 
-                    const dotX = radius * Math.cos(angle);
-                    const dotY = radius * Math.sin(angle);
-
-                    const labelRadius = 290; // Slightly inside the main radius
-                    const labelX = labelRadius * Math.cos(angle);
-                    const labelY = labelRadius * Math.sin(angle);
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
                     
                     const isLeft = Math.cos(angle) < -0.1;
                     const isRight = Math.cos(angle) > 0.1;
 
                     let transform = 'translate(-50%, -50%)';
                     if (isLeft) {
-                      transform += ' translateX(-100%) translateX(-15px)';
+                      transform += ' translateX(-50%)';
                     } else if (isRight) {
-                      transform += ' translateX(15px)';
+                      transform += ' translateX(50%)';
                     } else { 
                       transform += ' translateX(-50%)';
                       if(Math.sin(angle) > 0) {
-                        transform += ' translateY(15px)';
+                        transform += ' translateY(50%)';
                       } else {
-                        transform += ' translateY(-15px)';
+                        transform += ' translateY(-50%)';
                       }
                     }
 
                     return (
                       <div key={category.id}>
-                         {/* Dot */}
-                         <div
-                            className="absolute w-5 h-5 bg-primary rounded-full z-20"
-                             style={{
-                              left: `calc(50% + ${dotX}px)`,
-                              top: `calc(50% + ${dotY}px)`,
-                              transform: 'translate(-50%, -50%)',
-                            }}
-                          />
                           {/* Label */}
                           <div
                             onClick={() => { setSelectedCategory(category.id); setSelectedService(undefined); }}
                             className="absolute cursor-pointer bg-background/80 backdrop-blur-sm p-2 px-4 rounded-full border border-border/50 font-semibold hover:text-primary hover:border-primary/80 transition-colors z-30"
                             style={{
-                              left: `calc(50% + ${labelX}px)`,
-                              top: `calc(50% + ${labelY}px)`,
+                              left: `calc(50% + ${x}px)`,
+                              top: `calc(50% + ${y}px)`,
                               transform,
                             }}
                           >
