@@ -209,6 +209,8 @@ let bookings: Booking[] = [
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
 ];
 
+export let providerServices: Service[] = providers[2].services;
+
 let conversations: Conversation[] = [
   { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0 },
   { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2 },
@@ -429,3 +431,5 @@ export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
+
+    

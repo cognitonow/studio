@@ -28,6 +28,7 @@ import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BadgeProgress } from '@/components/badge-progress';
+import { ServiceManagementCard } from '@/components/service-management-card';
   
 
 export default function ProviderDashboardPage() {
@@ -341,39 +342,7 @@ export default function ProviderDashboardPage() {
                 </Card>
                 
                  {/* Service Management */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
-                        <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Service</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {provider.services.map(service => (
-                                    <TableRow key={service.id}>
-                                        <TableCell className="font-medium">{service.name}</TableCell>
-                                        <TableCell>${service.price}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button variant="ghost" size="sm">Edit</Button>
-                                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">Delete</Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                        <Button className="mt-4">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Add New Service
-                        </Button>
-                    </CardContent>
-                </Card>
+                <ServiceManagementCard />
             </div>
           </div>
         </TabsContent>
@@ -382,5 +351,7 @@ export default function ProviderDashboardPage() {
     </div>
   )
 }
+
+    
 
     
