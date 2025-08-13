@@ -1,7 +1,9 @@
 
+'use client'
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProviderById, providers } from '@/lib/data';
+import { getProviderById, providers, isFavourite, toggleFavourite } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -9,49 +11,39 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, Send } from 'lucide-react';
-import type { Metadata, ResolvingMetadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProviderChatHistory } from '@/components/provider-chat-history';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
  
-type Props = {
-  params: { id: string }
-}
- 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { id } = params;
-  const provider = getProviderById(id)
- 
-  if (!provider) {
-    return {
-      title: 'Provider Not Found',
-    }
-  }
-
-  return {
-    title: `${provider.name} | Beauty Book`,
-    description: provider.bio,
-  }
-}
-
-export async function generateStaticParams() {
-  return providers.map((provider) => ({
-    id: provider.id,
-  }));
-}
-
 export default function ProviderDetailPage({ params: { id } }: { params: { id: string } }) {
   const provider = getProviderById(id);
+  const { toast } = useToast();
+  const [isFav, setIsFav] = useState(false);
+
+  useEffect(() => {
+    if (provider) {
+      setIsFav(isFavourite(provider.id));
+    }
+  }, [provider]);
 
   if (!provider) {
     notFound();
   }
   
+  const handleToggleFavourite = () => {
+    const wasFavourited = toggleFavourite(provider.id);
+    setIsFav(wasFavourited);
+    toast({
+        title: wasFavourited ? "Added to Favourites!" : "Removed from Favourites",
+        description: `${provider.name} has been ${wasFavourited ? 'added to' : 'removed from'} your favourites list.`,
+    });
+  }
+
   const bookingHistory = [
     { id: "1", service: "Balayage", date: "2024-07-16", status: "Completed", price: 180 },
     { id: "2", service: "Haircut", date: "2024-05-20", status: "Completed", price: 50 },
@@ -240,8 +232,9 @@ export default function ProviderDetailPage({ params: { id } }: { params: { id: s
                 ))}
               </Accordion>
               <div className="flex flex-col gap-2 mt-6">
-                <Button variant="secondary">
-                  <Heart className="w-4 h-4 mr-2"/> Save to Favourites
+                <Button variant="secondary" onClick={handleToggleFavourite}>
+                  <Heart className={cn("w-4 h-4 mr-2", isFav && "fill-primary text-primary")} /> 
+                  {isFav ? 'Saved to Favourites' : 'Save to Favourites'}
                 </Button>
                 <Button variant="outline">
                   <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider

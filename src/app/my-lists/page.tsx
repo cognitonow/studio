@@ -1,13 +1,23 @@
+
+'use client'
+
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { providers } from "@/lib/data"
+import { getExploreQueueProviders, getFavouriteProviders } from "@/lib/data"
 import { ProviderCard } from "@/components/provider-card"
 import { Heart, List } from "lucide-react"
-
-const exploreQueueProviders = providers.slice(0, 2);
-const favouriteProviders = providers.slice(2, 4);
+import type { Provider } from '@/lib/types';
 
 export default function MyListsPage() {
+  const [exploreQueueProviders, setExploreQueueProviders] = useState<Provider[]>([]);
+  const [favouriteProviders, setFavouriteProviders] = useState<Provider[]>([]);
+  
+  useEffect(() => {
+    setExploreQueueProviders(getExploreQueueProviders());
+    setFavouriteProviders(getFavouriteProviders());
+  }, []);
+
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">My Lists</h1>
