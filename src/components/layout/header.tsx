@@ -70,16 +70,21 @@ function getNavLinks(role: UserRole) {
 
 const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean }) => {
     const { desktop } = getNavLinks(role);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     return (
         <>
             {desktop.map(({ href, label, icon: Icon }) => (
                  <Link key={`${href}-${label}`} href={href} passHref>
                     <Button variant="outline" size="icon" className="rounded-full relative">
-                        {label === 'Notifications' && hasUnreadNotifications && (
+                        {isMounted && label === 'Notifications' && hasUnreadNotifications && (
                              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
                         )}
-                        {label === 'Messages' && hasUnreadMessages && (
+                        {isMounted && label === 'Messages' && hasUnreadMessages && (
                              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
                         )}
                         <Icon className="h-5 w-5" />
@@ -115,10 +120,6 @@ export function Header() {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
 
     const checkUnreads = () => {
         const notifications = getNotifications();
@@ -134,7 +135,7 @@ export function Header() {
     const interval = setInterval(checkUnreads, 5000); 
 
     return () => clearInterval(interval);
-  }, [isMounted]);
+  }, []);
 
   const roleLabels: Record<UserRole, string> = {
     guest: 'Guest View',
@@ -210,7 +211,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-              {isMounted && <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />}
+              <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />
             </nav>
         </div>
       </div>
