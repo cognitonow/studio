@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import React, { useState, useEffect } from 'react';
+import React, from 'react';
 import { getNotifications, getUnreadMessageCount } from '@/lib/data';
 
 type UserRole = 'guest' | 'client' | 'provider';
@@ -108,16 +108,16 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 
 export function Header() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [userRole, setUserRole] = useState<UserRole>('client');
-  const [hasUnread, setHasUnread] = useState(false);
-  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [userRole, setUserRole] = React.useState<UserRole>('client');
+  const [hasUnread, setHasUnread] = React.useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = React.useState(false);
   
-  useEffect(() => {
+  React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isMounted) {
       const checkUnreads = () => {
           const notifications = getNotifications();
@@ -209,7 +209,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-              <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} isMounted={isMounted} />
+              {isMounted && <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} isMounted={isMounted} />}
             </nav>
         </div>
       </div>
