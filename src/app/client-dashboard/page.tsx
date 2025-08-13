@@ -10,12 +10,19 @@ import { providers, getExploreQueueProviders } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
 import type { Provider } from "@/lib/types";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { format } from "date-fns"
 
-// Mock data consistent with client-snapshot
 const mockClientStats = {
     rating: 4.8,
     totalBookings: 5,
     averageSpend: 125.50,
+    previousBookings: [
+        { id: 'b1', service: 'Balayage', date: '2024-05-10', status: 'Completed' },
+        { id: 'b2', service: 'Haircut & Blowdry', date: '2024-02-20', status: 'Completed' },
+        { id: 'b3', service: 'Glaze Treatment', date: '2023-11-15', status: 'Completed' },
+    ]
 };
 
 export default function ClientDashboardPage() {
@@ -71,6 +78,25 @@ export default function ClientDashboardPage() {
                       <span className="text-muted-foreground">Average Spend</span>
                   </div>
               </div>
+            </div>
+            <div className="space-y-4">
+                <h4 className="font-semibold text-sm">Recent Activity</h4>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Service</TableHead>
+                            <TableHead>Date</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {mockClientStats.previousBookings.slice(0, 3).map(booking => (
+                            <TableRow key={booking.id}>
+                                <TableCell className="font-medium">{booking.service}</TableCell>
+                                <TableCell>{format(new Date(booking.date), 'dd MMM yyyy')}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </div>
             <Button asChild className="w-full">
                 <Link href="/bookings">
