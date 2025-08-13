@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import React, from 'react';
+import React from 'react';
 import { getNotifications, getUnreadMessageCount } from '@/lib/data';
 
 type UserRole = 'guest' | 'client' | 'provider';
@@ -59,7 +59,7 @@ function getNavLinks(role: UserRole) {
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/messages', label: 'Messages' },
                 { href: '/notifications', label: 'Notifications' },
-                { href: '/account', label: 'Account' },
+                { href: '/account', 'label': 'Account' },
             ]
         }
     };
@@ -149,38 +149,36 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          {isMounted && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-1">
-                      {roleLabels[userRole]}
-                      <ChevronDown className="h-4 w-4" />
-                  </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                  <DropdownMenuLabel>Switch View</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                   <DropdownMenuItem onClick={() => setUserRole('guest')}>
-                      <Link href="/" className="flex items-center w-full">
-                          <Globe className="mr-2 h-4 w-4"/>
-                          Guest View
-                      </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setUserRole('client')}>
-                      <Link href="/discover" className="flex items-center w-full">
-                          <Eye className="mr-2 h-4 w-4"/>
-                          Client View
-                      </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setUserRole('provider')}>
-                      <Link href="/dashboard" className="flex items-center w-full">
-                          <Briefcase className="mr-2 h-4 w-4"/>
-                          Provider View
-                      </Link>
-                  </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                    {isMounted ? roleLabels[userRole] : roleLabels['client']}
+                    <ChevronDown className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Switch View</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setUserRole('guest')}>
+                    <Link href="/" className="flex items-center w-full">
+                        <Globe className="mr-2 h-4 w-4"/>
+                        Guest View
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setUserRole('client')}>
+                    <Link href="/discover" className="flex items-center w-full">
+                        <Eye className="mr-2 h-4 w-4"/>
+                        Client View
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setUserRole('provider')}>
+                    <Link href="/dashboard" className="flex items-center w-full">
+                        <Briefcase className="mr-2 h-4 w-4"/>
+                        Provider View
+                    </Link>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Mobile Menu Trigger */}
