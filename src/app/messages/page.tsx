@@ -24,26 +24,21 @@ export default function MessagesPage() {
     setMessages(getMessages());
 
     if (convos.length > 0) {
-      // Select the first unread conversation or the first conversation overall
-      const initialConvo = convos.find(c => c.unread > 0) || convos[0];
-      if (initialConvo) {
-        handleConversationSelect(initialConvo);
-      }
+      // Set the first conversation as active without marking as read initially
+      setActiveConversation(convos.find(c => c.unread > 0) || convos[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
-    markAllMessagesAsRead(convo.id);
-    // Force a re-render by creating a new array from the latest data
-    setConversations([...getConversations()]);
+    if (convo.unread > 0) {
+      markAllMessagesAsRead(convo.id);
+      // Force a re-render by creating a new array from the latest data
+      setConversations([...getConversations()]);
+    }
   }
 
-  const currentActiveConversation = conversations.find(c => c.id === activeConversation?.id);
-
-
-  if (!currentActiveConversation) {
+  if (!activeConversation) {
     return (
         <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
             <p className="text-muted-foreground">Loading conversations...</p>
@@ -68,13 +63,13 @@ export default function MessagesPage() {
             <ScrollArea className="h-full">
               <div className="space-y-1">
                 {conversations.map(convo => (
-                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === currentActiveConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
+                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
                         <Avatar className="w-12 h-12">
                             <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
                             <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex-grow overflow-hidden">
-                            <p className={cn("truncate", convo.unread > 0 ? 'font-bold text-primary' : 'font-semibold')}>{convo.name}</p>
+                            <p className={cn("truncate font-semibold", convo.unread > 0 && 'font-bold text-primary')}>{convo.name}</p>
                             <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 gap-1">
@@ -95,16 +90,16 @@ export default function MessagesPage() {
             <CardHeader className="flex flex-row items-center justify-between border-b">
                 <div className="flex items-center gap-4">
                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={currentActiveConversation.avatar} alt={currentActiveConversation.name} data-ai-hint={currentActiveConversation.dataAiHint} />
-                        <AvatarFallback>{currentActiveConversation.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={activeConversation.avatar} alt={activeConversation.name} data-ai-hint={activeConversation.dataAiHint} />
+                        <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-bold text-lg">{currentActiveConversation.name}</p>
+                        <p className="font-bold text-lg">{activeConversation.name}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={`/provider/${currentActiveConversation.providerId}`}>
+                        <Link href={`/provider/${activeConversation.providerId}`}>
                             <User className="mr-2 h-4 w-4" />
                             View Profile
                         </Link>
@@ -114,7 +109,7 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {messages.filter(m => m.conversationId === currentActiveConversation.id).map((message) => {
+                        {messages.filter(m => m.conversationId === activeConversation.id).map((message) => {
                             const MessageWrapper = message.isAi && message.bookingId ? Link : 'div';
                             const wrapperProps = message.isAi && message.bookingId ? { href: `/booking/manage/${message.bookingId}` } : {};
 
@@ -122,8 +117,8 @@ export default function MessagesPage() {
                                 <div key={message.id} className={cn("flex items-end gap-3", message.sender === 'user' ? 'justify-end' : '')}>
                                     {message.sender === 'provider' && (
                                         <Avatar className="w-8 h-8">
-                                            <AvatarImage src={currentActiveConversation.avatar} data-ai-hint={currentActiveConversation.dataAiHint} />
-                                            <AvatarFallback>{currentActiveConversation.name.charAt(0)}</AvatarFallback>
+                                            <AvatarImage src={activeConversation.avatar} data-ai-hint={activeConversation.dataAiHint} />
+                                            <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                     )}
                                     <div className="flex flex-col gap-1">
