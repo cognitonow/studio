@@ -24,18 +24,20 @@ export default function MessagesPage() {
     setMessages(getMessages());
 
     if (convos.length > 0) {
+      // Select the first unread conversation or the first conversation overall
       const initialConvo = convos.find(c => c.unread > 0) || convos[0];
       if (initialConvo) {
-        handleConversationSelect(initialConvo, convos);
+        handleConversationSelect(initialConvo);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  const handleConversationSelect = (convo: Conversation, currentConversations?: Conversation[]) => {
+  const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     markAllMessagesAsRead(convo.id);
     // Force a re-render by creating a new array from the latest data
-    setConversations(currentConversations ? [...currentConversations] : [...getConversations()]);
+    setConversations([...getConversations()]);
   }
 
   const currentActiveConversation = conversations.find(c => c.id === activeConversation?.id);
