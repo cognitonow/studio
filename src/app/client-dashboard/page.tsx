@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
 import type { Provider } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 
 const mockClientStats = {
@@ -29,7 +28,7 @@ export default function ClientDashboardPage() {
   const favoriteProvider = providers[0];
   const favoriteProviderFirstService = favoriteProvider.services[0];
   
-  const [suggestedProvider, setSuggestedProvider] = useState<Provider | undefined>(providers[1]);
+  const [suggestedProvider, setSuggestedProvider] = useState<Provider | undefined>(undefined);
 
   useEffect(() => {
     const exploreQueue = getExploreQueueProviders();
