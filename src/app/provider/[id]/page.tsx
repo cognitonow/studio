@@ -3,8 +3,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProviderById, providers, isFavourite, toggleFavourite } from '@/lib/data';
-import { notFound } from 'next/navigation';
+import { getProviderById, isFavourite, toggleFavourite } from '@/lib/data';
+import { notFound, useParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
  
-export default function ProviderDetailPage({ params: { id } }: { params: { id: string } }) {
+export default function ProviderDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const provider = getProviderById(id);
   const { toast } = useToast();
   const [isFav, setIsFav] = useState(false);
