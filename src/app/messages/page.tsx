@@ -24,8 +24,7 @@ export default function MessagesPage() {
     setMessages(getMessages());
 
     if (convos.length > 0) {
-      // Set the first conversation as active without marking as read initially
-      setActiveConversation(convos.find(c => c.unread > 0) || convos[0]);
+      setActiveConversation(convos[0]);
     }
   }, []);
   
@@ -33,7 +32,6 @@ export default function MessagesPage() {
     setActiveConversation(convo);
     if (convo.unread > 0) {
       markAllMessagesAsRead(convo.id);
-      // Force a re-render by creating a new array from the latest data
       setConversations([...getConversations()]);
     }
   }

@@ -130,7 +130,7 @@ export function Header() {
 
     checkUnreads();
     
-    // Periodically check for new updates as we don't have a real-time system
+    // In a real app, this would be handled by a real-time system (e.g., WebSockets)
     const interval = setInterval(checkUnreads, 5000); 
 
     return () => clearInterval(interval);
@@ -202,7 +202,7 @@ export function Header() {
                   <span className="font-bold text-lg text-foreground">Beauty Book</span>
                 </Link>
                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                  <MobileNavLinks role={userRole} />
+                  {isMounted && <MobileNavLinks role={userRole} />}
                 </div>
               </SheetContent>
             </Sheet>
