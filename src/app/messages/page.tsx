@@ -46,7 +46,8 @@ export default function MessagesPage() {
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     markAllMessagesAsRead(convo.id);
-    setConversations(getConversations()); // Force re-render
+    // Create a new array to force re-render
+    setConversations([...getConversations()]);
   }
 
 
