@@ -66,7 +66,7 @@ export function Chat({ providerName }: ChatProps) {
                 <form onSubmit={handleSendMessage} className="mt-4 flex w-full items-center space-x-2">
                     <Input
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.targe.value)}
+                        onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type your message..."
                         className="flex-grow"
                     />
