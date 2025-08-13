@@ -49,19 +49,28 @@ export default function ClientDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 text-center">
-                 <div>
-                  <p className="text-4xl font-bold">{mockClientStats.rating.toFixed(1)}</p>
-                  <p className="text-sm text-muted-foreground">Avg. Rating</p>
-                </div>
-                <div>
-                  <p className="text-4xl font-bold">{mockClientStats.totalBookings}</p>
-                  <p className="text-sm text-muted-foreground">Total Bookings</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-4xl font-bold">${mockClientStats.averageSpend.toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground">Average Spend</p>
-                </div>
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16">
+                  <AvatarImage src="https://placehold.co/100x100.png" alt="Your Avatar" data-ai-hint="person face" />
+                  <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <div className="grid gap-2 text-sm">
+                  <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-muted-foreground"/>
+                      <span className="font-semibold">{mockClientStats.rating.toFixed(1)}</span>
+                      <span className="text-muted-foreground">Client Rating</span>
+                  </div>
+                   <div className="flex items-center gap-2">
+                      <Repeat className="w-4 h-4 text-muted-foreground"/>
+                      <span className="font-semibold">{mockClientStats.totalBookings}</span>
+                      <span className="text-muted-foreground">Total Bookings</span>
+                  </div>
+                   <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-muted-foreground"/>
+                      <span className="font-semibold">${mockClientStats.averageSpend.toFixed(2)}</span>
+                      <span className="text-muted-foreground">Average Spend</span>
+                  </div>
+              </div>
             </div>
             <Button asChild className="w-full">
                 <Link href="/bookings">
