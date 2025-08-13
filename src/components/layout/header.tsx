@@ -142,21 +142,6 @@ export function Header() {
     provider: 'Provider View'
   }
   
-  if (!isMounted) {
-    return (
-       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-20 max-w-7xl items-center">
-             <div className="mr-4 hidden md:flex items-center">
-              <Link href="/" className="mr-2 flex items-center space-x-2">
-                <Sprout className="h-6 w-6 text-primary" />
-                <span className="font-bold text-lg text-foreground">Beauty Book</span>
-              </Link>
-            </div>
-        </div>
-      </header>
-    );
-  }
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 max-w-7xl items-center">
@@ -165,36 +150,38 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1">
-                    {roleLabels[userRole]}
-                    <ChevronDown className="h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuLabel>Switch View</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                 <DropdownMenuItem onClick={() => setUserRole('guest')}>
-                    <Link href="/" className="flex items-center w-full">
-                        <Globe className="mr-2 h-4 w-4"/>
-                        Guest View
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setUserRole('client')}>
-                    <Link href="/discover" className="flex items-center w-full">
-                        <Eye className="mr-2 h-4 w-4"/>
-                        Client View
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setUserRole('provider')}>
-                    <Link href="/dashboard" className="flex items-center w-full">
-                        <Briefcase className="mr-2 h-4 w-4"/>
-                        Provider View
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {isMounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1">
+                      {roleLabels[userRole]}
+                      <ChevronDown className="h-4 w-4" />
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                  <DropdownMenuLabel>Switch View</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                   <DropdownMenuItem onClick={() => setUserRole('guest')}>
+                      <Link href="/" className="flex items-center w-full">
+                          <Globe className="mr-2 h-4 w-4"/>
+                          Guest View
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setUserRole('client')}>
+                      <Link href="/discover" className="flex items-center w-full">
+                          <Eye className="mr-2 h-4 w-4"/>
+                          Client View
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setUserRole('provider')}>
+                      <Link href="/dashboard" className="flex items-center w-full">
+                          <Briefcase className="mr-2 h-4 w-4"/>
+                          Provider View
+                      </Link>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Mobile Menu Trigger */}
@@ -223,7 +210,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-                <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />
+              {isMounted && <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />}
             </nav>
         </div>
       </div>
