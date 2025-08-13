@@ -3,13 +3,20 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Heart, Star, List } from "lucide-react"
+import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { ProviderCard } from "@/components/provider-card"
 import { providers, getExploreQueueProviders } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
 import type { Provider } from "@/lib/types";
+
+// Mock data consistent with client-snapshot
+const mockClientStats = {
+    rating: 4.8,
+    totalBookings: 5,
+    averageSpend: 125.50,
+};
 
 export default function ClientDashboardPage() {
   const favoriteProvider = providers[0];
@@ -33,7 +40,7 @@ export default function ClientDashboardPage() {
       
       {/* Section 1: Analytics Dashboard */}
       <div className="grid gap-8 md:grid-cols-1 lg:grid-cols-3 mb-12">
-        {/* Appointments Used */}
+        {/* Your Stats */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
@@ -42,9 +49,19 @@ export default function ClientDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="text-center">
-              <p className="text-6xl font-bold">6</p>
-              <p className="text-muted-foreground">Appointments Completed</p>
+            <div className="grid grid-cols-2 gap-4 text-center">
+                 <div>
+                  <p className="text-4xl font-bold">{mockClientStats.rating.toFixed(1)}</p>
+                  <p className="text-sm text-muted-foreground">Avg. Rating</p>
+                </div>
+                <div>
+                  <p className="text-4xl font-bold">{mockClientStats.totalBookings}</p>
+                  <p className="text-sm text-muted-foreground">Total Bookings</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-4xl font-bold">${mockClientStats.averageSpend.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">Average Spend</p>
+                </div>
             </div>
             <Button asChild className="w-full">
                 <Link href="/bookings">
