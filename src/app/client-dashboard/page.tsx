@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Heart, Star } from "lucide-react"
+import { ArrowRight, Calendar, Heart, Star, List } from "lucide-react"
 import Link from "next/link"
 import { ProviderCard } from "@/components/provider-card"
 import { providers, getFeaturedProviders } from "@/lib/data"
@@ -88,24 +88,44 @@ export default function ClientDashboardPage() {
         </Card>
       </div>
 
-      {/* Section 2: Booking Management */}
-       <div>
-        <h2 className="text-3xl font-bold font-headline mb-4">Booking Management</h2>
-        <Card>
-            <CardHeader>
-                <CardTitle>Manage Your Appointments</CardTitle>
-                <CardDescription>View your upcoming and past bookings, or make changes to your appointments.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-                <p className="text-muted-foreground mb-4">Ready to manage your bookings? Click the button below to see your full history.</p>
-                <Button asChild size="lg">
-                    <Link href="/bookings">
-                        <Calendar className="mr-2 h-5 w-5" />
-                        Go to My Bookings
-                    </Link>
-                </Button>
-            </CardContent>
-        </Card>
+      {/* Section 2: Booking Management & My Lists */}
+       <div className="grid md:grid-cols-2 gap-8">
+        <div>
+            <h2 className="text-3xl font-bold font-headline mb-4">Booking Management</h2>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Manage Your Appointments</CardTitle>
+                    <CardDescription>View your upcoming and past bookings, or make changes to your appointments.</CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                    <p className="text-muted-foreground mb-4">Ready to manage your bookings? Click the button below to see your full history.</p>
+                    <Button asChild size="lg">
+                        <Link href="/bookings">
+                            <Calendar className="mr-2 h-5 w-5" />
+                            Go to My Bookings
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+         <div>
+            <h2 className="text-3xl font-bold font-headline mb-4">My Lists</h2>
+            <Card>
+                <CardHeader>
+                    <CardTitle>View Your Saved Providers</CardTitle>
+                    <CardDescription>Access your Explore Queue and Favourites to easily book with providers you're interested in.</CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                    <p className="text-muted-foreground mb-4">Ready to find a saved provider? Click the button below to see your lists.</p>
+                    <Button asChild size="lg">
+                        <Link href="/my-lists">
+                            <List className="mr-2 h-5 w-5" />
+                            Go to My Lists
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
       </div>
     </div>
   )
