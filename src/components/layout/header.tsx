@@ -68,14 +68,9 @@ function getNavLinks(role: UserRole) {
 }
 
 
-const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean }) => {
+const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages, isMounted }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean, isMounted: boolean }) => {
     const { desktop } = getNavLinks(role);
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
+    
     return (
         <>
             {desktop.map(({ href, label, icon: Icon }) => (
@@ -113,29 +108,32 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 
 export function Header() {
+  const [isMounted, setIsMounted] = useState(false);
   const [userRole, setUserRole] = useState<UserRole>('client');
   const [hasUnread, setHasUnread] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
+  
   useEffect(() => {
     setIsMounted(true);
-
-    const checkUnreads = () => {
-        const notifications = getNotifications();
-        setHasUnread(notifications.some(n => !n.read));
-
-        const unreadMessagesCount = getUnreadMessageCount();
-        setHasUnreadMessages(unreadMessagesCount > 0);
-    };
-
-    checkUnreads();
-    
-    // In a real app, this would be handled by a real-time system (e.g., WebSockets)
-    const interval = setInterval(checkUnreads, 5000); 
-
-    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const checkUnreads = () => {
+          const notifications = getNotifications();
+          setHasUnread(notifications.some(n => !n.read));
+
+          const unreadMessagesCount = getUnreadMessageCount();
+          setHasUnreadMessages(unreadMessagesCount > 0);
+      };
+
+      checkUnreads();
+      
+      const interval = setInterval(checkUnreads, 5000); 
+
+      return () => clearInterval(interval);
+    }
+  }, [isMounted]);
 
   const roleLabels: Record<UserRole, string> = {
     guest: 'Guest View',
@@ -211,7 +209,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-              <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} />
+              <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} isMounted={isMounted} />
             </nav>
         </div>
       </div>
