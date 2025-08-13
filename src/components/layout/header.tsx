@@ -108,7 +108,7 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 
 export function Header() {
-  const [userRole, setUserRole] = useState<UserRole>('provider');
+  const [userRole, setUserRole] = useState<UserRole>('client');
   const [hasUnread, setHasUnread] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
