@@ -111,8 +111,15 @@ export function Header() {
   const [userRole, setUserRole] = useState<UserRole>('client');
   const [hasUnread, setHasUnread] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     const checkUnreads = () => {
         const notifications = getNotifications();
         setHasUnread(notifications.some(n => !n.read));
@@ -127,12 +134,27 @@ export function Header() {
     const interval = setInterval(checkUnreads, 5000); 
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isMounted]);
 
   const roleLabels: Record<UserRole, string> = {
     guest: 'Guest View',
     client: 'Client View',
     provider: 'Provider View'
+  }
+  
+  if (!isMounted) {
+    return (
+       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-20 max-w-7xl items-center">
+             <div className="mr-4 hidden md:flex items-center">
+              <Link href="/" className="mr-2 flex items-center space-x-2">
+                <Sprout className="h-6 w-6 text-primary" />
+                <span className="font-bold text-lg text-foreground">Beauty Book</span>
+              </Link>
+            </div>
+        </div>
+      </header>
+    );
   }
 
   return (
