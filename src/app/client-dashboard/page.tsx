@@ -1,16 +1,31 @@
 
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Calendar, Heart, Star, List } from "lucide-react"
 import Link from "next/link"
 import { ProviderCard } from "@/components/provider-card"
-import { providers, getFeaturedProviders } from "@/lib/data"
+import { providers, getExploreQueueProviders } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect, useState } from "react";
+import type { Provider } from "@/lib/types";
 
 export default function ClientDashboardPage() {
   const favoriteProvider = providers[0];
-  const suggestedProvider = providers[1];
   const favoriteProviderFirstService = favoriteProvider.services[0];
+  
+  const [suggestedProvider, setSuggestedProvider] = useState<Provider | undefined>(providers[1]);
+
+  useEffect(() => {
+    const exploreQueue = getExploreQueueProviders();
+    if (exploreQueue.length > 0) {
+      setSuggestedProvider(exploreQueue[exploreQueue.length - 1]);
+    } else {
+      setSuggestedProvider(providers[1]); // Fallback provider
+    }
+  }, []);
+
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -83,7 +98,11 @@ export default function ClientDashboardPage() {
                 <CardDescription>Based on your history, we think you'll love:</CardDescription>
             </CardHeader>
             <CardContent>
-                <ProviderCard provider={suggestedProvider} />
+                {suggestedProvider ? (
+                    <ProviderCard provider={suggestedProvider} />
+                ) : (
+                    <p className="text-muted-foreground text-center">Your next great find is waiting on the Explore page!</p>
+                )}
             </CardContent>
         </Card>
       </div>
