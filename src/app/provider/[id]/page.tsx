@@ -8,11 +8,10 @@ import { notFound, useParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, Send } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ProviderChatHistory } from '@/components/provider-chat-history';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -97,7 +96,7 @@ export default function ProviderDetailPage() {
             <TabsList>
               <TabsTrigger value="reviews">Verified Reviews</TabsTrigger>
               <TabsTrigger value="feedback">Leave Feedback</TabsTrigger>
-              <TabsTrigger value="chat">Chat History</TabsTrigger>
+              <TabsTrigger value="chat">Chat</TabsTrigger>
               <TabsTrigger value="booking-history">Booking History</TabsTrigger>
             </TabsList>
             <TabsContent value="reviews">
@@ -155,7 +154,20 @@ export default function ProviderDetailPage() {
               </Card>
             </TabsContent>
             <TabsContent value="chat">
-              <ProviderChatHistory />
+               <Card>
+                <CardHeader>
+                  <CardTitle>Start a Conversation</CardTitle>
+                  <CardDescription>Have a question for {provider.name}? Send them a message directly.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild>
+                    <Link href={`/messages?providerId=${provider.id}`}>
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Chat with {provider.name}
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </TabsContent>
             <TabsContent value="booking-history">
               <Card>
@@ -225,8 +237,10 @@ export default function ProviderDetailPage() {
                 <Button variant="secondary">
                   <Heart className="w-4 h-4 mr-2"/> Save to Favourites
                 </Button>
-                <Button variant="outline">
-                  <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
+                <Button variant="outline" asChild>
+                  <Link href={`/messages?providerId=${provider.id}`}>
+                    <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
+                  </Link>
                 </Button>
               </div>
             </CardContent>
