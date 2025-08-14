@@ -156,7 +156,7 @@ export default function ManageBookingPage() {
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
-  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.status === 'Pending' || booking.isPaid;
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.isPaid;
   const showPaymentForm = booking.status === 'Confirmed' && !booking.isPaid;
 
 
@@ -301,4 +301,3 @@ export default function ManageBookingPage() {
     </div>
   );
 }
-
