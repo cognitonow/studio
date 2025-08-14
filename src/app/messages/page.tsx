@@ -30,8 +30,6 @@ export default function MessagesPage() {
   }, []);
 
   useEffect(() => {
-    setActiveConversation(undefined); // Reset active conversation on view change
-
     const isProviderView = view === 'provider';
     const convos = isProviderView ? getProviderConversations() : getConversations();
 
