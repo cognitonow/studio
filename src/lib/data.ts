@@ -490,7 +490,7 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => b.status === 'Confirmed' || b.status === 'Pending' || b.status === 'Review Order and Pay')
+        .filter(b => b.status !== 'Completed' && b.status !== 'Cancelled' && new Date(b.date) >= new Date())
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
@@ -535,6 +535,32 @@ export const getClientDashboardData = () => {
     };
 }
 
+export const getClientHistoryByName = (clientName: string) => {
+    const clientBookings = bookings.filter(b => b.clientName === clientName);
+    const completedBookings = clientBookings.filter(b => b.status === 'Completed');
+
+    const totalSpend = completedBookings.reduce((acc, booking) => {
+        const bookingServices = getServicesByIds(booking.serviceIds);
+        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
+        return acc + bookingTotal;
+    }, 0);
+
+    const totalBookings = clientBookings.length;
+    const averageSpend = completedBookings.length > 0 ? totalSpend / completedBookings.length : 0;
+
+    const previousBookings = completedBookings
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3);
+    
+    // The rating is mocked as we don't have a client-specific rating system yet
+    return {
+        rating: 4.8, 
+        totalBookings,
+        averageSpend,
+        previousBookings,
+    };
+};
+
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getBookingById = (id: string) => bookings.find(b => b.id === id);
@@ -543,3 +569,4 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+

@@ -7,23 +7,16 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { User, Star, Repeat, DollarSign } from "lucide-react"
 import { format } from 'date-fns';
+import { getClientHistoryByName, getServicesByIds } from "@/lib/data";
 
 interface ClientDetailsProps {
     clientName: string;
 }
 
-const mockClientHistory = {
-    rating: 4.8,
-    totalBookings: 5,
-    averageSpend: 125.50,
-    previousBookings: [
-        { id: 'b1', service: 'Balayage', date: '2024-05-10', status: 'Completed' },
-        { id: 'b2', service: 'Haircut & Blowdry', date: '2024-02-20', status: 'Completed' },
-        { id: 'b3', service: 'Glaze Treatment', date: '2023-11-15', status: 'Completed' },
-    ]
-}
 
 export function ClientDetails({ clientName }: ClientDetailsProps) {
+  const clientHistory = getClientHistoryByName(clientName);
+
   return (
     <Card>
       <CardHeader>
@@ -42,17 +35,17 @@ export function ClientDetails({ clientName }: ClientDetailsProps) {
             <div className="grid gap-2 text-sm">
                 <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-muted-foreground"/>
-                    <span className="font-semibold">{mockClientHistory.rating.toFixed(1)}</span>
+                    <span className="font-semibold">{clientHistory.rating.toFixed(1)}</span>
                     <span className="text-muted-foreground">Client Rating</span>
                 </div>
                  <div className="flex items-center gap-2">
                     <Repeat className="w-4 h-4 text-muted-foreground"/>
-                    <span className="font-semibold">{mockClientHistory.totalBookings}</span>
+                    <span className="font-semibold">{clientHistory.totalBookings}</span>
                     <span className="text-muted-foreground">Total Bookings</span>
                 </div>
                  <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-muted-foreground"/>
-                    <span className="font-semibold">${mockClientHistory.averageSpend.toFixed(2)}</span>
+                    <span className="font-semibold">${clientHistory.averageSpend.toFixed(2)}</span>
                     <span className="text-muted-foreground">Average Spend</span>
                 </div>
             </div>
@@ -62,15 +55,15 @@ export function ClientDetails({ clientName }: ClientDetailsProps) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Service</TableHead>
+                        <TableHead>Service(s)</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Status</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {mockClientHistory.previousBookings.map(booking => (
+                    {clientHistory.previousBookings.map(booking => (
                         <TableRow key={booking.id}>
-                            <TableCell className="font-medium">{booking.service}</TableCell>
+                            <TableCell className="font-medium">{getServicesByIds(booking.serviceIds).map(s => s.name).join(', ')}</TableCell>
                             <TableCell>{format(new Date(booking.date), 'dd MMM yyyy')}</TableCell>
                             <TableCell><Badge variant="secondary">{booking.status}</Badge></TableCell>
                         </TableRow>
