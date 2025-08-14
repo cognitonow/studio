@@ -97,7 +97,7 @@ export default function BookingPage() {
     
     toast({
         title: "Booking Request Sent!",
-        description: "Your request has been sent to the provider. You will be notified when they confirm.",
+        description: "Your request has been sent to the provider. You can see its status in 'My Bookings'.",
     });
 
     router.push('/bookings');

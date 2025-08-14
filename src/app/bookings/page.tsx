@@ -19,19 +19,32 @@ import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
 
 export default function ClientBookingsPage() {
-  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
-  const [pastBookings, setPastBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
 
   useEffect(() => {
-    const { upcoming, past } = getBookings();
-    setUpcomingBookings(upcoming);
-    setPastBookings(past);
+    const allBookings = getBookings();
+    setBookings(allBookings);
   }, []);
 
   const renderServices = (serviceIds: string[]) => {
     const services = getServicesByIds(serviceIds);
     return services.map(s => s.name).join(', ');
   }
+
+  const getStatusBadge = (status: Booking['status']) => {
+    switch (status) {
+      case 'Pending':
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+      case 'Confirmed':
+        return <Badge className="bg-blue-100 text-blue-800">Confirmed</Badge>;
+      case 'Completed':
+        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
+      case 'Cancelled':
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -45,7 +58,7 @@ export default function ClientBookingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Upcoming Appointments</CardTitle>
-              <CardDescription>Here are your confirmed future bookings. You can amend or cancel them here.</CardDescription>
+              <CardDescription>Here are your requested and confirmed future bookings.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -59,13 +72,13 @@ export default function ClientBookingsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {upcomingBookings.map(booking => (
+                  {bookings.upcoming.length > 0 ? bookings.upcoming.map(booking => (
                     <TableRow key={booking.id}>
                       <TableCell className="font-medium">{booking.providerName}</TableCell>
                       <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{booking.status}</Badge>
+                        {getStatusBadge(booking.status)}
                       </TableCell>
                       <TableCell className="text-right">
                           <Button variant="outline" size="sm" asChild>
@@ -73,7 +86,11 @@ export default function ClientBookingsPage() {
                           </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center h-24">You have no upcoming appointments.</TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -97,13 +114,13 @@ export default function ClientBookingsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pastBookings.map(booking => (
+                   {bookings.past.length > 0 ? bookings.past.map(booking => (
                     <TableRow key={booking.id}>
                       <TableCell className="font-medium">{booking.providerName}</TableCell>
                       <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge>{booking.status}</Badge>
+                        {getStatusBadge(booking.status)}
                       </TableCell>
                       <TableCell className="text-right">
                           <Button variant="secondary" size="sm" asChild>
@@ -111,7 +128,11 @@ export default function ClientBookingsPage() {
                           </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
+                   )) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center h-24">You have no past appointments.</TableCell>
+                    </TableRow>
+                   )}
                 </TableBody>
               </Table>
             </CardContent>

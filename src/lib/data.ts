@@ -265,12 +265,13 @@ let notifications: Notification[] = [
   ];
 
 export const getBookings = () => {
+    const now = new Date();
     const upcoming = bookings
-        .filter(b => new Date(b.date) >= new Date() && b.status !== 'Completed' && b.status !== 'Cancelled')
+        .filter(b => new Date(b.date) >= now && b.status !== 'Completed' && b.status !== 'Cancelled')
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = bookings
-        .filter(b => new Date(b.date) < new Date() || ['Completed', 'Cancelled'].includes(b.status))
+        .filter(b => new Date(b.date) < now || ['Completed', 'Cancelled'].includes(b.status))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         
     return { upcoming, past };
@@ -392,7 +393,7 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
     }
 };
 
-export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'>) => {
+export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'>): Booking => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
         status: 'Pending',
@@ -508,5 +509,6 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
 
 
