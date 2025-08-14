@@ -4,6 +4,7 @@ import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistri
 import { format, formatDistanceToNow, isSameDay, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
+import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -363,6 +364,9 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
                     bookingId: booking.id
                 });
+                
+                await sendAutomatedMessage(booking, draftBookingApproval);
+
 
             } else if (status === 'Confirmed') {
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
