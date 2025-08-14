@@ -13,6 +13,7 @@ import type { Provider, Service, Booking } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 interface ClientDashboardData {
     totalBookings: number;
@@ -21,6 +22,23 @@ interface ClientDashboardData {
     favoriteProvider?: Provider;
     activeBooking?: (Booking & { services: Service[] });
 }
+
+const getStatusBadge = (status: Booking['status']) => {
+    switch (status) {
+      case 'Pending':
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+      case 'Review Order and Pay':
+        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Payment Required</Badge>;
+      case 'Confirmed':
+        return <Badge className="bg-blue-100 text-blue-800">Confirmed</Badge>;
+      case 'Completed':
+        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
+      case 'Cancelled':
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
 
 export default function ClientDashboardPage() {
   const [dashboardData, setDashboardData] = useState<ClientDashboardData | null>(null);
@@ -130,9 +148,14 @@ export default function ClientDashboardPage() {
                         <CardDescription>Your next appointment is coming up!</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="space-y-1">
-                            <p className="font-semibold text-lg">{dashboardData.activeBooking.providerName}</p>
-                            <p className="text-muted-foreground text-sm">{dashboardData.activeBooking.services.map(s => s.name).join(', ')}</p>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="font-semibold text-lg">{dashboardData.activeBooking.providerName}</p>
+                                    <p className="text-muted-foreground text-sm">{dashboardData.activeBooking.services.map(s => s.name).join(', ')}</p>
+                                </div>
+                                {getStatusBadge(dashboardData.activeBooking.status)}
+                            </div>
                         </div>
                         <div className="text-sm space-y-1">
                             <div className="flex items-center gap-2">
