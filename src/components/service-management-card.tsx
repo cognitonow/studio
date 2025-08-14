@@ -32,6 +32,7 @@ export function ServiceManagementCard() {
     const [editedPrice, setEditedPrice] = useState<number | string>('');
     const [editedDuration, setEditedDuration] = useState<number | string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
+    const [editedName, setEditedName] = useState('');
 
 
     const handleAddService = () => {
@@ -107,21 +108,23 @@ export function ServiceManagementCard() {
         setEditedPrice(service.price);
         setEditedDuration(service.duration);
         setEditedDescription(service.description);
+        setEditedName(service.name);
         setIsEditDialogOpen(true);
     }
     
     const handleSaveChanges = () => {
-        if (!serviceToEdit || !editedServiceId) return;
-        
-        const baseService = allServices.find(s => s.id === editedServiceId) || serviceToEdit;
+        if (!serviceToEdit) return;
 
+        const isCustom = serviceToEdit.id.startsWith('custom-');
+        
         const updatedService: Service = {
-            ...baseService,
-            id: editedServiceId,
+            ...serviceToEdit,
             categoryId: editedCategory,
+            name: isCustom ? editedName : allServices.find(s => s.id === editedServiceId)?.name || serviceToEdit.name,
             price: Number(editedPrice),
             duration: Number(editedDuration),
             description: editedDescription,
+            id: isCustom ? serviceToEdit.id : editedServiceId,
         };
 
         setProviderServices(prev => 
@@ -137,10 +140,12 @@ export function ServiceManagementCard() {
     
     const handleEditCategoryChange = (categoryId: string) => {
         setEditedCategory(categoryId);
-        setEditedServiceId('');
-        setEditedPrice('');
-        setEditedDuration('');
-        setEditedDescription('');
+        if (!serviceToEdit?.id.startsWith('custom-')) {
+            setEditedServiceId('');
+            setEditedPrice('');
+            setEditedDuration('');
+            setEditedDescription('');
+        }
     }
 
     const handleEditServiceSelect = (serviceId: string) => {
@@ -160,6 +165,8 @@ export function ServiceManagementCard() {
     const filteredEditServices = editedCategory
         ? allServices.filter(s => s.categoryId === editedCategory)
         : [];
+
+    const isEditingCustom = serviceToEdit?.id.startsWith('custom-');
 
 
     return (
@@ -277,40 +284,47 @@ export function ServiceManagementCard() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Service</Label>
-                                    <Select onValueChange={handleEditServiceSelect} value={editedServiceId} disabled={!editedCategory}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Service" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {filteredEditServices.length > 0 ? filteredEditServices.map(service => (
-                                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                                            )) : <SelectItem value="none" disabled>No available services</SelectItem>}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                {isEditingCustom ? (
+                                     <div className="space-y-2">
+                                        <Label htmlFor="edit-name">Service Name</Label>
+                                        <Input id="edit-name" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <Label>Service</Label>
+                                        <Select onValueChange={handleEditServiceSelect} value={editedServiceId} disabled={!editedCategory}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Service" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {filteredEditServices.length > 0 ? filteredEditServices.map(service => (
+                                                    <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                                )) : <SelectItem value="none" disabled>No available services</SelectItem>}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-price">Price ($)</Label>
-                                    <Input id="edit-price" type="number" value={editedPrice} onChange={(e) => setEditedPrice(e.target.value)} disabled={!editedServiceId} />
+                                    <Input id="edit-price" type="number" value={editedPrice} onChange={(e) => setEditedPrice(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-duration">Duration (min)</Label>
-                                    <Input id="edit-duration" type="number" value={editedDuration} onChange={(e) => setEditedDuration(e.target.value)} disabled={!editedServiceId} />
+                                    <Input id="edit-duration" type="number" value={editedDuration} onChange={(e) => setEditedDuration(e.target.value)} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit-description">Description</Label>
-                                <Textarea id="edit-description" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={4} disabled={!editedServiceId} />
+                                <Textarea id="edit-description" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={4} />
                             </div>
                         </div>
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button type="button" variant="secondary">Cancel</Button>
                             </DialogClose>
-                            <Button type="button" onClick={handleSaveChanges} disabled={!editedServiceId}>Save Changes</Button>
+                            <Button type="button" onClick={handleSaveChanges}>Save Changes</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
