@@ -1,7 +1,7 @@
 
 
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
-import { format, formatDistanceToNow, isSameDay } from 'date-fns';
+import { format, formatDistanceToNow, isSameDay, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 
@@ -265,13 +265,13 @@ let notifications: Notification[] = [
   ];
 
 export const getBookings = () => {
-    const now = new Date();
+    const today = startOfDay(new Date());
     const upcoming = bookings
-        .filter(b => new Date(b.date) >= now && (b.status === 'Pending' || b.status === 'Confirmed'))
+        .filter(b => new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed'))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = bookings
-        .filter(b => new Date(b.date) < now || b.status === 'Completed' || b.status === 'Cancelled')
+        .filter(b => new Date(b.date) < today || b.status === 'Completed' || b.status === 'Cancelled')
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         
     return { upcoming, past };
@@ -509,6 +509,7 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
 
 
 
