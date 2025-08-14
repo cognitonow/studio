@@ -34,6 +34,8 @@ export default function PaymentPage() {
   const totalCost = services.reduce((acc, service) => acc + service.price, 0);
 
   if (!provider || services.length === 0 || !date) {
+    // While date is loading, we can show a loader or return null
+    // We check for dateStr to ensure we don't flash notFound for a valid page
     if (!provider || !dateStr) {
       notFound();
     }
