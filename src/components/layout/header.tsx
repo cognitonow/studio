@@ -37,6 +37,7 @@ function getNavLinks(role: UserRole) {
                 { href: '/client-dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/bookings', label: 'My Bookings', icon: Book },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
+                { href: '/notifications', label: 'Notifications', icon: Bell },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
@@ -45,6 +46,7 @@ function getNavLinks(role: UserRole) {
                 { href: '/my-lists', label: 'My Lists' },
                 { href: '/bookings', label: 'My Bookings' },
                 { href: '/messages', label: 'Messages' },
+                { href: '/notifications', label: 'Notifications' },
                 { href: '/account', label: 'Account' },
             ],
         },
