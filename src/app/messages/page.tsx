@@ -22,9 +22,13 @@ export default function MessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
+  const [isMounted, setIsMounted] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     setActiveConversation(undefined); // Reset active conversation on view change
@@ -128,7 +132,7 @@ export default function MessagesPage() {
             <ScrollArea className="h-full">
               <div className="space-y-1">
                 {conversations.map(convo => (
-                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
+                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", activeConversation && convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
                         <Avatar className="w-12 h-12">
                             <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
                             <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
@@ -181,7 +185,7 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {messages.filter(m => m.conversationId === activeConversation.id).map((message) => (
+                        {messages.filter(m => activeConversation && m.conversationId === activeConversation.id).map((message) => (
                             <div key={message.id} className={cn("flex items-end gap-3", (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'justify-end' : '')}>
                                 {(message.sender === 'provider' && view === 'client') || (message.sender === 'user' && view === 'provider') ? (
                                     <Avatar className="w-8 h-8">
@@ -238,5 +242,3 @@ export default function MessagesPage() {
     </div>
   )
 }
-
-    
