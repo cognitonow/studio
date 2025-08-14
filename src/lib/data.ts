@@ -5,6 +5,7 @@ import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
+import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -309,7 +310,7 @@ const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'
     notifications.unshift(newNotification);
 };
 
-const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: any) => Promise<{ message: string }>) => {
+const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: any) => Promise<{ message: string }>, metadata?: any) => {
     const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
     const bookingDateTime = format(new Date(booking.date), "PPP p");
 
@@ -319,6 +320,7 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
             providerName: booking.providerName,
             serviceName: serviceNames,
             bookingDate: bookingDateTime,
+            ...metadata,
         });
         
         // This is simplified for mock data. In a real app, you'd have separate conversations for client/provider.
@@ -359,7 +361,7 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
     }
 }
 
-export const updateBookingStatus = async (bookingId: string, status: Booking['status']) => {
+export const updateBookingStatus = async (bookingId: string, status: Booking['status'], cancelledBy: 'client' | 'provider' = 'client') => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
         const booking = bookings[bookingIndex];
@@ -373,12 +375,22 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
 
 
             if (status === 'Cancelled') {
-                providerNotification({
-                    icon: 'cancellation',
-                    title: 'Booking Cancelled by Client',
-                    description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
-                    bookingId: booking.id
-                });
+                if (cancelledBy === 'client') {
+                    providerNotification({
+                        icon: 'cancellation',
+                        title: 'Booking Cancelled by Client',
+                        description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
+                        bookingId: booking.id
+                    });
+                } else {
+                    clientNotification({
+                        icon: 'cancellation',
+                        title: 'Booking Cancelled by Provider',
+                        description: `${booking.providerName} has cancelled your booking for ${new Date(booking.date).toLocaleDateString()}.`,
+                        bookingId: booking.id
+                    });
+                }
+                await sendAutomatedMessage(booking, draftBookingCancellation, { cancelledBy });
             } else if (status === 'Review Order and Pay') {
                 providerNotification({
                     icon: 'confirmation',
