@@ -94,70 +94,39 @@ export default function ProviderDashboardPage() {
   };
 
   const getBookingActions = (booking: Booking) => {
-    const bookingDate = new Date(booking.date);
     const now = new Date();
     
-    const actions: JSX.Element[] = [];
-
     switch (booking.status) {
       case 'Pending':
-        actions.push(
-             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
-                <Link href="/messages">
-                    <Contact className="h-4 w-4 mr-2" />
-                    Start Chat
-                </Link>
-            </Button>,
-            <Button key={`confirm-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Review Order and Pay')}>Approve</Button>,
-            <Button key={`cancel-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Decline</Button>
+        return (
+            <div className="flex gap-2 justify-end">
+                 <Button size="sm" variant="outline" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                </Button>
+            </div>
         );
-        break;
       case 'Review Order and Pay':
-        actions.push(
-             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
-                <Link href="/messages">
-                    <Contact className="h-4 w-4" />
-                </Link>
-            </Button>,
-            <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
-                <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-            </Button>
-        );
-        break;
       case 'Confirmed':
-         actions.push(
-             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
-                <Link href="/messages">
-                    <Contact className="h-4 w-4" />
-                </Link>
-            </Button>
+         return (
+            <div className="flex gap-2 justify-end">
+                <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
+                </Button>
+                 {new Date(booking.date) <= now && booking.status === 'Confirmed' && (
+                    <Button size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>
+                )}
+            </div>
         );
-        actions.push(
-            <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
-                <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-            </Button>
-        );
-        if (bookingDate <= now) { // Past or current booking
-            actions.push(<Button key={`complete-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>);
-        } else { // Future booking
-            actions.push(
-                <Button key={`cancel-future-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
-            );
-        }
-        break;
       case 'Completed':
       case 'Cancelled':
-         actions.push(
+         return (
             <Button key={`details-${booking.id}`} size="sm" variant="secondary" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
             </Button>
         );
-        break;
       default:
         return null;
     }
-    
-    return <div className="flex gap-2 justify-end">{actions}</div>;
   };
   
   const renderServices = (serviceIds: string[]) => {

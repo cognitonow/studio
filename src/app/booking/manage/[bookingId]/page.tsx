@@ -3,13 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { providers, getBookingById, updateBooking, getServicesByIds, updateBookingStatus } from '@/lib/data';
+import { providers, getBookingById, updateBooking, getServicesByIds, updateBookingStatus, services as allServices } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
-import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft, CreditCard } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft, CreditCard, User, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { ClientDetails } from '@/components/manage-booking/client-details';
 import { Input } from '@/components/ui/input';
+import { useUserRole } from '@/hooks/use-user-role';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 
 const availableTimes = [
@@ -70,6 +73,7 @@ export default function ManageBookingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const bookingId = params.bookingId as string;
+  const { role: userRole } = useUserRole();
 
   const [booking, setBooking] = useState<Booking | null | undefined>(undefined);
   const [bookedServices, setBookedServices] = useState<Service[]>([]);
@@ -89,7 +93,7 @@ export default function ManageBookingPage() {
   const provider = providers.find(p => p.id === booking?.providerId);
   
   if (booking === undefined) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto py-12 px-4 text-center">Loading booking details...</div>;
   }
 
   if (!booking || !provider) {
@@ -123,23 +127,30 @@ export default function ManageBookingPage() {
       });
       toast({
         title: "Booking Updated!",
-        description: "Your appointment details have been successfully saved.",
+        description: "The appointment details have been successfully saved.",
       });
-      router.push('/dashboard'); 
+      router.push(userRole === 'provider' ? '/dashboard' : '/bookings'); 
     }
   };
   
-  const handleCancelBooking = () => {
+  const handleCancelBooking = (cancelledBy: 'client' | 'provider') => {
     if (booking) {
-      updateBookingStatus(booking.id, 'Cancelled');
+      updateBookingStatus(booking.id, 'Cancelled', cancelledBy);
       toast({
         title: "Booking Cancelled",
         description: "The appointment has been successfully cancelled.",
         variant: "destructive",
       });
-      router.push('/bookings');
+      router.push(userRole === 'provider' ? '/dashboard' : '/bookings');
     }
   };
+
+  const handleApproveBooking = () => {
+      if (booking) {
+          updateBookingStatus(booking.id, 'Review Order and Pay', 'provider');
+          router.push('/dashboard');
+      }
+  }
   
   const handleConfirmPayment = () => {
     if (booking) {
@@ -156,48 +167,64 @@ export default function ManageBookingPage() {
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
-  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.isPaid;
-  const showPaymentForm = booking.status === 'Review Order and Pay' && !booking.isPaid;
-  const canAmendBooking = booking.status === 'Confirmed' && !isReadOnly;
-  const canCancelPending = booking.status === 'Pending';
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || (userRole === 'client' && booking.isPaid);
+  
+  // Client-specific statuses
+  const showPaymentForm = userRole === 'client' && booking.status === 'Review Order and Pay' && !booking.isPaid;
+  const canAmendBooking = userRole === 'client' && booking.status === 'Confirmed' && !isReadOnly;
+  const canCancelRequest = userRole === 'client' && booking.status === 'Pending';
 
+  // Provider-specific statuses
+  const needsProviderAction = userRole === 'provider' && booking.status === 'Pending';
+
+  const returnPath = userRole === 'provider' ? '/dashboard' : '/bookings';
 
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <Button variant="ghost" onClick={() => router.push('/bookings')} className="mb-4">
+        <Button variant="ghost" onClick={() => router.push(returnPath)} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Return to My Bookings
+            {userRole === 'provider' ? 'Return to Dashboard' : 'Return to My Bookings'}
         </Button>
-        <h1 className="text-4xl font-bold font-headline mb-8">{isReadOnly && !showPaymentForm ? 'Booking Details' : 'Manage Your Booking'}</h1>
+        <h1 className="text-4xl font-bold font-headline mb-8">
+            {userRole === 'provider' ? 'Manage Client Booking' : 'Manage Your Booking'}
+        </h1>
         
         <div className="grid md:grid-cols-2 gap-8">
           
           {/* Left Column: Booking Details & Services */}
           <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Appointment Details</CardTitle>
-                <CardDescription>With {provider.name}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4 text-sm">
-                  <CalendarIcon className="w-5 h-5 text-muted-foreground" />
-                  <span>
-                    {selectedDate 
-                      ? `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at ${selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`
-                      : 'No date selected'}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+             {userRole === 'client' && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Appointment with {provider.name}</CardTitle>
+                        <CardDescription>
+                            <Link href={`/provider/${provider.id}`} className="hover:underline text-primary">View their profile</Link>
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex items-center gap-4">
+                         <Avatar className="w-16 h-16">
+                            <AvatarImage src={provider.avatarUrl} alt={provider.name} data-ai-hint={provider.dataAiHint} />
+                            <AvatarFallback>{provider.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="text-sm">
+                            <p className="font-semibold">Date & Time</p>
+                            <p className="text-muted-foreground">
+                            {selectedDate 
+                            ? `${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at ${selectedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`
+                            : 'No date selected'}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+             )}
 
-            <ClientDetails clientName={booking.clientName || 'Client'} />
+            {userRole === 'provider' && <ClientDetails clientName={booking.clientName || 'Client'} />}
 
             <Card>
               <CardHeader>
                 <CardTitle>Booked Services</CardTitle>
-                {!isReadOnly && <CardDescription>Add or remove services from your appointment.</CardDescription>}
+                {!isReadOnly && <CardDescription>Add or remove services from this appointment.</CardDescription>}
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -246,8 +273,8 @@ export default function ManageBookingPage() {
             ) : (
                 <Card>
                 <CardHeader>
-                    <CardTitle>{isReadOnly ? 'Date & Time' : 'Amend Date & Time'}</CardTitle>
-                    {canAmendBooking && <CardDescription>Select a new time for your appointment.</CardDescription>}
+                    <CardTitle>{isReadOnly ? 'Appointment Date & Time' : 'Amend Date & Time'}</CardTitle>
+                    {(canAmendBooking && !needsProviderAction) && <CardDescription>Select a new time for your appointment.</CardDescription>}
                 </CardHeader>
                 <CardContent className="flex justify-center">
                     <div className="flex flex-col items-center gap-4">
@@ -256,7 +283,7 @@ export default function ManageBookingPage() {
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                         className="rounded-md border"
-                        disabled={isReadOnly || canCancelPending || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
+                        disabled={isReadOnly || canCancelRequest || needsProviderAction || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
                         />
                         <div className="w-full space-y-2">
                             <Label htmlFor="time" className="flex items-center gap-2">
@@ -266,7 +293,7 @@ export default function ManageBookingPage() {
                             <Select 
                                 onValueChange={handleTimeSelect}
                                 value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                                disabled={isReadOnly || canCancelPending || !selectedDate}
+                                disabled={isReadOnly || canCancelRequest || needsProviderAction || !selectedDate}
                             >
                                 <SelectTrigger id="time">
                                     <SelectValue placeholder="Select a time" />
@@ -283,25 +310,48 @@ export default function ManageBookingPage() {
                 </Card>
             )}
 
-            {(canAmendBooking || canCancelPending) && (
-                <div className="flex flex-col gap-4">
-                    {canAmendBooking && (
-                        <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-4">
+                {/* Provider Actions */}
+                {needsProviderAction && (
+                    <>
+                        <Button size="lg" onClick={handleApproveBooking}>
+                            <ThumbsUp className="mr-2 h-4 w-4" />
+                            Approve Request
                         </Button>
-                    )}
-                    <CancelBookingDialog onConfirm={handleCancelBooking}>
+                        <Button size="lg" variant="destructive" onClick={() => handleCancelBooking('provider')}>
+                            <ThumbsDown className="mr-2 h-4 w-4" />
+                            Decline Request
+                        </Button>
+                         <Button size="lg" variant="outline" asChild>
+                            <Link href={`/messages?providerId=${booking.providerId}`}>
+                                <MessageSquare className="mr-2 h-4 w-4" />
+                                Chat with Client
+                            </Link>
+                        </Button>
+                    </>
+                )}
+
+                {/* Client Actions */}
+                {canAmendBooking && (
+                    <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                    </Button>
+                )}
+                 {(canAmendBooking || canCancelRequest) && (
+                     <CancelBookingDialog onConfirm={() => handleCancelBooking('client')}>
                         <Button variant="destructive" size="lg" className="w-full">
                             <XCircle className="mr-2 h-4 w-4" />
-                            {canCancelPending ? 'Cancel Request' : 'Cancel Booking'}
+                            {canCancelRequest ? 'Cancel Request' : 'Cancel Booking'}
                         </Button>
                     </CancelBookingDialog>
-                </div>
-            )}
+                 )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

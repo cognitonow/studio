@@ -242,13 +242,41 @@ let providerMessages: Message[] = [
     { id: 4, conversationId: 2, sender: 'provider', text: "You're so welcome, Emily! It was a pleasure. So glad you love it!", isAi: true },
 ];
 
+let clientNotifications: Notification[] = [
+     {
+      id: 1,
+      icon: 'payment',
+      title: 'Action Required - Review & Pay',
+      description: "Chloe's Hair Haven has approved your booking! Please review and complete payment to confirm your spot.",
+      time: '1 hour ago',
+      read: false,
+      bookingId: '5',
+    },
+    {
+      id: 2,
+      icon: 'message',
+      title: "New Message from Glow & Go",
+      description: "Let us know if you have any questions about your facial.",
+      time: "5 hours ago",
+      read: false,
+    },
+     {
+        id: 3,
+        icon: 'cancellation',
+        title: 'Booking Cancelled by Provider',
+        description: "The Relaxation Station has cancelled your booking for tomorrow.",
+        time: "1 day ago",
+        read: true,
+        bookingId: 'some-id'
+    },
+];
 
-let notifications: Notification[] = [
+let providerNotifications: Notification[] = [
     {
       id: 1,
       icon: 'new-booking',
-      title: "New Booking!",
-      description: "Alex Ray has booked a Haircut for August 15, 2024 at 2:00 PM.",
+      title: "New Booking Request!",
+      description: "Alex Ray has requested a Haircut for this Friday.",
       time: "1 hour ago",
       read: false,
       bookingId: '5'
@@ -256,16 +284,16 @@ let notifications: Notification[] = [
     {
       id: 2,
       icon: 'message',
-      title: "New Message",
-      description: "Kate Winslet sent you a message about her upcoming Classic Facial.",
-      time: "5 hours ago",
-      read: false,
+      title: "New Message from Emily R.",
+      description: "Thank you so much for the amazing balayage!",
+      time: "1 day ago",
+      read: true,
     },
-    {
+     {
       id: 3,
       icon: 'cancellation',
-      title: "Booking Cancelled",
-      description: "Taylor Swift has cancelled her Bridal Makeup booking for September 1, 2024.",
+      title: "Booking Cancelled by Client",
+      description: "Taylor Swift has cancelled her Bridal Makeup booking.",
       time: "2 days ago",
       read: true,
       bookingId: '6'
@@ -273,13 +301,13 @@ let notifications: Notification[] = [
     {
         id: 4,
         icon: 'confirmation',
-        title: "Booking Confirmed!",
-        description: "Jordan Peele's booking for a Classic Manicure is confirmed for August 18, 2024 at 10:00 AM.",
+        title: "Payment Received!",
+        description: "Jane D.'s payment has been received for her manicure.",
         time: "3 days ago",
         read: true,
         bookingId: '3'
     }
-  ];
+];
 
 export const getBookings = () => {
     const today = startOfDay(new Date());
@@ -300,14 +328,18 @@ export const getProviderBookings = (providerId: string) => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
+const addNotification = (recipient: UserRole, notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
     const newNotification: Notification = {
-        id: notifications.length + 1,
+        id: Math.random(), // Use a more robust ID in a real app
         time: formatDistanceToNow(new Date(), { addSuffix: true }),
         read: false,
         ...notification
     };
-    notifications.unshift(newNotification);
+    if (recipient === 'provider') {
+        providerNotifications.unshift(newNotification);
+    } else {
+        clientNotifications.unshift(newNotification);
+    }
 };
 
 const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: any) => Promise<{ message: string }>, metadata?: any) => {
@@ -368,22 +400,16 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
         if (booking.status !== status) {
             booking.status = status;
 
-            // In a real app, this would target a specific user.
-            // For now, we add all notifications to the global notifications array.
-            const clientNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => addNotification(notification);
-            const providerNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => addNotification(notification);
-
-
             if (status === 'Cancelled') {
                 if (cancelledBy === 'client') {
-                    providerNotification({
+                    addNotification('provider',{
                         icon: 'cancellation',
                         title: 'Booking Cancelled by Client',
                         description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
                         bookingId: booking.id
                     });
-                } else {
-                    clientNotification({
+                } else { // Cancelled by provider
+                    addNotification('client', {
                         icon: 'cancellation',
                         title: 'Booking Cancelled by Provider',
                         description: `${booking.providerName} has cancelled your booking for ${new Date(booking.date).toLocaleDateString()}.`,
@@ -392,13 +418,13 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 }
                 await sendAutomatedMessage(booking, draftBookingCancellation, { cancelledBy });
             } else if (status === 'Review Order and Pay') {
-                providerNotification({
+                addNotification('provider', {
                     icon: 'confirmation',
                     title: 'Booking Approved!',
                     description: `You approved ${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()}. Waiting for payment.`,
                     bookingId: booking.id
                 });
-                clientNotification({
+                addNotification('client', {
                     icon: 'payment',
                     title: 'Action Required - Review & Pay',
                     description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
@@ -406,13 +432,13 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 });
                 await sendAutomatedMessage(booking, draftBookingApproval);
             } else if (status === 'Confirmed') {
-                clientNotification({
+                 addNotification('client', {
                     icon: 'confirmation',
                     title: 'Booking Confirmed!',
                     description: `Your booking with ${booking.providerName} for ${new Date(booking.date).toLocaleDateString()} is confirmed.`,
                     bookingId: booking.id
                 });
-                providerNotification({
+                addNotification('provider', {
                     icon: 'confirmation',
                     title: 'Booking Confirmed!',
                     description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is now confirmed.`,
@@ -421,13 +447,13 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
             } else if (status === 'Completed') {
                 booking.isPaid = true; // For simplicity, assume payment is captured on completion
-                providerNotification({
+                addNotification('provider', {
                     icon: 'new-booking', // Using this for completed as well for provider feed
                     title: 'Booking Completed!',
                     description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`,
                     bookingId: booking.id
                 });
-                clientNotification({
+                addNotification('client', {
                     icon: 'confirmation',
                     title: 'Service Complete!',
                     description: `Your appointment with ${booking.providerName} is complete. We hope you enjoyed your service!`,
@@ -462,7 +488,7 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
     bookings.push(newBooking);
 
     // This is a provider notification
-    addNotification({
+    addNotification('provider', {
         icon: 'new-booking',
         title: 'New Booking Request!',
         description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
@@ -471,20 +497,23 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
 };
 
 
-export const getNotifications = () => {
+export const getNotifications = (role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
     // Return a new array to ensure React state updates trigger re-renders
-    return [...notifications];
+    return [...list].sort((a,b) => b.id - a.id);
 }
 
-export const markNotificationAsRead = (id: number) => {
-    const notification = notifications.find(n => n.id === id);
+export const markNotificationAsRead = (id: number, role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
+    const notification = list.find(n => n.id === id);
     if (notification) {
         notification.read = true;
     }
 }
 
-export const markAllNotificationsAsRead = () => {
-    notifications.forEach(n => n.read = true);
+export const markAllNotificationsAsRead = (role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
+    list.forEach(n => n.read = true);
 }
 
 export const getConversations = () => [...conversations].sort((a, b) => b.id - a.id);

@@ -9,6 +9,7 @@ import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } 
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useUserRole } from '@/hooks/use-user-role';
 
 const NotificationList = ({ items, onItemClick }: { items: Notification[], onItemClick: (id: number) => void }) => {
     const getIcon = (icon: Notification['icon']) => {
@@ -80,20 +81,21 @@ const NotificationList = ({ items, onItemClick }: { items: Notification[], onIte
 
 
 export default function NotificationsPage() {
+    const { role } = useUserRole();
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     useEffect(() => {
-        setNotifications(getNotifications());
-    }, []);
+        setNotifications(getNotifications(role));
+    }, [role]);
 
     const handleMarkAllAsRead = () => {
-        markAllNotificationsAsRead();
-        setNotifications(getNotifications());
+        markAllNotificationsAsRead(role);
+        setNotifications(getNotifications(role));
     }
 
     const handleItemClick = (id: number) => {
-        markNotificationAsRead(id);
-        setNotifications(getNotifications());
+        markNotificationAsRead(id, role);
+        setNotifications(getNotifications(role));
     }
 
     return (
@@ -109,7 +111,9 @@ export default function NotificationsPage() {
                                 </CardTitle>
                                 <CardDescription>Stay up-to-date with your bookings and messages.</CardDescription>
                             </div>
-                            <Button variant="outline" size="sm" onClick={handleMarkAllAsRead}>Mark all as read</Button>
+                            {notifications.some(n => !n.read) && (
+                                <Button variant="outline" size="sm" onClick={handleMarkAllAsRead}>Mark all as read</Button>
+                            )}
                         </div>
                     </CardHeader>
                     <CardContent>
