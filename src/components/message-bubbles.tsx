@@ -52,7 +52,7 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
             </Avatar>
         </div>
     );
-}
+};
 
 export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
     return (
@@ -71,4 +71,4 @@ export const ProviderMessage = ({ message, activeConversation }: ProviderMessage
             </div>
         </div>
     );
-}
+};
