@@ -231,8 +231,8 @@ let messages: Message[] = [
 ];
 
 let providerConversations: Conversation[] = [
-    { id: 1, providerId: '3', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'client-1' },
-    { id: 2, providerId: '3', name: "Emily R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman smiling", lastMessage: "Thank you so much for the amazing balayage!", time: "1d", unread: 0, clientId: 'client-2' },
+    { id: 1, providerId: '3', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'Alex Ray' },
+    { id: 2, providerId: '3', name: "Emily R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman smiling", lastMessage: "Thank you so much for the amazing balayage!", time: "1d", unread: 0, clientId: 'Emily R.' },
 ];
 
 let providerMessages: Message[] = [
