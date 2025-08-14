@@ -92,6 +92,7 @@ export default function BookingPage() {
     addBooking({
         providerId: provider.id,
         providerName: provider.name,
+        clientName: 'Alex Ray', // Mock client name
         serviceIds: [service.id],
         date: date.toISOString(),
         isPaid: false,
@@ -188,3 +189,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    

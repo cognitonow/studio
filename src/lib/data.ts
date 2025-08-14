@@ -478,14 +478,13 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
     }
 };
 
-export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'>) => {
+export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
         status: 'Pending',
-        clientName: 'Jane Doe', // Placeholder name for client
         ...booking,
     };
-    bookings.push(newBooking);
+    bookings.unshift(newBooking);
 
     // This is a provider notification
     addNotification('provider', {
@@ -494,6 +493,35 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
         description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
         bookingId: newBooking.id
     });
+    
+    // Create a new provider conversation if one doesn't exist
+    let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName);
+    if (!providerConvo) {
+        providerConvo = {
+            id: providerConversations.length + 1,
+            providerId: newBooking.providerId,
+            clientId: newBooking.clientName,
+            name: newBooking.clientName || 'New Client',
+            avatar: "https://placehold.co/100x100.png",
+            dataAiHint: "person face",
+            lastMessage: "Booking request created.",
+            time: "Just now",
+            unread: 1,
+        };
+        providerConversations.unshift(providerConvo);
+    }
+    
+    // Add the initial message from the client to the provider's message list
+    const serviceNames = getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', ');
+    providerMessages.push({
+        id: providerMessages.length + 1,
+        conversationId: providerConvo.id,
+        sender: 'user',
+        text: `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`,
+    });
+    providerConvo.lastMessage = `Request for ${serviceNames}.`;
+    providerConvo.unread = (providerConvo.unread || 0) + 1;
+
 };
 
 
@@ -659,5 +687,7 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
+    
 
     
