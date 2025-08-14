@@ -7,56 +7,78 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Sparkles, User, Phone, Video, CreditCard } from "lucide-react"
-import { getConversations, getMessages, markAllMessagesAsRead, startConversationWithProvider } from "@/lib/data"
+import { Search, Send, Sparkles, User, CreditCard, Repeat, UserSwitch } from "lucide-react"
+import { getConversations, getMessages, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessages } from "@/lib/data"
 import { useState, useEffect } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
+type ChatView = 'client' | 'provider';
+
 export default function MessagesPage() {
+  const [view, setView] = useState<ChatView>('client');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const convos = getConversations();
-    setConversations(convos);
-    setMessages(getMessages());
+    const isProviderView = view === 'provider';
+    const convos = isProviderView ? getProviderConversations() : getConversations();
+    const currentMessages = isProviderView ? getProviderMessages() : getMessages();
 
-    const providerIdToChat = searchParams.get('providerId');
-    if (providerIdToChat) {
-        const existingConvo = convos.find(c => c.providerId === providerIdToChat);
-        if (existingConvo) {
-            setActiveConversation(existingConvo);
-        } else {
-            const newConvo = startConversationWithProvider(providerIdToChat);
-            if (newConvo) {
-                setConversations(prev => [newConvo, ...prev]);
-                setActiveConversation(newConvo);
-            } else if (convos.length > 0) {
-                 setActiveConversation(convos[0]);
+    setConversations(convos);
+    setMessages(currentMessages);
+
+    if (view === 'client') {
+        const providerIdToChat = searchParams.get('providerId');
+        if (providerIdToChat) {
+            const existingConvo = convos.find(c => c.providerId === providerIdToChat);
+            if (existingConvo) {
+                setActiveConversation(existingConvo);
+            } else {
+                const newConvo = startConversationWithProvider(providerIdToChat);
+                if (newConvo) {
+                    setConversations(prev => [newConvo, ...prev]);
+                    setActiveConversation(newConvo);
+                } else if (convos.length > 0) {
+                    setActiveConversation(convos[0]);
+                }
             }
+        } else if (convos.length > 0) {
+            setActiveConversation(convos[0]);
         }
-    } else if (convos.length > 0) {
-      setActiveConversation(convos[0]);
+    } else {
+        if (convos.length > 0) {
+            setActiveConversation(convos[0]);
+        }
     }
-  }, [searchParams]);
+  }, [searchParams, view]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     if (convo.unread > 0) {
       markAllMessagesAsRead(convo.id);
-      setConversations([...getConversations()]);
+      // This part is tricky in mock data, in a real app you'd refetch or update state more granularly
+      const updatedConvos = view === 'provider' ? getProviderConversations() : getConversations();
+      setConversations(updatedConvos);
     }
+  }
+
+  const toggleView = () => {
+    setView(current => current === 'client' ? 'provider' : 'client');
   }
 
   if (!activeConversation) {
     return (
-        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
-            <p className="text-muted-foreground">Loading conversations...</p>
+        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
+             <p className="text-muted-foreground">No active conversations.</p>
+             <Button onClick={toggleView}>
+                <Repeat className="mr-2 h-4 w-4" />
+                Switch to {view === 'client' ? 'Provider' : 'Client'} View
+            </Button>
         </div>
     )
   }
@@ -68,7 +90,13 @@ export default function MessagesPage() {
         {/* Conversations List */}
         <Card className="md:col-span-1 lg:col-span-1 h-full flex flex-col">
           <CardHeader>
-            <CardTitle className="text-2xl font-headline">Chats</CardTitle>
+            <div className="flex justify-between items-center">
+                <CardTitle className="text-2xl font-headline">Chats</CardTitle>
+                 <Button onClick={toggleView} size="sm" variant="outline">
+                    <UserSwitch className="mr-2 h-4 w-4" />
+                    {view === 'client' ? 'Provider View' : 'Client View'}
+                </Button>
+            </div>
             <div className="relative pt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input placeholder="Search messages..." className="pl-10" />
@@ -114,10 +142,17 @@ export default function MessagesPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={`/provider/${activeConversation.providerId}`}>
-                            <User className="mr-2 h-4 w-4" />
-                            View Profile
-                        </Link>
+                        {view === 'client' ? (
+                             <Link href={`/provider/${activeConversation.providerId}`}>
+                                <User className="mr-2 h-4 w-4" />
+                                View Profile
+                            </Link>
+                        ) : (
+                             <Link href={`/booking/manage/1`}>
+                                <User className="mr-2 h-4 w-4" />
+                                View Client History
+                            </Link>
+                        )}
                     </Button>
                 </div>
             </CardHeader>
@@ -125,17 +160,17 @@ export default function MessagesPage() {
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
                         {messages.filter(m => m.conversationId === activeConversation.id).map((message) => (
-                            <div key={message.id} className={cn("flex items-end gap-3", message.sender === 'user' ? 'justify-end' : '')}>
-                                {message.sender === 'provider' && (
+                            <div key={message.id} className={cn("flex items-end gap-3", (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'justify-end' : '')}>
+                                {(message.sender === 'provider' && view === 'client') || (message.sender === 'user' && view === 'provider') ? (
                                     <Avatar className="w-8 h-8">
                                         <AvatarImage src={activeConversation.avatar} data-ai-hint={activeConversation.dataAiHint} />
                                         <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                )}
+                                ) : null }
                                 <div className="flex flex-col gap-1 items-start">
                                     <div className={cn(
                                         "rounded-lg px-4 py-3 max-w-md",
-                                        message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted',
+                                        (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'bg-primary text-primary-foreground' : 'bg-muted',
                                         message.isAi && 'bg-purple-100 dark:bg-purple-900/50'
                                     )}>
                                         <p className="text-sm">{message.text}</p>
@@ -143,7 +178,7 @@ export default function MessagesPage() {
                                             <Button asChild size="sm" className="mt-3">
                                                 <Link href={`/booking/manage/${message.bookingId}`}>
                                                     <CreditCard className="mr-2 h-4 w-4" />
-                                                    Review & Pay
+                                                    {view === 'client' ? 'Review & Pay' : 'Manage Booking'}
                                                 </Link>
                                             </Button>
                                         )}
@@ -155,12 +190,12 @@ export default function MessagesPage() {
                                         </div>
                                     )}
                                 </div>
-                                {message.sender === 'user' && (
+                                 {(message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? (
                                     <Avatar className="w-8 h-8">
                                         <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
-                                        <AvatarFallback>U</AvatarFallback>
+                                        <AvatarFallback>{view === 'client' ? 'U' : 'P'}</AvatarFallback>
                                     </Avatar>
-                                )}
+                                ) : null}
                             </div>
                         ))}
                     </div>

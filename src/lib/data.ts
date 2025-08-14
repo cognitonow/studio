@@ -1,4 +1,5 @@
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
 import { format, formatDistanceToNow, isSameDay, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -217,13 +218,26 @@ let bookings: Booking[] = [
 export let providerServices: Service[] = providers[2].services;
 
 let conversations: Conversation[] = [
-  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you need anything!", time: "10m", unread: 0 },
-  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Sounds great, thank you!", time: "2h", unread: 0 },
-  { id: 3, providerId: '2', name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0 },
-  { id: 4, providerId: '4', name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0 },
-]
+  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
+  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
+  { id: 3, providerId: '2', name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
+  { id: 4, providerId: '4', name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
+];
 
 let messages: Message[] = [];
+
+let providerConversations: Conversation[] = [
+    { id: 1, providerId: '3', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'client-1' },
+    { id: 2, providerId: '3', name: "Emily R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman smiling", lastMessage: "Thank you so much for the amazing balayage!", time: "1d", unread: 0, clientId: 'client-2' },
+];
+
+let providerMessages: Message[] = [
+    { id: 1, conversationId: 1, sender: 'user', text: "Hi! I've sent a booking request for a haircut for this Friday." },
+    { id: 2, conversationId: 1, sender: 'provider', text: "Hi Alex, thanks for letting me know. I see it and will approve it shortly.", isAi: true, bookingId: '5' },
+    { id: 3, conversationId: 2, sender: 'user', text: "Just wanted to say thank you again for the amazing balayage. I love it!" },
+    { id: 4, conversationId: 2, sender: 'provider', text: "You're so welcome, Emily! It was a pleasure. So glad you love it!", isAi: true },
+];
+
 
 let notifications: Notification[] = [
     {
@@ -303,8 +317,10 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
             serviceName: serviceNames,
             bookingDate: bookingDateTime,
         });
-
-        const conversation = conversations.find(c => c.name === booking.providerName);
+        
+        // This is simplified for mock data. In a real app, you'd have separate conversations for client/provider.
+        const conversation = conversations.find(c => c.providerId === booking.providerId);
+        const providerConversation = providerConversations.find(c => c.clientId === booking.clientName); // This is a bit of a hack for mock data
 
         if (conversation) {
              messages.push({
@@ -317,8 +333,24 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
             });
             conversation.lastMessage = response.message;
             conversation.time = 'Just now';
-            conversation.unread = (conversation.unread || 0) + 1;
+            // conversation.unread = (conversation.unread || 0) + 1;
         }
+
+        if (providerConversation) {
+             providerMessages.push({
+                id: providerMessages.length + 1,
+                conversationId: providerConversation.id,
+                sender: 'provider',
+                text: response.message,
+                isAi: true,
+                bookingId: booking.id,
+            });
+            providerConversation.lastMessage = response.message;
+            providerConversation.time = 'Just now';
+            providerConversation.unread = (providerConversation.unread || 0) + 1;
+        }
+
+
     } catch (e) {
         console.error("Failed to draft automated message:", e);
     }
@@ -440,21 +472,30 @@ export const markAllNotificationsAsRead = () => {
     notifications.forEach(n => n.read = true);
 }
 
-export const getConversations = () => [...conversations];
+export const getConversations = () => [...conversations].sort((a, b) => b.id - a.id);
 export const getMessages = () => [...messages];
+
+export const getProviderConversations = () => [...providerConversations].sort((a,b) => b.id - a.id);
+export const getProviderMessages = () => [...providerMessages];
+
 
 export const getUnreadMessageCount = () => {
     return conversations.reduce((count, convo) => count + (convo.unread || 0), 0);
 };
 
 export const markAllMessagesAsRead = (conversationId?: number) => {
-    if (conversationId) {
-        const convo = conversations.find(c => c.id === conversationId);
-        if (convo) {
+    const markAsRead = (convo: Conversation) => {
+        if (convo.id === conversationId) {
             convo.unread = 0;
         }
+    };
+
+    if (conversationId) {
+        conversations.forEach(markAsRead);
+        providerConversations.forEach(markAsRead);
     } else {
         conversations.forEach(convo => convo.unread = 0);
+        providerConversations.forEach(convo => convo.unread = 0);
     }
 };
 
