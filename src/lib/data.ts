@@ -213,19 +213,13 @@ let bookings: Booking[] = [
 export let providerServices: Service[] = providers[2].services;
 
 let conversations: Conversation[] = [
-  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Perfect, see you then!", time: "10m", unread: 0 },
-  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Yes, I have availability on Friday.", time: "2h", unread: 2 },
+  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you need anything!", time: "10m", unread: 0 },
+  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Sounds great, thank you!", time: "2h", unread: 0 },
   { id: 3, providerId: '2', name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "You're welcome! Glad I could help.", time: "1d", unread: 0 },
   { id: 4, providerId: '4', name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Let's schedule a trial run.", time: "3d", unread: 0 },
 ]
 
-let messages: Message[] = [
-    { id: 1, conversationId: 2, sender: 'provider', text: 'Hi there! Just confirming your appointment for the Balayage service tomorrow at 2 PM.', isAi: true, bookingId: '1' },
-    { id: 2, conversationId: 2, sender: 'user', text: 'Hi Chloe! Yes, that sounds right. I was wondering if it would be possible to also get a quick trim?' },
-    { id: 3, conversationId: 2, sender: 'provider', text: "Of course! A trim shouldn't add too much time. I've updated the appointment for you." },
-    { id: 4, conversationId: 2, sender: 'user', text: "That's fantastic, thank you so much! "},
-    { id: 5, conversationId: 2, sender: 'provider', text: "You're very welcome. Looking forward to seeing you tomorrow!" },
-]
+let messages: Message[] = [];
 
 let notifications: Notification[] = [
     {
@@ -570,3 +564,4 @@ export const getServicesByIds = (ids: string[]) => services.filter(s => ids.incl
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
 
+    

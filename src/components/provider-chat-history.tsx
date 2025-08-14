@@ -17,13 +17,7 @@ interface Message {
 }
 
 export function ProviderChatHistory() {
-    const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Can I see some more examples of your balayage work?", sender: 'user', timestamp: '2 days ago' },
-        { id: 2, text: "Absolutely! I'll send some over to your email. Do you have a specific color palette in mind?", sender: 'provider', timestamp: '2 days ago' },
-        { id: 3, text: "Something with caramel and honey tones would be lovely.", sender: 'user', timestamp: '2 days ago' },
-        { id: 4, text: "Perfect, I have some great examples for you. Sending them now!", sender: 'provider', timestamp: '2 days ago' },
-        { id: 5, text: "Thanks so much!", sender: 'user', timestamp: '2 days ago' },
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
 
     const handleSendMessage = (e: React.FormEvent) => {
@@ -53,7 +47,7 @@ export function ProviderChatHistory() {
             <CardContent>
                 <ScrollArea className="h-64 w-full pr-4 mb-4">
                     <div className="space-y-4">
-                        {messages.map((message) => (
+                        {messages.length > 0 ? messages.map((message) => (
                             <div key={message.id} className={`flex flex-col gap-1 ${message.sender === 'user' ? 'items-end' : 'items-start'}`}>
                                 <div className={`flex items-start gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
                                     {message.sender === 'provider' && (
@@ -76,7 +70,11 @@ export function ProviderChatHistory() {
                                     {message.timestamp}
                                 </span>
                             </div>
-                        ))}
+                        )) : (
+                             <div className="flex items-center justify-center h-full text-muted-foreground">
+                                No message history with this client yet.
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
                 <form onSubmit={handleSendMessage} className="flex w-full items-center space-x-2">
@@ -94,3 +92,5 @@ export function ProviderChatHistory() {
         </Card>
     );
 }
+
+    
