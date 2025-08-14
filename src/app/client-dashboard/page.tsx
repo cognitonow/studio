@@ -215,7 +215,7 @@ export default function ClientDashboardPage() {
                 Favorite Provider
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow space-y-4">
+          <CardContent className="flex-grow flex flex-col">
             {isLoading || !dashboardData?.favoriteProvider ? (
                 <div className="space-y-4">
                     <Skeleton className="h-32 w-full rounded-lg" />
@@ -280,7 +280,7 @@ export default function ClientDashboardPage() {
                             <Badge key={badge} variant="secondary">{badge}</Badge>
                         ))}
                     </div>
-                    <Button asChild className="w-full mt-4">
+                    <Button asChild className="w-full mt-auto pt-4">
                         <Link href={`/provider/${dashboardData.favoriteProvider.id}`}>
                             View Profile
                         </Link>
