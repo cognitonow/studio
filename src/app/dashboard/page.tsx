@@ -56,7 +56,7 @@ export default function ProviderDashboardPage() {
   }, [provider]);
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
-    updateBookingStatus(bookingId, status);
+    updateBookingStatus(bookingId, status, 'provider');
     if (provider) {
       setBookings(getProviderBookings(provider.id));
     }
@@ -99,21 +99,14 @@ export default function ProviderDashboardPage() {
     
     const actions: JSX.Element[] = [];
 
-    if (booking.status !== 'Cancelled' && booking.status !== 'Completed') {
-         actions.push(
-            <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
-                <Link href="/messages">
-                    <Contact className="h-4 w-4" />
-                </Link>
-            </Button>
-        );
-    }
-
     switch (booking.status) {
       case 'Pending':
         actions.push(
-            <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
-                <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
+                <Link href="/messages">
+                    <Contact className="h-4 w-4 mr-2" />
+                    Start Chat
+                </Link>
             </Button>,
             <Button key={`confirm-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Review Order and Pay')}>Approve</Button>,
             <Button key={`cancel-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Decline</Button>
@@ -121,12 +114,24 @@ export default function ProviderDashboardPage() {
         break;
       case 'Review Order and Pay':
         actions.push(
+             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
+                <Link href="/messages">
+                    <Contact className="h-4 w-4" />
+                </Link>
+            </Button>,
             <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
             </Button>
         );
         break;
       case 'Confirmed':
+         actions.push(
+             <Button key={`contact-${booking.id}`} size="sm" variant="ghost" asChild>
+                <Link href="/messages">
+                    <Contact className="h-4 w-4" />
+                </Link>
+            </Button>
+        );
         actions.push(
             <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
