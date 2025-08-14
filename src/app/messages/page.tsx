@@ -14,11 +14,10 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { UserMessage, ProviderMessage } from "@/components/message-bubbles"
-
-type ChatView = 'client' | 'provider';
+import { useUserRole } from "@/hooks/use-user-role"
 
 export default function MessagesPage() {
-  const [view, setView] = useState<ChatView>('client');
+  const { role: userRole } = useUserRole();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const [isMounted, setIsMounted] = useState(false);
@@ -32,14 +31,14 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!isMounted) return;
 
-    const isProviderView = view === 'provider';
+    const isProviderView = userRole === 'provider';
     const convos = isProviderView ? getProviderConversations() : getConversations();
 
     setConversations(convos);
     
     let initialConvo: Conversation | undefined = undefined;
 
-    if (view === 'client') {
+    if (userRole === 'client') {
         const providerIdToChat = searchParams.get('providerId');
         if (providerIdToChat) {
             const existingConvo = convos.find(c => c.providerId === providerIdToChat);
@@ -63,20 +62,19 @@ export default function MessagesPage() {
     
     setActiveConversation(initialConvo);
 
-  }, [view, searchParams, router, isMounted]);
+  }, [userRole, searchParams, router, isMounted]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     if (convo.unread > 0) {
-      markAllMessagesAsRead(convo.id, view);
-      // This part is tricky in mock data, in a real app you'd refetch or update state more granularly
-      const updatedConvos = view === 'provider' ? getProviderConversations() : getConversations();
+      markAllMessagesAsRead(convo.id, userRole);
+      const updatedConvos = userRole === 'provider' ? getProviderConversations() : getConversations();
       setConversations(updatedConvos);
     }
   }
   
   const activeMessages = activeConversation ? 
-    (view === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
+    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
     : [];
 
   if (!isMounted) {
@@ -154,7 +152,7 @@ export default function MessagesPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" asChild>
-                        {view === 'client' ? (
+                        {userRole === 'client' ? (
                              <Link href={`/provider/${activeConversation.providerId}`}>
                                 <User className="mr-2 h-4 w-4" />
                                 View Profile
@@ -172,9 +170,9 @@ export default function MessagesPage() {
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
                         {activeMessages.map((message) => {
-                           const isUser = (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider');
+                           const isUser = (message.sender === 'user' && userRole === 'client') || (message.sender === 'provider' && userRole === 'provider');
                            if (isUser) {
-                               return <UserMessage key={message.id} message={message} view={view} />;
+                               return <UserMessage key={message.id} message={message} view={userRole} />;
                            }
                            return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />;
                         })}

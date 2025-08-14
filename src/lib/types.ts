@@ -1,5 +1,7 @@
 
 
+export type UserRole = 'guest' | 'client' | 'provider';
+
 export type Provider = {
   id: string;
   name: string;

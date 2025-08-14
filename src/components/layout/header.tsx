@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import React from 'react';
 import { getNotifications, getUnreadMessageCount } from '@/lib/data';
-
-type UserRole = 'guest' | 'client' | 'provider';
+import { useUserRole } from '@/hooks/use-user-role';
+import type { UserRole } from '@/hooks/use-user-role';
 
 function getNavLinks(role: UserRole) {
     const navConfig = {
@@ -111,7 +111,7 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 export function Header() {
   const [isMounted, setIsMounted] = React.useState(false);
-  const [userRole, setUserRole] = React.useState<UserRole>('client');
+  const { role: userRole, setRole: setUserRole } = useUserRole();
   const [hasUnread, setHasUnread] = React.useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = React.useState(false);
   
@@ -125,17 +125,18 @@ export function Header() {
           const notifications = getNotifications();
           setHasUnread(notifications.some(n => !n.read));
 
-          const unreadMessagesCount = getUnreadMessageCount();
+          const unreadMessagesCount = getUnreadMessageCount(userRole);
           setHasUnreadMessages(unreadMessagesCount > 0);
       };
 
       checkUnreads();
       
+      // Check for new messages every 5 seconds, and on role change
       const interval = setInterval(checkUnreads, 5000); 
 
       return () => clearInterval(interval);
     }
-  }, [isMounted]);
+  }, [isMounted, userRole]);
 
   const roleLabels: Record<UserRole, string> = {
     guest: 'Guest View',

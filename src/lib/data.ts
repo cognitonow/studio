@@ -1,6 +1,6 @@
 
 
-import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
+import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
@@ -486,8 +486,9 @@ export const getProviderMessagesForConversation = (conversationId: number) => {
 }
 
 
-export const getUnreadMessageCount = () => {
-    return conversations.reduce((count, convo) => count + (convo.unread || 0), 0);
+export const getUnreadMessageCount = (role: UserRole) => {
+    const conversationList = role === 'provider' ? providerConversations : conversations;
+    return conversationList.reduce((count, convo) => count + (convo.unread || 0), 0);
 };
 
 export const markAllMessagesAsRead = (conversationId?: number, view?: 'client' | 'provider') => {
