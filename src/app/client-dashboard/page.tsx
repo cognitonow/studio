@@ -9,9 +9,10 @@ import { ProviderCard } from "@/components/provider-card"
 import { providers, getExploreQueueProviders } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
-import type { Provider } from "@/lib/types";
+import type { Provider, Service } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from "date-fns"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const mockClientStats = {
     rating: 4.8,
@@ -25,18 +26,26 @@ const mockClientStats = {
 };
 
 export default function ClientDashboardPage() {
-  const favoriteProvider = providers[0];
-  const favoriteProviderFirstService = favoriteProvider.services[0];
-  
+  const [favoriteProvider, setFavoriteProvider] = useState<Provider | undefined>(undefined);
+  const [favoriteProviderFirstService, setFavoriteProviderFirstService] = useState<Service | undefined>(undefined);
   const [suggestedProvider, setSuggestedProvider] = useState<Provider | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const favProvider = providers[0];
     const exploreQueue = getExploreQueueProviders();
+    let suggProvider;
+
     if (exploreQueue.length > 0) {
-      setSuggestedProvider(exploreQueue[exploreQueue.length - 1]);
+      suggProvider = exploreQueue[exploreQueue.length - 1];
     } else {
-      setSuggestedProvider(providers[1]); // Fallback provider
+      suggProvider = providers[1]; // Fallback provider
     }
+
+    setFavoriteProvider(favProvider);
+    setFavoriteProviderFirstService(favProvider.services[0]);
+    setSuggestedProvider(suggProvider);
+    setIsLoading(false);
   }, []);
 
 
@@ -115,27 +124,44 @@ export default function ClientDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Link href={`/provider/${favoriteProvider.id}`} className="block group">
-              <div className="flex items-center gap-4">
-                  <Avatar className="h-20 w-20">
-                      <AvatarImage src={favoriteProvider.avatarUrl} data-ai-hint={favoriteProvider.dataAiHint} />
-                      <AvatarFallback>{favoriteProvider.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                      <h3 className="text-lg font-semibold group-hover:underline">{favoriteProvider.name}</h3>
-                      <p className="text-sm text-muted-foreground">{favoriteProvider.specialty}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                          <Star className="w-4 h-4 text-primary fill-primary" />
-                          <span>{favoriteProvider.rating} ({favoriteProvider.reviewCount} reviews)</span>
-                      </div>
-                  </div>
-              </div>
-            </Link>
-             <Button asChild className="w-full mt-6">
-                <Link href={`/book/${favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
-                    Book Again
+            {isLoading || !favoriteProvider ? (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-20 w-20 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-4 w-24" />
+                        </div>
+                    </div>
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            ) : (
+                <>
+                <Link href={`/provider/${favoriteProvider.id}`} className="block group">
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20">
+                        <AvatarImage src={favoriteProvider.avatarUrl} data-ai-hint={favoriteProvider.dataAiHint} />
+                        <AvatarFallback>{favoriteProvider.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h3 className="text-lg font-semibold group-hover:underline">{favoriteProvider.name}</h3>
+                        <p className="text-sm text-muted-foreground">{favoriteProvider.specialty}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                            <Star className="w-4 h-4 text-primary fill-primary" />
+                            <span>{favoriteProvider.rating} ({favoriteProvider.reviewCount} reviews)</span>
+                        </div>
+                    </div>
+                </div>
                 </Link>
-            </Button>
+                {favoriteProviderFirstService && (
+                    <Button asChild className="w-full mt-6">
+                        <Link href={`/book/${favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
+                            Book Again
+                        </Link>
+                    </Button>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -149,7 +175,15 @@ export default function ClientDashboardPage() {
                 <CardDescription>Based on your history, we think you'll love:</CardDescription>
             </CardHeader>
             <CardContent>
-                {suggestedProvider ? (
+                {isLoading ? (
+                     <div className="space-y-4">
+                        <Skeleton className="h-48 w-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-4/5" />
+                            <Skeleton className="h-4 w-3/5" />
+                        </div>
+                    </div>
+                ) : suggestedProvider ? (
                     <ProviderCard provider={suggestedProvider} />
                 ) : (
                     <p className="text-muted-foreground text-center">Your next great find is waiting on the Explore page!</p>
