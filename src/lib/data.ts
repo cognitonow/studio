@@ -425,6 +425,34 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
         .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
+export const getClientDashboardData = () => {
+    const completedBookings = bookings.filter(b => b.status === 'Completed');
+    const totalSpend = completedBookings.reduce((acc, booking) => {
+        const bookingServices = getServicesByIds(booking.serviceIds);
+        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
+        return acc + bookingTotal;
+    }, 0);
+    
+    const totalBookings = bookings.length;
+    const averageSpend = totalBookings > 0 ? totalSpend / completedBookings.length : 0;
+
+    const previousBookings = bookings
+        .filter(b => b.status === 'Completed' || b.status === 'Cancelled')
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // Mock logic for favorite and suggested providers
+    const favoriteProvider = providers[0];
+    const suggestedProvider = providers[1];
+
+    return {
+        totalBookings,
+        averageSpend,
+        previousBookings,
+        favoriteProvider,
+        suggestedProvider,
+    };
+}
+
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getBookingById = (id: string) => bookings.find(b => b.id === id);

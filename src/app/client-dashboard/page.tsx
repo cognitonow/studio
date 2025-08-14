@@ -6,47 +6,33 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { ProviderCard } from "@/components/provider-card"
-import { providers, getExploreQueueProviders } from "@/lib/data"
+import { providers, getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
-import type { Provider, Service } from "@/lib/types";
+import type { Provider, Service, Booking } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton";
 
-const mockClientStats = {
-    rating: 4.8,
-    totalBookings: 5,
-    averageSpend: 125.50,
-    previousBookings: [
-        { id: 'b1', service: 'Balayage', date: '2024-05-10', status: 'Completed' },
-        { id: 'b2', service: 'Haircut & Blowdry', date: '2024-02-20', status: 'Completed' },
-        { id: 'b3', service: 'Glaze Treatment', date: '2023-11-15', status: 'Completed' },
-    ]
-};
+interface ClientDashboardData {
+    totalBookings: number;
+    averageSpend: number;
+    previousBookings: Booking[];
+    favoriteProvider?: Provider;
+    suggestedProvider?: Provider;
+}
 
 export default function ClientDashboardPage() {
-  const [favoriteProvider, setFavoriteProvider] = useState<Provider | undefined>(undefined);
-  const [favoriteProviderFirstService, setFavoriteProviderFirstService] = useState<Service | undefined>(undefined);
-  const [suggestedProvider, setSuggestedProvider] = useState<Provider | undefined>(undefined);
+  const [dashboardData, setDashboardData] = useState<ClientDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const favProvider = providers[0];
-    const exploreQueue = getExploreQueueProviders();
-    let suggProvider;
-
-    if (exploreQueue.length > 0) {
-      suggProvider = exploreQueue[exploreQueue.length - 1];
-    } else {
-      suggProvider = providers[1]; // Fallback provider
-    }
-
-    setFavoriteProvider(favProvider);
-    setFavoriteProviderFirstService(favProvider.services[0]);
-    setSuggestedProvider(suggProvider);
+    const data = getClientDashboardData();
+    setDashboardData(data);
     setIsLoading(false);
   }, []);
+
+  const favoriteProviderFirstService = dashboardData?.favoriteProvider?.services[0];
 
 
   return (
@@ -64,25 +50,34 @@ export default function ClientDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {isLoading || !dashboardData ? (
+                 <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="w-16 h-16 rounded-full" />
+                       <div className="grid gap-2">
+                         <Skeleton className="h-4 w-24" />
+                         <Skeleton className="h-4 w-20" />
+                         <Skeleton className="h-4 w-28" />
+                       </div>
+                    </div>
+                    <Skeleton className="h-10 w-full" />
+                 </div>
+            ): (
+            <>
             <div className="flex items-center gap-4">
               <Avatar className="w-16 h-16">
                   <AvatarImage src="https://placehold.co/100x100.png" alt="Your Avatar" data-ai-hint="person face" />
                   <AvatarFallback>U</AvatarFallback>
               </Avatar>
               <div className="grid gap-2 text-sm">
-                  <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-muted-foreground"/>
-                      <span className="font-semibold">{mockClientStats.rating.toFixed(1)}</span>
-                      <span className="text-muted-foreground">Client Rating</span>
-                  </div>
                    <div className="flex items-center gap-2">
                       <Repeat className="w-4 h-4 text-muted-foreground"/>
-                      <span className="font-semibold">{mockClientStats.totalBookings}</span>
+                      <span className="font-semibold">{dashboardData.totalBookings}</span>
                       <span className="text-muted-foreground">Total Bookings</span>
                   </div>
                    <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-muted-foreground"/>
-                      <span className="font-semibold">${mockClientStats.averageSpend.toFixed(2)}</span>
+                      <span className="font-semibold">${dashboardData.averageSpend.toFixed(2)}</span>
                       <span className="text-muted-foreground">Average Spend</span>
                   </div>
               </div>
@@ -92,14 +87,14 @@ export default function ClientDashboardPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Service</TableHead>
+                            <TableHead>Provider</TableHead>
                             <TableHead>Date</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockClientStats.previousBookings.slice(0, 3).map(booking => (
+                        {dashboardData.previousBookings.slice(0, 3).map(booking => (
                             <TableRow key={booking.id}>
-                                <TableCell className="font-medium">{booking.service}</TableCell>
+                                <TableCell className="font-medium">{booking.providerName}</TableCell>
                                 <TableCell>{format(new Date(booking.date), 'dd MMM yyyy')}</TableCell>
                             </TableRow>
                         ))}
@@ -112,6 +107,8 @@ export default function ClientDashboardPage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
+            </>
+            )}
           </CardContent>
         </Card>
 
@@ -124,7 +121,7 @@ export default function ClientDashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading || !favoriteProvider ? (
+            {isLoading || !dashboardData?.favoriteProvider ? (
                 <div className="space-y-4">
                     <div className="flex items-center gap-4">
                         <Skeleton className="h-20 w-20 rounded-full" />
@@ -137,25 +134,25 @@ export default function ClientDashboardPage() {
                 </div>
             ) : (
                 <>
-                <Link href={`/provider/${favoriteProvider.id}`} className="block group">
+                <Link href={`/provider/${dashboardData.favoriteProvider.id}`} className="block group">
                 <div className="flex items-center gap-4">
                     <Avatar className="h-20 w-20">
-                        <AvatarImage src={favoriteProvider.avatarUrl} data-ai-hint={favoriteProvider.dataAiHint} />
-                        <AvatarFallback>{favoriteProvider.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={dashboardData.favoriteProvider.avatarUrl} data-ai-hint={dashboardData.favoriteProvider.dataAiHint} />
+                        <AvatarFallback>{dashboardData.favoriteProvider.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <h3 className="text-lg font-semibold group-hover:underline">{favoriteProvider.name}</h3>
-                        <p className="text-sm text-muted-foreground">{favoriteProvider.specialty}</p>
+                        <h3 className="text-lg font-semibold group-hover:underline">{dashboardData.favoriteProvider.name}</h3>
+                        <p className="text-sm text-muted-foreground">{dashboardData.favoriteProvider.specialty}</p>
                         <div className="flex items-center gap-1 mt-1">
                             <Star className="w-4 h-4 text-primary fill-primary" />
-                            <span>{favoriteProvider.rating} ({favoriteProvider.reviewCount} reviews)</span>
+                            <span>{dashboardData.favoriteProvider.rating} ({dashboardData.favoriteProvider.reviewCount} reviews)</span>
                         </div>
                     </div>
                 </div>
                 </Link>
                 {favoriteProviderFirstService && (
                     <Button asChild className="w-full mt-6">
-                        <Link href={`/book/${favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
+                        <Link href={`/book/${dashboardData.favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
                             Book Again
                         </Link>
                     </Button>
@@ -183,8 +180,8 @@ export default function ClientDashboardPage() {
                             <Skeleton className="h-4 w-3/5" />
                         </div>
                     </div>
-                ) : suggestedProvider ? (
-                    <ProviderCard provider={suggestedProvider} />
+                ) : dashboardData?.suggestedProvider ? (
+                    <ProviderCard provider={dashboardData.suggestedProvider} />
                 ) : (
                     <p className="text-muted-foreground text-center">Your next great find is waiting on the Explore page!</p>
                 )}

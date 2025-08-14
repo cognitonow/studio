@@ -5,9 +5,9 @@ This document contains a list of features, improvements, and ideas for future de
 ## Features
 
 - [x] Sign up flow
-- [ ] Client Dashboard
+- [x] Client Dashboard
 
 ## Improvements
 
-- [ ]
-- [ ]
+- [ ] 
+- [ ] 
