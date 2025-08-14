@@ -137,7 +137,7 @@ export default function ManageBookingPage() {
         description: "The appointment has been successfully cancelled.",
         variant: "destructive",
       });
-      router.push('/dashboard');
+      router.push('/bookings');
     }
   };
   
@@ -156,16 +156,18 @@ export default function ManageBookingPage() {
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
-  const isReadOnly = booking.status === 'Pending' || booking.status === 'Completed' || booking.status === 'Cancelled' || booking.isPaid;
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.isPaid;
   const showPaymentForm = booking.status === 'Review Order and Pay' && !booking.isPaid;
+  const canAmendBooking = booking.status === 'Confirmed' && !isReadOnly;
+  const canCancelPending = booking.status === 'Pending';
 
 
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <Button variant="ghost" onClick={() => router.push('/dashboard')} className="mb-4">
+        <Button variant="ghost" onClick={() => router.push('/bookings')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Return to Dashboard
+            Return to My Bookings
         </Button>
         <h1 className="text-4xl font-bold font-headline mb-8">{isReadOnly && !showPaymentForm ? 'Booking Details' : 'Manage Your Booking'}</h1>
         
@@ -205,7 +207,7 @@ export default function ManageBookingPage() {
                         <p className="font-semibold">{service.name}</p>
                         <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
                       </div>
-                      {!isReadOnly && (
+                      {canAmendBooking && (
                         <Button variant="ghost" size="icon" onClick={() => handleRemoveService(service.id)}>
                             <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
@@ -216,7 +218,7 @@ export default function ManageBookingPage() {
                   )}
                 </div>
                 <Separator className="my-6" />
-                {!isReadOnly && (
+                {canAmendBooking && (
                     <AddServiceDialog 
                     providerServices={provider.services}
                     onAddService={handleAddService}
@@ -245,7 +247,7 @@ export default function ManageBookingPage() {
                 <Card>
                 <CardHeader>
                     <CardTitle>{isReadOnly ? 'Date & Time' : 'Amend Date & Time'}</CardTitle>
-                    {!isReadOnly && <CardDescription>Select a new time for your appointment.</CardDescription>}
+                    {canAmendBooking && <CardDescription>Select a new time for your appointment.</CardDescription>}
                 </CardHeader>
                 <CardContent className="flex justify-center">
                     <div className="flex flex-col items-center gap-4">
@@ -254,7 +256,7 @@ export default function ManageBookingPage() {
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                         className="rounded-md border"
-                        disabled={isReadOnly || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
+                        disabled={isReadOnly || canCancelPending || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
                         />
                         <div className="w-full space-y-2">
                             <Label htmlFor="time" className="flex items-center gap-2">
@@ -264,7 +266,7 @@ export default function ManageBookingPage() {
                             <Select 
                                 onValueChange={handleTimeSelect}
                                 value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                                disabled={isReadOnly || !selectedDate}
+                                disabled={isReadOnly || canCancelPending || !selectedDate}
                             >
                                 <SelectTrigger id="time">
                                     <SelectValue placeholder="Select a time" />
@@ -281,18 +283,20 @@ export default function ManageBookingPage() {
                 </Card>
             )}
 
-            {!isReadOnly && (
+            {(canAmendBooking || canCancelPending) && (
                 <div className="flex flex-col gap-4">
-                <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Changes
-                    </Button>
-                <CancelBookingDialog onConfirm={handleCancelBooking}>
-                        <Button variant="destructive" size="lg" className="w-full">
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Cancel Booking
+                    {canAmendBooking && (
+                        <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Changes
                         </Button>
-                </CancelBookingDialog>
+                    )}
+                    <CancelBookingDialog onConfirm={handleCancelBooking}>
+                        <Button variant="destructive" size="lg" className="w-full">
+                            <XCircle className="mr-2 h-4 w-4" />
+                            {canCancelPending ? 'Cancel Request' : 'Cancel Booking'}
+                        </Button>
+                    </CancelBookingDialog>
                 </div>
             )}
           </div>
