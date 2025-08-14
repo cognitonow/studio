@@ -8,10 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { List, PlusCircle, Trash2 } from 'lucide-react';
+import { List, PlusCircle, Trash2, Edit } from 'lucide-react';
 import { services as allServices, serviceCategories, providerServices as initialProviderServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 
 export function ServiceManagementCard() {
     const [providerServices, setProviderServices] = useState<Service[]>(initialProviderServices);
@@ -20,6 +21,14 @@ export function ServiceManagementCard() {
     const [price, setPrice] = useState<number | string>('');
     const [duration, setDuration] = useState<number | string>('');
     const [description, setDescription] = useState<string>('');
+
+    // State for the edit dialog
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
+    const [editedPrice, setEditedPrice] = useState<number | string>('');
+    const [editedDuration, setEditedDuration] = useState<number | string>('');
+    const [editedDescription, setEditedDescription] = useState<string>('');
+
 
     const handleAddService = () => {
         const serviceToAdd = allServices.find(s => s.id === selectedServiceId);
@@ -30,7 +39,7 @@ export function ServiceManagementCard() {
                 duration: typeof duration === 'number' ? duration : serviceToAdd.duration,
                 description: description || serviceToAdd.description,
             };
-            setProviderServices(prev => [...prev, newService]);
+            setProviderServices(prev => [...prev, newService].sort((a,b) => a.name.localeCompare(b.name)));
             // Reset form
             setSelectedCategory('');
             setSelectedServiceId('');
@@ -44,17 +53,13 @@ export function ServiceManagementCard() {
         setProviderServices(prev => prev.filter(s => s.id !== serviceId));
     };
 
-    const filteredServices = selectedCategory
-        ? allServices.filter(s => s.categoryId === selectedCategory)
-        : [];
-        
     const handleServiceSelect = (serviceId: string) => {
         setSelectedServiceId(serviceId);
         const service = allServices.find(s => s.id === serviceId);
         if (service) {
             setPrice(service.price);
             setDuration(service.duration);
-            setDescription(`This service takes ${service.duration} minutes to complete.`);
+            setDescription(service.description);
         }
     }
 
@@ -66,6 +71,32 @@ export function ServiceManagementCard() {
         setDuration('');
         setDescription('');
     }
+
+    const handleOpenEditDialog = (service: Service) => {
+        setServiceToEdit(service);
+        setEditedPrice(service.price);
+        setEditedDuration(service.duration);
+        setEditedDescription(service.description);
+        setIsEditDialogOpen(true);
+    }
+    
+    const handleSaveChanges = () => {
+        if (!serviceToEdit) return;
+
+        setProviderServices(prev => 
+            prev.map(s => 
+                s.id === serviceToEdit.id 
+                ? { ...s, price: Number(editedPrice), duration: Number(editedDuration), description: editedDescription }
+                : s
+            )
+        );
+        setIsEditDialogOpen(false);
+        setServiceToEdit(null);
+    }
+
+    const filteredServices = selectedCategory
+        ? allServices.filter(s => s.categoryId === selectedCategory && !providerServices.some(ps => ps.id === s.id))
+        : [];
 
     return (
         <Card>
@@ -97,24 +128,24 @@ export function ServiceManagementCard() {
                                     <SelectValue placeholder="Select Service" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {filteredServices.map(service => (
+                                    {filteredServices.length > 0 ? filteredServices.map(service => (
                                         <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                                    ))}
+                                    )) : <SelectItem value="none" disabled>No available services</SelectItem>}
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="price">Price ($)</Label>
-                            <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+                            <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} disabled={!selectedServiceId} />
                         </div>
                         <div className="space-y-2">
                              <Label htmlFor="duration">Duration (min)</Label>
-                            <Input id="duration" type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} />
+                            <Input id="duration" type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} disabled={!selectedServiceId} />
                         </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter a description for the service." />
+                        <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter a description for the service." disabled={!selectedServiceId} />
                     </div>
                      <Button onClick={handleAddService} disabled={!selectedServiceId} className="mt-2">
                         <PlusCircle className="mr-2 h-4 w-4" />
@@ -138,6 +169,9 @@ export function ServiceManagementCard() {
                                     <TableCell className="font-medium">{service.name}</TableCell>
                                     <TableCell>${service.price}</TableCell>
                                     <TableCell className="text-right">
+                                        <Button variant="ghost" size="icon" onClick={() => handleOpenEditDialog(service)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
                                         <Button variant="ghost" size="icon" onClick={() => handleRemoveService(service.id)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
@@ -147,6 +181,41 @@ export function ServiceManagementCard() {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Edit Service Dialog */}
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Edit Service: {serviceToEdit?.name}</DialogTitle>
+                            <DialogDescription>
+                                Update the price, duration, and description for this service.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-price">Price ($)</Label>
+                                    <Input id="edit-price" type="number" value={editedPrice} onChange={(e) => setEditedPrice(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-duration">Duration (min)</Label>
+                                    <Input id="edit-duration" type="number" value={editedDuration} onChange={(e) => setEditedDuration(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-description">Description</Label>
+                                <Textarea id="edit-description" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={4} />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary">Cancel</Button>
+                            </DialogClose>
+                            <Button type="button" onClick={handleSaveChanges}>Save Changes</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
             </CardContent>
         </Card>
     );
