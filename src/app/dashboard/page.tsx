@@ -39,16 +39,19 @@ export default function ProviderDashboardPage() {
 
   useEffect(() => {
     const fetchBookings = () => {
-        if (provider) {
-            setBookings(getProviderBookings(provider.id));
-        }
+      if (provider) {
+        setBookings(getProviderBookings(provider.id));
+      }
     };
-    fetchBookings();
+    
+    fetchBookings(); // Initial fetch
 
-    // Re-fetch when the window gets focus, to catch updates from other tabs
+    // Set up the event listener to re-fetch when the window gains focus
     window.addEventListener('focus', fetchBookings);
+
+    // Clean up the event listener when the component unmounts
     return () => {
-        window.removeEventListener('focus', fetchBookings);
+      window.removeEventListener('focus', fetchBookings);
     };
   }, [provider]);
 
