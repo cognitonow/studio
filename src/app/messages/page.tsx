@@ -30,6 +30,8 @@ export default function MessagesPage() {
   }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const isProviderView = view === 'provider';
     const convos = isProviderView ? getProviderConversations() : getConversations();
 
@@ -61,7 +63,7 @@ export default function MessagesPage() {
     
     setActiveConversation(initialConvo);
 
-  }, [view, searchParams, router]);
+  }, [view, searchParams, router, isMounted]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
