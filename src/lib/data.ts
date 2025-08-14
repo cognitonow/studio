@@ -333,60 +333,61 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
         if (booking.status !== status) {
             booking.status = status;
 
-            // Client notifications
-            const clientNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
-                // In a real app, this would target a specific user.
-                // For now, we add it to the global notifications.
-                addNotification(notification);
-            };
+            // In a real app, this would target a specific user.
+            // For now, we add all notifications to the global notifications array.
+            const clientNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => addNotification(notification);
+            const providerNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => addNotification(notification);
+
 
             if (status === 'Cancelled') {
-                // Provider-facing notification
-                addNotification({
+                providerNotification({
                     icon: 'cancellation',
                     title: 'Booking Cancelled by Client',
                     description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
                     bookingId: booking.id
                 });
             } else if (status === 'Review Order and Pay') {
-                 // Provider-facing notification
-                addNotification({
+                providerNotification({
                     icon: 'confirmation',
                     title: 'Booking Approved!',
                     description: `You approved ${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()}. Waiting for payment.`,
                     bookingId: booking.id
                 });
-
-                // Client-facing notification
                 clientNotification({
                     icon: 'payment',
                     title: 'Action Required - Review & Pay',
                     description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
                     bookingId: booking.id
                 });
-                
                 await sendAutomatedMessage(booking, draftBookingApproval);
-
-
             } else if (status === 'Confirmed') {
+                clientNotification({
+                    icon: 'confirmation',
+                    title: 'Booking Confirmed!',
+                    description: `Your booking with ${booking.providerName} for ${new Date(booking.date).toLocaleDateString()} is confirmed.`,
+                    bookingId: booking.id
+                });
+                providerNotification({
+                    icon: 'confirmation',
+                    title: 'Booking Confirmed!',
+                    description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is now confirmed.`,
+                    bookingId: booking.id
+                });
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
-
             } else if (status === 'Completed') {
                 booking.isPaid = true; // For simplicity, assume payment is captured on completion
-                addNotification({
+                providerNotification({
                     icon: 'new-booking', // Using this for completed as well for provider feed
                     title: 'Booking Completed!',
                     description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`,
                     bookingId: booking.id
                 });
-
                 clientNotification({
                     icon: 'confirmation',
                     title: 'Service Complete!',
                     description: `Your appointment with ${booking.providerName} is complete. We hope you enjoyed your service!`,
                     bookingId: booking.id,
                 });
-
                 await sendAutomatedMessage(booking, draftPostBookingMessage);
             }
         }
@@ -521,3 +522,4 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
