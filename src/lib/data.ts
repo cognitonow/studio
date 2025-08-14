@@ -1,7 +1,7 @@
 
 
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
-import { format, formatDistanceToNow, isSameDay, startOfDay } from 'date-fns';
+import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
@@ -483,7 +483,8 @@ export const getUnreadMessageCount = () => {
     return conversations.reduce((count, convo) => count + (convo.unread || 0), 0);
 };
 
-export const markAllMessagesAsRead = (conversationId?: number) => {
+export const markAllMessagesAsRead = (conversationId?: number, view?: 'client' | 'provider') => {
+    const conversationList = view === 'provider' ? providerConversations : conversations;
     const markAsRead = (convo: Conversation) => {
         if (convo.id === conversationId) {
             convo.unread = 0;
@@ -491,11 +492,9 @@ export const markAllMessagesAsRead = (conversationId?: number) => {
     };
 
     if (conversationId) {
-        conversations.forEach(markAsRead);
-        providerConversations.forEach(markAsRead);
+        conversationList.forEach(markAsRead);
     } else {
-        conversations.forEach(convo => convo.unread = 0);
-        providerConversations.forEach(convo => convo.unread = 0);
+        conversationList.forEach(convo => convo.unread = 0);
     }
 };
 
@@ -521,14 +520,15 @@ export const startConversationWithProvider = (providerId: string): Conversation 
 }
 
 export const getBookedTimes = (providerId: string, date: Date): string[] => {
+    const day = startOfDay(date);
     return bookings
-        .filter(b => b.providerId === providerId && isSameDay(new Date(b.date), date) && b.status !== 'Cancelled')
+        .filter(b => b.providerId === providerId && startOfDay(new Date(b.date)).getTime() === day.getTime() && b.status !== 'Cancelled')
         .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay')
+        .filter(b => (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && isFuture(new Date(b.date)))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
@@ -610,3 +610,5 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
+    

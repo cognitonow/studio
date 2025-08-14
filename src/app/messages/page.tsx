@@ -13,7 +13,7 @@ import { useState, useEffect } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 
 type ChatView = 'client' | 'provider';
 
@@ -23,44 +23,51 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const searchParams = useSearchParams();
+  const router = useRouter();
+
 
   useEffect(() => {
+    setActiveConversation(undefined); // Reset active conversation on view change
+
     const isProviderView = view === 'provider';
     const convos = isProviderView ? getProviderConversations() : getConversations();
     const currentMessages = isProviderView ? getProviderMessages() : getMessages();
 
     setConversations(convos);
     setMessages(currentMessages);
+    
+    let initialConvo: Conversation | undefined = undefined;
 
     if (view === 'client') {
         const providerIdToChat = searchParams.get('providerId');
         if (providerIdToChat) {
             const existingConvo = convos.find(c => c.providerId === providerIdToChat);
             if (existingConvo) {
-                setActiveConversation(existingConvo);
+                initialConvo = existingConvo;
             } else {
                 const newConvo = startConversationWithProvider(providerIdToChat);
                 if (newConvo) {
                     setConversations(prev => [newConvo, ...prev]);
-                    setActiveConversation(newConvo);
-                } else if (convos.length > 0) {
-                    setActiveConversation(convos[0]);
+                    initialConvo = newConvo;
                 }
             }
-        } else if (convos.length > 0) {
-            setActiveConversation(convos[0]);
-        }
-    } else {
-        if (convos.length > 0) {
-            setActiveConversation(convos[0]);
+            // Clean up URL after handling the param
+            router.replace('/messages');
         }
     }
-  }, [searchParams, view]);
+    
+    if (!initialConvo && convos.length > 0) {
+        initialConvo = convos[0];
+    }
+    
+    setActiveConversation(initialConvo);
+
+  }, [view, searchParams, router]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     if (convo.unread > 0) {
-      markAllMessagesAsRead(convo.id);
+      markAllMessagesAsRead(convo.id, view);
       // This part is tricky in mock data, in a real app you'd refetch or update state more granularly
       const updatedConvos = view === 'provider' ? getProviderConversations() : getConversations();
       setConversations(updatedConvos);
@@ -68,10 +75,17 @@ export default function MessagesPage() {
   }
 
   const toggleView = () => {
+    setActiveConversation(undefined);
     setView(current => current === 'client' ? 'provider' : 'client');
   }
+  
+  const currentConversations = view === 'provider' ? getProviderConversations() : getConversations();
 
-  if (!activeConversation) {
+  if (!isMounted) {
+    return <div>Loading...</div>; // Or a loading skeleton
+  }
+
+  if (currentConversations.length === 0) {
     return (
         <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
              <p className="text-muted-foreground">No active conversations.</p>
@@ -81,6 +95,14 @@ export default function MessagesPage() {
             </Button>
         </div>
     )
+  }
+
+  if (!activeConversation) {
+    return (
+      <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
+        <p>Loading chats...</p>
+      </div>
+    );
   }
 
   return (
@@ -216,3 +238,5 @@ export default function MessagesPage() {
     </div>
   )
 }
+
+    
