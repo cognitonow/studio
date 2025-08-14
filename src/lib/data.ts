@@ -393,11 +393,11 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
     }
 };
 
-export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'>): Booking => {
+export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'>) => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
         status: 'Pending',
-        clientName: 'New Client', // Placeholder name
+        clientName: 'Jane Doe', // Placeholder name for client
         ...booking,
     };
     bookings.push(newBooking);
@@ -409,9 +409,8 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
         description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
         bookingId: newBooking.id
     });
-
-    return newBooking;
 };
+
 
 export const getNotifications = () => {
     // Return a new array to ensure React state updates trigger re-renders
@@ -509,6 +508,7 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
 
 
 

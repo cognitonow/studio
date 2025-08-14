@@ -22,8 +22,19 @@ export default function ClientBookingsPage() {
   const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
 
   useEffect(() => {
-    const allBookings = getBookings();
-    setBookings(allBookings);
+    // This function will run on mount and every time the component is focused
+    const fetchBookings = () => {
+        const allBookings = getBookings();
+        setBookings(allBookings);
+    };
+
+    fetchBookings();
+
+    window.addEventListener('focus', fetchBookings);
+
+    return () => {
+        window.removeEventListener('focus', fetchBookings);
+    };
   }, []);
 
   const renderServices = (serviceIds: string[]) => {
