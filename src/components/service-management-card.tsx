@@ -25,6 +25,7 @@ export function ServiceManagementCard() {
     // State for the edit dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
+    const [editedName, setEditedName] = useState<string>('');
     const [editedPrice, setEditedPrice] = useState<number | string>('');
     const [editedDuration, setEditedDuration] = useState<number | string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
@@ -74,6 +75,7 @@ export function ServiceManagementCard() {
 
     const handleOpenEditDialog = (service: Service) => {
         setServiceToEdit(service);
+        setEditedName(service.name);
         setEditedPrice(service.price);
         setEditedDuration(service.duration);
         setEditedDescription(service.description);
@@ -86,7 +88,7 @@ export function ServiceManagementCard() {
         setProviderServices(prev => 
             prev.map(s => 
                 s.id === serviceToEdit.id 
-                ? { ...s, price: Number(editedPrice), duration: Number(editedDuration), description: editedDescription }
+                ? { ...s, name: editedName, price: Number(editedPrice), duration: Number(editedDuration), description: editedDescription }
                 : s
             )
         );
@@ -188,10 +190,14 @@ export function ServiceManagementCard() {
                         <DialogHeader>
                             <DialogTitle>Edit Service: {serviceToEdit?.name}</DialogTitle>
                             <DialogDescription>
-                                Update the price, duration, and description for this service.
+                                Update the details for this service.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-name">Service Name</Label>
+                                <Input id="edit-name" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+                            </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-price">Price ($)</Label>
