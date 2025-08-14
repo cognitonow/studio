@@ -54,7 +54,6 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
     );
 }
 
-
 export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
     return (
         <div className="flex items-end gap-3">
