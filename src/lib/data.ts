@@ -490,7 +490,7 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => (b.status === 'Confirmed' || b.status === 'Pending' || b.status === 'Review Order and Pay') && new Date(b.date) >= new Date())
+        .filter(b => (b.status === 'Confirmed' || b.status === 'Pending' || b.status === 'Review Order and Pay') && new Date(b.date) > new Date())
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
@@ -543,3 +543,4 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
