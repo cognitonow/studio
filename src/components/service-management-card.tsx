@@ -25,7 +25,8 @@ export function ServiceManagementCard() {
     // State for the edit dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
-    const [editedName, setEditedName] = useState<string>('');
+    const [editedCategory, setEditedCategory] = useState('');
+    const [editedServiceId, setEditedServiceId] = useState('');
     const [editedPrice, setEditedPrice] = useState<number | string>('');
     const [editedDuration, setEditedDuration] = useState<number | string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
@@ -75,7 +76,8 @@ export function ServiceManagementCard() {
 
     const handleOpenEditDialog = (service: Service) => {
         setServiceToEdit(service);
-        setEditedName(service.name);
+        setEditedCategory(service.categoryId);
+        setEditedServiceId(service.id);
         setEditedPrice(service.price);
         setEditedDuration(service.duration);
         setEditedDescription(service.description);
@@ -83,22 +85,56 @@ export function ServiceManagementCard() {
     }
     
     const handleSaveChanges = () => {
-        if (!serviceToEdit) return;
+        if (!serviceToEdit || !editedServiceId) return;
+        
+        const baseService = allServices.find(s => s.id === editedServiceId) || serviceToEdit;
+
+        const updatedService: Service = {
+            ...baseService,
+            id: editedServiceId,
+            categoryId: editedCategory,
+            price: Number(editedPrice),
+            duration: Number(editedDuration),
+            description: editedDescription,
+        };
 
         setProviderServices(prev => 
             prev.map(s => 
                 s.id === serviceToEdit.id 
-                ? { ...s, name: editedName, price: Number(editedPrice), duration: Number(editedDuration), description: editedDescription }
+                ? updatedService
                 : s
             )
         );
         setIsEditDialogOpen(false);
         setServiceToEdit(null);
     }
+    
+    const handleEditCategoryChange = (categoryId: string) => {
+        setEditedCategory(categoryId);
+        setEditedServiceId('');
+        setEditedPrice('');
+        setEditedDuration('');
+        setEditedDescription('');
+    }
+
+    const handleEditServiceSelect = (serviceId: string) => {
+        setEditedServiceId(serviceId);
+        const service = allServices.find(s => s.id === serviceId);
+        if (service) {
+            setEditedPrice(service.price);
+            setEditedDuration(service.duration);
+            setEditedDescription(service.description);
+        }
+    }
 
     const filteredServices = selectedCategory
         ? allServices.filter(s => s.categoryId === selectedCategory && !providerServices.some(ps => ps.id === s.id))
         : [];
+        
+    const filteredEditServices = editedCategory
+        ? allServices.filter(s => s.categoryId === editedCategory)
+        : [];
+
 
     return (
         <Card>
@@ -188,36 +224,60 @@ export function ServiceManagementCard() {
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Edit Service: {serviceToEdit?.name}</DialogTitle>
+                            <DialogTitle>Edit Service</DialogTitle>
                             <DialogDescription>
                                 Update the details for this service.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="edit-name">Service Name</Label>
-                                <Input id="edit-name" value={editedName} onChange={(e) => setEditedName(e.target.value)} />
+                           <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Category</Label>
+                                    <Select onValueChange={handleEditCategoryChange} value={editedCategory}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {serviceCategories.map(cat => (
+                                                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Service</Label>
+                                    <Select onValueChange={handleEditServiceSelect} value={editedServiceId} disabled={!editedCategory}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Service" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {filteredEditServices.length > 0 ? filteredEditServices.map(service => (
+                                                <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
+                                            )) : <SelectItem value="none" disabled>No available services</SelectItem>}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-price">Price ($)</Label>
-                                    <Input id="edit-price" type="number" value={editedPrice} onChange={(e) => setEditedPrice(e.target.value)} />
+                                    <Input id="edit-price" type="number" value={editedPrice} onChange={(e) => setEditedPrice(e.target.value)} disabled={!editedServiceId} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-duration">Duration (min)</Label>
-                                    <Input id="edit-duration" type="number" value={editedDuration} onChange={(e) => setEditedDuration(e.target.value)} />
+                                    <Input id="edit-duration" type="number" value={editedDuration} onChange={(e) => setEditedDuration(e.target.value)} disabled={!editedServiceId} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit-description">Description</Label>
-                                <Textarea id="edit-description" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={4} />
+                                <Textarea id="edit-description" value={editedDescription} onChange={(e) => setEditedDescription(e.target.value)} rows={4} disabled={!editedServiceId} />
                             </div>
                         </div>
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button type="button" variant="secondary">Cancel</Button>
                             </DialogClose>
-                            <Button type="button" onClick={handleSaveChanges}>Save Changes</Button>
+                            <Button type="button" onClick={handleSaveChanges} disabled={!editedServiceId}>Save Changes</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
