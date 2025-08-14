@@ -96,37 +96,11 @@ export default function ProviderDashboardPage() {
   const getBookingActions = (booking: Booking) => {
     const now = new Date();
     
-    switch (booking.status) {
-      case 'Pending':
-        return (
-            <div className="flex gap-2 justify-end">
-                 <Button size="sm" variant="outline" asChild>
-                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-                </Button>
-            </div>
-        );
-      case 'Review Order and Pay':
-      case 'Confirmed':
-         return (
-            <div className="flex gap-2 justify-end">
-                <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
-                    <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
-                </Button>
-                 {new Date(booking.date) <= now && booking.status === 'Confirmed' && (
-                    <Button size="sm" onClick={() => handleStatusChange(booking.id, 'Completed')}>Mark as Completed</Button>
-                )}
-            </div>
-        );
-      case 'Completed':
-      case 'Cancelled':
-         return (
-            <Button key={`details-${booking.id}`} size="sm" variant="secondary" asChild>
-                <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
-            </Button>
-        );
-      default:
-        return null;
-    }
+    return (
+         <Button size="sm" variant="outline" asChild>
+            <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+        </Button>
+    )
   };
   
   const renderServices = (serviceIds: string[]) => {

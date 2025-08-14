@@ -167,15 +167,19 @@ export default function ManageBookingPage() {
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
-  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || (userRole === 'client' && booking.isPaid);
-  
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled';
+
   // Client-specific statuses
   const showPaymentForm = userRole === 'client' && booking.status === 'Review Order and Pay' && !booking.isPaid;
-  const canAmendBooking = userRole === 'client' && booking.status === 'Confirmed' && !isReadOnly;
-  const canCancelRequest = userRole === 'client' && booking.status === 'Pending';
-
+  const canClientCancelRequest = userRole === 'client' && booking.status === 'Pending';
+  
   // Provider-specific statuses
+  const canProviderAmend = userRole === 'provider' && ['Pending', 'Review Order and Pay', 'Confirmed'].includes(booking.status);
+  const canProviderEditDateTime = userRole === 'provider' && ['Pending', 'Confirmed'].includes(booking.status);
   const needsProviderAction = userRole === 'provider' && booking.status === 'Pending';
+
+  // Shared statuses
+  const canSaveChanges = canProviderAmend; // For now, only providers can save changes after initial booking
 
   const returnPath = userRole === 'provider' ? '/dashboard' : '/bookings';
 
@@ -234,7 +238,7 @@ export default function ManageBookingPage() {
                         <p className="font-semibold">{service.name}</p>
                         <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
                       </div>
-                      {canAmendBooking && (
+                      {canProviderAmend && (
                         <Button variant="ghost" size="icon" onClick={() => handleRemoveService(service.id)}>
                             <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
@@ -245,7 +249,7 @@ export default function ManageBookingPage() {
                   )}
                 </div>
                 <Separator className="my-6" />
-                {canAmendBooking && (
+                {canProviderAmend && (
                     <AddServiceDialog 
                     providerServices={provider.services}
                     onAddService={handleAddService}
@@ -274,7 +278,7 @@ export default function ManageBookingPage() {
                 <Card>
                 <CardHeader>
                     <CardTitle>{isReadOnly ? 'Appointment Date & Time' : 'Amend Date & Time'}</CardTitle>
-                    {(canAmendBooking && !needsProviderAction) && <CardDescription>Select a new time for your appointment.</CardDescription>}
+                    {canProviderEditDateTime && <CardDescription>Select a new time for your appointment.</CardDescription>}
                 </CardHeader>
                 <CardContent className="flex justify-center">
                     <div className="flex flex-col items-center gap-4">
@@ -283,7 +287,7 @@ export default function ManageBookingPage() {
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                         className="rounded-md border"
-                        disabled={isReadOnly || canCancelRequest || needsProviderAction || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
+                        disabled={isReadOnly || !canProviderEditDateTime}
                         />
                         <div className="w-full space-y-2">
                             <Label htmlFor="time" className="flex items-center gap-2">
@@ -293,7 +297,7 @@ export default function ManageBookingPage() {
                             <Select 
                                 onValueChange={handleTimeSelect}
                                 value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                                disabled={isReadOnly || canCancelRequest || needsProviderAction || !selectedDate}
+                                disabled={isReadOnly || !canProviderEditDateTime || !selectedDate}
                             >
                                 <SelectTrigger id="time">
                                     <SelectValue placeholder="Select a time" />
@@ -319,10 +323,12 @@ export default function ManageBookingPage() {
                             <ThumbsUp className="mr-2 h-4 w-4" />
                             Approve Request
                         </Button>
-                        <Button size="lg" variant="destructive" onClick={() => handleCancelBooking('provider')}>
-                            <ThumbsDown className="mr-2 h-4 w-4" />
-                            Decline Request
-                        </Button>
+                        <CancelBookingDialog onConfirm={() => handleCancelBooking('provider')}>
+                             <Button size="lg" variant="destructive">
+                                <ThumbsDown className="mr-2 h-4 w-4" />
+                                Decline Request
+                            </Button>
+                        </CancelBookingDialog>
                          <Button size="lg" variant="outline" asChild>
                             <Link href={`/messages?providerId=${booking.providerId}`}>
                                 <MessageSquare className="mr-2 h-4 w-4" />
@@ -332,18 +338,20 @@ export default function ManageBookingPage() {
                     </>
                 )}
 
-                {/* Client Actions */}
-                {canAmendBooking && (
+                {/* Shared Actions */}
+                {canSaveChanges && (
                     <Button size="lg" className="w-full" onClick={handleSaveChanges} disabled={bookedServices.length === 0}>
                         <Save className="mr-2 h-4 w-4" />
                         Save Changes
                     </Button>
                 )}
-                 {(canAmendBooking || canCancelRequest) && (
+
+                {/* Client Actions */}
+                 {canClientCancelRequest && (
                      <CancelBookingDialog onConfirm={() => handleCancelBooking('client')}>
                         <Button variant="destructive" size="lg" className="w-full">
                             <XCircle className="mr-2 h-4 w-4" />
-                            {canCancelRequest ? 'Cancel Request' : 'Cancel Booking'}
+                            Cancel Request
                         </Button>
                     </CancelBookingDialog>
                  )}
@@ -354,4 +362,3 @@ export default function ManageBookingPage() {
     </div>
   );
 }
-
