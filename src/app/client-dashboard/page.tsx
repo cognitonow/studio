@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image"
 
 interface ClientDashboardData {
     totalBookings: number;
@@ -49,6 +50,11 @@ export default function ClientDashboardPage() {
     setDashboardData(data);
     setIsLoading(false);
   }, []);
+  
+  const favoriteProviderPortfolio = dashboardData?.favoriteProvider?.portfolio.slice(0, 3);
+  const mainImage = favoriteProviderPortfolio?.[0] ?? { url: 'https://placehold.co/600x400.png', dataAiHint: 'salon interior' };
+  const subImage1 = favoriteProviderPortfolio?.[1] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'hair styling' };
+  const subImage2 = favoriteProviderPortfolio?.[2] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'makeup application' };
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -206,12 +212,10 @@ export default function ClientDashboardPage() {
           <CardContent className="flex-grow space-y-4">
             {isLoading || !dashboardData?.favoriteProvider ? (
                 <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-4 w-24" />
-                        </div>
+                    <Skeleton className="h-32 w-full rounded-lg" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-24" />
                     </div>
                      <Skeleton className="h-4 w-full" />
                      <Skeleton className="h-4 w-3/4" />
@@ -219,17 +223,40 @@ export default function ClientDashboardPage() {
                 </div>
             ) : (
                 <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-16 w-16">
-                            <AvatarImage src={dashboardData.favoriteProvider.avatarUrl} data-ai-hint={dashboardData.favoriteProvider.dataAiHint} />
-                            <AvatarFallback>{dashboardData.favoriteProvider.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <h3 className="text-lg font-semibold">{dashboardData.favoriteProvider.name}</h3>
-                            <p className="text-sm text-muted-foreground">{dashboardData.favoriteProvider.specialty}</p>
+                    <div className="grid grid-cols-3 grid-rows-2 gap-1 h-32 rounded-lg overflow-hidden mb-4">
+                        <div className="col-span-2 row-span-2 relative">
+                            <Image
+                                src={mainImage.url}
+                                alt={`${dashboardData.favoriteProvider.name} portfolio 1`}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={mainImage.dataAiHint}
+                            />
+                        </div>
+                        <div className="col-span-1 row-span-1 relative">
+                            <Image
+                                src={subImage1.url}
+                                alt={`${dashboardData.favoriteProvider.name} portfolio 2`}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={subImage1.dataAiHint}
+                            />
+                        </div>
+                        <div className="col-span-1 row-span-1 relative">
+                            <Image
+                                src={subImage2.url}
+                                alt={`${dashboardData.favoriteProvider.name} portfolio 3`}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={subImage2.dataAiHint}
+                            />
                         </div>
                     </div>
-                    <div className="text-sm space-y-2 mt-4">
+                    <div>
+                        <h3 className="text-lg font-semibold">{dashboardData.favoriteProvider.name}</h3>
+                        <p className="text-sm text-muted-foreground">{dashboardData.favoriteProvider.specialty}</p>
+                    </div>
+                    <div className="text-sm space-y-2 mt-2">
                         <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-primary fill-primary" />
                             <span>{dashboardData.favoriteProvider.rating} ({dashboardData.favoriteProvider.reviewCount} reviews)</span>
