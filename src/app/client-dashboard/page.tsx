@@ -147,7 +147,7 @@ export default function ClientDashboardPage() {
                         <Button asChild className="w-full">
                             <Link href={`/booking/manage/${dashboardData.activeBooking.id}`}>
                                 <Pencil className="mr-2 h-4 w-4" />
-                                Amend Booking
+                                Manage Booking
                             </Link>
                         </Button>
                     </CardContent>
@@ -162,7 +162,7 @@ export default function ClientDashboardPage() {
                     <CardDescription>View upcoming and past bookings, or make changes.</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
-                    <p className="text-muted-foreground mb-4">Ready to manage your bookings? Click the button below.</p>
+                    <p className="text-muted-foreground mb-4">You have no upcoming appointments.</p>
                     <Button asChild size="lg">
                         <Link href="/bookings">
                             <Calendar className="mr-2 h-5 w-5" />
