@@ -68,11 +68,12 @@ export type Booking = {
     date: string;
     status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
     clientName?: string; // Optional client name for provider view
+    isPaid: boolean;
 };
 
 export type Notification = {
   id: number;
-  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation';
+  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation' | 'payment';
   title: string;
   description: string;
   time: string;

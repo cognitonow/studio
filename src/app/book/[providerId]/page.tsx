@@ -2,7 +2,7 @@
 'use client'
 
 import { useSearchParams, useRouter, useParams } from 'next/navigation';
-import { getProviderById, services as allServices, getBookedTimes } from '@/lib/data';
+import { getProviderById, services as allServices, getBookedTimes, addBooking } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Clock, ArrowRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 
 const allPossibleTimes = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
@@ -29,6 +30,7 @@ export default function BookingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
+  const { toast } = useToast();
   const providerId = params.providerId as string;
   const serviceId = searchParams.get('service');
   
@@ -82,21 +84,30 @@ export default function BookingPage() {
     }
   };
   
-  const handleProceedToPayment = () => {
-    if (date && serviceId) {
-      const params = new URLSearchParams({
-        service: serviceId,
+  const handleRequestBooking = () => {
+    if (!provider || !service || !date) return;
+
+    addBooking({
+        providerId: provider.id,
+        providerName: provider.name,
+        serviceIds: [service.id],
         date: date.toISOString(),
-      });
-      router.push(`/book/${providerId}/payment?${params.toString()}`);
-    }
+        isPaid: false,
+    });
+    
+    toast({
+        title: "Booking Request Sent!",
+        description: "Your request has been sent to the provider. You will be notified when they confirm.",
+    });
+
+    router.push('/bookings');
   };
 
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold font-headline mb-2 text-center">Book Your Service</h1>
-        <p className="text-muted-foreground text-center mb-8">Step 1 of 3: Select your preferred date and time.</p>
+        <h1 className="text-4xl font-bold font-headline mb-2 text-center">Request a Booking</h1>
+        <p className="text-muted-foreground text-center mb-8">Select your preferred date and time. Your booking will be confirmed by the provider.</p>
         
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-8">
@@ -116,8 +127,8 @@ export default function BookingPage() {
                 )}
               </CardContent>
             </Card>
-            <Button size="lg" className="w-full" onClick={handleProceedToPayment} disabled={!date}>
-                Proceed to Payment
+            <Button size="lg" className="w-full" onClick={handleRequestBooking} disabled={!date}>
+                Request to Book
                 <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>

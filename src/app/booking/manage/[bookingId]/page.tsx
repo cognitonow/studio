@@ -9,13 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
-import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft, CreditCard } from 'lucide-react';
 import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { ClientDetails } from '@/components/manage-booking/client-details';
+import { Input } from '@/components/ui/input';
 
 
 const availableTimes = [
@@ -30,6 +31,39 @@ const formatToAmPm = (time: string) => {
     const formattedHours = hours % 12 || 12;
     return `${String(formattedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
 };
+
+const PaymentForm = ({ onConfirmPayment, totalCost }: { onConfirmPayment: () => void, totalCost: number }) => (
+    <Card>
+        <CardHeader>
+            <CardTitle>Confirm & Pay</CardTitle>
+            <CardDescription>Enter your payment details to confirm your booking.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="space-y-2">
+                <Label htmlFor="name">Name on Card</Label>
+                <Input id="name" placeholder="Jane Doe" />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="cardNumber">Card Number</Label>
+                <div className="relative">
+                    <Input id="cardNumber" placeholder="**** **** **** ****" />
+                    <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="expiry">Expiry</Label>
+                    <Input id="expiry" placeholder="MM/YY" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="cvc">CVC</Label>
+                    <Input id="cvc" placeholder="123" />
+                </div>
+            </div>
+             <Button size="lg" className="w-full" onClick={onConfirmPayment}>Pay ${totalCost.toFixed(2)}</Button>
+        </CardContent>
+    </Card>
+);
 
 export default function ManageBookingPage() {
   const params = useParams();
@@ -106,11 +140,24 @@ export default function ManageBookingPage() {
       router.push('/dashboard');
     }
   };
+  
+  const handleConfirmPayment = () => {
+    if (booking) {
+        updateBooking(booking.id, { isPaid: true });
+        // Manually update the state to reflect the change immediately
+        setBooking(prev => prev ? { ...prev, isPaid: true } : null);
+        toast({
+            title: "Payment Successful!",
+            description: "Your booking is paid and confirmed.",
+        });
+    }
+  };
 
   const totalCost = bookedServices.reduce((acc, service) => acc + service.price, 0);
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
-  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled';
+  const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.status === 'Pending' || booking.isPaid;
+  const showPaymentForm = booking.status === 'Confirmed' && !booking.isPaid;
 
 
   return (
@@ -120,7 +167,7 @@ export default function ManageBookingPage() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Return to Dashboard
         </Button>
-        <h1 className="text-4xl font-bold font-headline mb-8">{isReadOnly ? 'Booking Details' : 'Manage Your Booking'}</h1>
+        <h1 className="text-4xl font-bold font-headline mb-8">{isReadOnly && !showPaymentForm ? 'Booking Details' : 'Manage Your Booking'}</h1>
         
         <div className="grid md:grid-cols-2 gap-8">
           
@@ -192,43 +239,47 @@ export default function ManageBookingPage() {
 
           {/* Right Column: Calendar & Actions */}
           <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>{isReadOnly ? 'Date & Time' : 'Amend Date & Time'}</CardTitle>
-                 {!isReadOnly && <CardDescription>Select a new time for your appointment.</CardDescription>}
-              </CardHeader>
-              <CardContent className="flex justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      className="rounded-md border"
-                      disabled={isReadOnly || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
-                    />
-                    <div className="w-full space-y-2">
-                        <Label htmlFor="time" className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>Appointment Time</span>
-                        </Label>
-                        <Select 
-                            onValueChange={handleTimeSelect}
-                            value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
-                            disabled={isReadOnly || !selectedDate}
-                        >
-                            <SelectTrigger id="time">
-                                <SelectValue placeholder="Select a time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {availableTimes.map(time => (
-                                    <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+            {showPaymentForm ? (
+                <PaymentForm onConfirmPayment={handleConfirmPayment} totalCost={totalCost} />
+            ) : (
+                <Card>
+                <CardHeader>
+                    <CardTitle>{isReadOnly ? 'Date & Time' : 'Amend Date & Time'}</CardTitle>
+                    {!isReadOnly && <CardDescription>Select a new time for your appointment.</CardDescription>}
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                    <div className="flex flex-col items-center gap-4">
+                        <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        className="rounded-md border"
+                        disabled={isReadOnly || ((date) => date < new Date(new Date().setDate(new Date().getDate() - 1)))}
+                        />
+                        <div className="w-full space-y-2">
+                            <Label htmlFor="time" className="flex items-center gap-2">
+                                <Clock className="w-4 h-4" />
+                                <span>Appointment Time</span>
+                            </Label>
+                            <Select 
+                                onValueChange={handleTimeSelect}
+                                value={selectedDate ? `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`: ''}
+                                disabled={isReadOnly || !selectedDate}
+                            >
+                                <SelectTrigger id="time">
+                                    <SelectValue placeholder="Select a time" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableTimes.map(time => (
+                                        <SelectItem key={time} value={time}>{formatToAmPm(time)}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+                </Card>
+            )}
 
             {!isReadOnly && (
                 <div className="flex flex-col gap-4">
@@ -250,3 +301,4 @@ export default function ManageBookingPage() {
     </div>
   );
 }
+

@@ -201,12 +201,12 @@ export const playlists: Playlist[] = [
 ];
 
 let bookings: Booking[] = [
-    { id: "1", providerId: "3", providerName: "Chloe's Hair Haven", serviceIds: ["hair-22"], date: "2024-08-15T14:00:00.000Z", status: "Confirmed", clientName: 'Emily R.' },
-    { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.' },
-    { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Confirmed", clientName: 'Jane D.' },
-    { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey' },
-    { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending' },
-    { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled' },
+    { id: "1", providerId: "3", providerName: "Chloe's Hair Haven", serviceIds: ["hair-22"], date: "2024-08-15T14:00:00.000Z", status: "Confirmed", clientName: 'Emily R.', isPaid: true },
+    { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.', isPaid: true },
+    { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Confirmed", clientName: 'Jane D.', isPaid: false },
+    { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey', isPaid: true },
+    { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
+    { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled', isPaid: false },
 ];
 
 export let providerServices: Service[] = providers[2].services;
@@ -266,8 +266,8 @@ let notifications: Notification[] = [
 
 export const getBookings = () => {
     const upcoming = bookings
-        .filter(b => new Date(b.date) >= new Date() && b.status === 'Confirmed')
-        .sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime());
+        .filter(b => new Date(b.date) >= new Date() && b.status !== 'Completed' && b.status !== 'Cancelled')
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = bookings
         .filter(b => new Date(b.date) < new Date() || ['Completed', 'Cancelled'].includes(b.status))
@@ -330,28 +330,55 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
         if (booking.status !== status) {
             booking.status = status;
 
+            // Client notifications
+            const clientNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
+                // In a real app, this would target a specific user.
+                // For now, we add it to the global notifications.
+                addNotification(notification);
+            };
+
             if (status === 'Cancelled') {
+                // Provider-facing notification
                 addNotification({
                     icon: 'cancellation',
-                    title: 'Booking Cancelled',
+                    title: 'Booking Cancelled by Client',
                     description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
                     bookingId: booking.id
                 });
             } else if (status === 'Confirmed') {
+                 // Provider-facing notification
                 addNotification({
                     icon: 'confirmation',
                     title: 'Booking Confirmed!',
-                    description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is confirmed.`,
+                    description: `You confirmed ${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()}.`,
                     bookingId: booking.id
                 });
+
+                // Client-facing notification
+                clientNotification({
+                    icon: 'payment',
+                    title: 'Booking Confirmed - Payment Required',
+                    description: `${booking.providerName} has confirmed your booking! Please complete payment to secure your spot.`,
+                    bookingId: booking.id
+                });
+
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
             } else if (status === 'Completed') {
+                booking.isPaid = true; // For simplicity, assume payment is captured on completion
                 addNotification({
-                    icon: 'new-booking',
+                    icon: 'new-booking', // Using this for completed as well for provider feed
                     title: 'Booking Completed!',
                     description: `You've marked ${booking.clientName}'s booking on ${new Date(booking.date).toLocaleDateString()} as completed.`,
                     bookingId: booking.id
                 });
+
+                clientNotification({
+                    icon: 'confirmation',
+                    title: 'Service Complete!',
+                    description: `Your appointment with ${booking.providerName} is complete. We hope you enjoyed your service!`,
+                    bookingId: booking.id,
+                });
+
                 await sendAutomatedMessage(booking, draftPostBookingMessage);
             }
         }
@@ -374,9 +401,10 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status' | 'clientName'
     };
     bookings.push(newBooking);
 
+    // This is a provider notification
     addNotification({
         icon: 'new-booking',
-        title: 'New Booking!',
+        title: 'New Booking Request!',
         description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
         bookingId: newBooking.id
     });
@@ -480,4 +508,5 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
 

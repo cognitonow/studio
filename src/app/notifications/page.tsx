@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bell, CheckCircle, MessageSquare, XCircle } from "lucide-react"
+import { Bell, CheckCircle, MessageSquare, XCircle, CreditCard } from "lucide-react"
 import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/lib/data';
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,8 @@ const NotificationList = ({ items, onItemClick }: { items: Notification[], onIte
                 return <MessageSquare className="h-6 w-6 text-primary" />;
             case 'confirmation':
                  return <CheckCircle className="h-6 w-6 text-blue-500" />;
+            case 'payment':
+                return <CreditCard className="h-6 w-6 text-orange-500" />;
             default:
                 return <Bell className="h-6 w-6 text-muted-foreground" />;
         }
