@@ -20,8 +20,10 @@ import type { Booking } from "@/lib/types"
 
 export default function ClientBookingsPage() {
   const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // This function will run on mount and every time the component is focused
     const fetchBookings = () => {
         const allBookings = getBookings();
@@ -30,6 +32,7 @@ export default function ClientBookingsPage() {
 
     fetchBookings();
 
+    // Re-fetch when the window gets focus, to catch updates from other tabs
     window.addEventListener('focus', fetchBookings);
 
     return () => {
@@ -56,6 +59,10 @@ export default function ClientBookingsPage() {
         return <Badge>{status}</Badge>;
     }
   };
+
+  if (!isMounted) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div className="container mx-auto py-12 px-4">
