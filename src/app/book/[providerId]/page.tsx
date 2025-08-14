@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Clock, ArrowRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const allPossibleTimes = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
@@ -114,8 +115,16 @@ export default function BookingPage() {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">{service.name}</CardTitle>
-                <CardDescription>with {provider.name}</CardDescription>
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={provider.avatarUrl} alt={provider.name} data-ai-hint={provider.dataAiHint} />
+                    <AvatarFallback>{provider.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="font-headline text-2xl">{service.name}</CardTitle>
+                    <CardDescription>with {provider.name}</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <p className="font-bold text-2xl mb-2">${service.price}</p>
