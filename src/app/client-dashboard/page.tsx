@@ -1,17 +1,17 @@
 
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign } from "lucide-react"
+import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign, Clock, User, Pencil } from "lucide-react"
 import Link from "next/link"
-import { ProviderCard } from "@/components/provider-card"
 import { providers, getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useEffect, useState } from "react";
 import type { Provider, Service, Booking } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { format } from "date-fns"
+import { format, formatDistanceToNowStrict } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ClientDashboardData {
@@ -19,7 +19,7 @@ interface ClientDashboardData {
     averageSpend: number;
     previousBookings: Booking[];
     favoriteProvider?: Provider;
-    suggestedProvider?: Provider;
+    activeBooking?: (Booking & { services: Service[] });
 }
 
 export default function ClientDashboardPage() {
@@ -112,6 +112,69 @@ export default function ClientDashboardPage() {
           </CardContent>
         </Card>
 
+        {/* Active Booking or Management Card */}
+        <Card className="lg:col-span-1">
+            {isLoading ? (
+                <CardContent className="p-6">
+                    <Skeleton className="h-12 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-1/2 mb-6" />
+                    <Skeleton className="h-10 w-full" />
+                </CardContent>
+            ) : dashboardData?.activeBooking ? (
+                 <>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 font-headline">
+                            <Clock className="w-6 h-6 text-primary"/>
+                            Active Booking
+                        </CardTitle>
+                        <CardDescription>Your next appointment is coming up!</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-1">
+                            <p className="font-semibold text-lg">{dashboardData.activeBooking.providerName}</p>
+                            <p className="text-muted-foreground text-sm">{dashboardData.activeBooking.services.map(s => s.name).join(', ')}</p>
+                        </div>
+                        <div className="text-sm space-y-1">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-muted-foreground" />
+                                <span>{format(new Date(dashboardData.activeBooking.date), 'PPPP')}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-muted-foreground" />
+                                <span>{format(new Date(dashboardData.activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(dashboardData.activeBooking.date), { addSuffix: true })})</span>
+                            </div>
+                        </div>
+                        <Button asChild className="w-full">
+                            <Link href={`/booking/manage/${dashboardData.activeBooking.id}`}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Amend Booking
+                            </Link>
+                        </Button>
+                    </CardContent>
+                 </>
+            ) : (
+                <>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 font-headline">
+                        <Calendar className="w-6 h-6 text-primary"/>
+                        Manage Appointments
+                    </CardTitle>
+                    <CardDescription>View upcoming and past bookings, or make changes.</CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                    <p className="text-muted-foreground mb-4">Ready to manage your bookings? Click the button below.</p>
+                    <Button asChild size="lg">
+                        <Link href="/bookings">
+                            <Calendar className="mr-2 h-5 w-5" />
+                            Go to My Bookings
+                        </Link>
+                    </Button>
+                </CardContent>
+                </>
+            )}
+        </Card>
+
+
         {/* Favourite Provider */}
         <Card className="lg:col-span-1">
           <CardHeader>
@@ -162,53 +225,10 @@ export default function ClientDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Suggestion */}
-        <Card className="lg:col-span-1">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-headline">
-                    <Star className="w-6 h-6 text-primary"/>
-                    Try Someone New
-                </CardTitle>
-                <CardDescription>Based on your history, we think you'll love:</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? (
-                     <div className="space-y-4">
-                        <Skeleton className="h-48 w-full" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-4/5" />
-                            <Skeleton className="h-4 w-3/5" />
-                        </div>
-                    </div>
-                ) : dashboardData?.suggestedProvider ? (
-                    <ProviderCard provider={dashboardData.suggestedProvider} />
-                ) : (
-                    <p className="text-muted-foreground text-center">Your next great find is waiting on the Explore page!</p>
-                )}
-            </CardContent>
-        </Card>
       </div>
 
-      {/* Section 2: Booking Management & My Lists */}
-       <div className="grid md:grid-cols-2 gap-8">
-        <div>
-            <h2 className="text-3xl font-bold font-headline mb-4">Booking Management</h2>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Manage Your Appointments</CardTitle>
-                    <CardDescription>View your upcoming and past bookings, or make changes to your appointments.</CardDescription>
-                </CardHeader>
-                <CardContent className="text-center">
-                    <p className="text-muted-foreground mb-4">Ready to manage your bookings? Click the button below to see your full history.</p>
-                    <Button asChild size="lg">
-                        <Link href="/bookings">
-                            <Calendar className="mr-2 h-5 w-5" />
-                            Go to My Bookings
-                        </Link>
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+      {/* Section 2: My Lists */}
+       <div className="grid md:grid-cols-1 gap-8">
          <div>
             <h2 className="text-3xl font-bold font-headline mb-4">My Lists</h2>
             <Card>

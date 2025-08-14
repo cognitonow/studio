@@ -425,6 +425,23 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
         .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
+export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
+    const upcomingConfirmed = bookings
+        .filter(b => b.status === 'Confirmed' && new Date(b.date) >= new Date())
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    if (upcomingConfirmed.length > 0) {
+        const nextBooking = upcomingConfirmed[0];
+        const bookingServices = getServicesByIds(nextBooking.serviceIds);
+        return {
+            ...nextBooking,
+            services: bookingServices,
+        }
+    }
+    return undefined;
+}
+
+
 export const getClientDashboardData = () => {
     const completedBookings = bookings.filter(b => b.status === 'Completed');
     const totalSpend = completedBookings.reduce((acc, booking) => {
@@ -443,6 +460,7 @@ export const getClientDashboardData = () => {
     // Mock logic for favorite and suggested providers
     const favoriteProvider = providers[0];
     const suggestedProvider = providers[1];
+    const activeBooking = getActiveBooking();
 
     return {
         totalBookings,
@@ -450,6 +468,7 @@ export const getClientDashboardData = () => {
         previousBookings,
         favoriteProvider,
         suggestedProvider,
+        activeBooking,
     };
 }
 
@@ -459,6 +478,6 @@ export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
-export const getExploreQueueProviders = () => providers.slice(3, 5);
-
+export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
