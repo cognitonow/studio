@@ -36,9 +36,11 @@ export default function BookingPage() {
   const service = allServices.find(s => s.id === serviceId);
 
   const [date, setDate] = useState<Date | undefined>();
-  const [availableTimes, setAvailableTimes] = useState<string[]>(allPossibleTimes);
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const newDate = new Date();
     newDate.setHours(9,0,0,0);
     setDate(newDate);
@@ -56,6 +58,11 @@ export default function BookingPage() {
   if (!provider || !service) {
     notFound();
   }
+  
+  if (!isMounted) {
+    return null; // or a loading skeleton
+  }
+
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
