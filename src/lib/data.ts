@@ -218,13 +218,16 @@ let bookings: Booking[] = [
 export let providerServices: Service[] = providers[2].services;
 
 let conversations: Conversation[] = [
-  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
-  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
-  { id: 3, providerId: '2', name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "skincare product", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
-  { id: 4, providerId: '4', name: "Bridal Beauty Co.", avatar: "https://placehold.co/100x100.png", dataAiHint: "makeup brushes", lastMessage: "Start a new conversation!", time: "Just now", unread: 0 },
+  { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you have any questions!", time: "2h", unread: 0 },
+  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Can't wait to see you!", time: "1d", unread: 0 },
 ];
 
-let messages: Message[] = [];
+let messages: Message[] = [
+    { id: 1, conversationId: 1, sender: 'user', text: "Hi Olivia, I'd like to book an appointment." },
+    { id: 2, conversationId: 1, sender: 'provider', text: "Hi! Of course, feel free to use the booking button on my profile. Let me know if you have any questions!" },
+    { id: 3, conversationId: 2, sender: 'user', text: "Hi Chloe, looking forward to my appointment tomorrow!" },
+    { id: 4, conversationId: 2, sender: 'provider', text: "Me too! Can't wait to see you!" },
+];
 
 let providerConversations: Conversation[] = [
     { id: 1, providerId: '3', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'client-1' },
@@ -473,10 +476,14 @@ export const markAllNotificationsAsRead = () => {
 }
 
 export const getConversations = () => [...conversations].sort((a, b) => b.id - a.id);
-export const getMessages = () => [...messages];
+export const getMessagesForConversation = (conversationId: number) => {
+    return [...messages].filter(m => m.conversationId === conversationId);
+}
 
 export const getProviderConversations = () => [...providerConversations].sort((a,b) => b.id - a.id);
-export const getProviderMessages = () => [...providerMessages];
+export const getProviderMessagesForConversation = (conversationId: number) => {
+    return [...providerMessages].filter(m => m.conversationId === conversationId);
+}
 
 
 export const getUnreadMessageCount = () => {
@@ -528,7 +535,7 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && isFuture(new Date(b.date)))
+        .filter(b => (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && new Date(b.date) >= startOfDay(new Date()))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {

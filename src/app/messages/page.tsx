@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -8,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Sparkles, User, CreditCard, Repeat, UserSwitch } from "lucide-react"
-import { getConversations, getMessages, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessages } from "@/lib/data"
+import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation } from "@/lib/data"
 import { useState, useEffect } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -20,7 +19,6 @@ type ChatView = 'client' | 'provider';
 export default function MessagesPage() {
   const [view, setView] = useState<ChatView>('client');
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const [isMounted, setIsMounted] = useState(false);
   const searchParams = useSearchParams();
@@ -35,10 +33,8 @@ export default function MessagesPage() {
 
     const isProviderView = view === 'provider';
     const convos = isProviderView ? getProviderConversations() : getConversations();
-    const currentMessages = isProviderView ? getProviderMessages() : getMessages();
 
     setConversations(convos);
-    setMessages(currentMessages);
     
     let initialConvo: Conversation | undefined = undefined;
 
@@ -83,13 +79,15 @@ export default function MessagesPage() {
     setView(current => current === 'client' ? 'provider' : 'client');
   }
   
-  const currentConversations = view === 'provider' ? getProviderConversations() : getConversations();
+  const activeMessages = activeConversation ? 
+    (view === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
+    : [];
 
   if (!isMounted) {
     return <div>Loading...</div>; // Or a loading skeleton
   }
 
-  if (currentConversations.length === 0) {
+  if (conversations.length === 0) {
     return (
         <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
              <p className="text-muted-foreground">No active conversations.</p>
@@ -185,7 +183,7 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {messages.filter(m => activeConversation && m.conversationId === activeConversation.id).map((message) => (
+                        {activeMessages.map((message) => (
                             <div key={message.id} className={cn("flex items-end gap-3", (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'justify-end' : '')}>
                                 {(message.sender === 'provider' && view === 'client') || (message.sender === 'user' && view === 'provider') ? (
                                     <Avatar className="w-8 h-8">
