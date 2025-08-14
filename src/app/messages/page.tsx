@@ -13,6 +13,7 @@ import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
+import { UserMessage, ProviderMessage } from "@/components/message-bubbles"
 
 type ChatView = 'client' | 'provider';
 
@@ -183,45 +184,13 @@ export default function MessagesPage() {
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4">
                     <div className="space-y-6">
-                        {activeMessages.map((message) => (
-                            <div key={message.id} className={cn("flex items-end gap-3", (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'justify-end' : '')}>
-                                {(message.sender === 'provider' && view === 'client') || (message.sender === 'user' && view === 'provider') ? (
-                                    <Avatar className="w-8 h-8">
-                                        <AvatarImage src={activeConversation.avatar} data-ai-hint={activeConversation.dataAiHint} />
-                                        <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                ) : null }
-                                <div className="flex flex-col gap-1 items-start">
-                                    <div className={cn(
-                                        "rounded-lg px-4 py-3 max-w-md",
-                                        (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? 'bg-primary text-primary-foreground' : 'bg-muted',
-                                        message.isAi && 'bg-purple-100 dark:bg-purple-900/50'
-                                    )}>
-                                        <p className="text-sm">{message.text}</p>
-                                        {message.isAi && message.bookingId && (
-                                            <Button asChild size="sm" className="mt-3">
-                                                <Link href={`/booking/manage/${message.bookingId}`}>
-                                                    <CreditCard className="mr-2 h-4 w-4" />
-                                                    {view === 'client' ? 'Review & Pay' : 'Manage Booking'}
-                                                </Link>
-                                            </Button>
-                                        )}
-                                    </div>
-                                    {message.isAi && (
-                                        <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
-                                            <Sparkles className="w-3 h-3" />
-                                            <span>Sent by AI Assistant</span>
-                                        </div>
-                                    )}
-                                </div>
-                                 {(message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider') ? (
-                                    <Avatar className="w-8 h-8">
-                                        <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
-                                        <AvatarFallback>{view === 'client' ? 'U' : 'P'}</AvatarFallback>
-                                    </Avatar>
-                                ) : null}
-                            </div>
-                        ))}
+                        {activeMessages.map((message) => {
+                           const isUser = (message.sender === 'user' && view === 'client') || (message.sender === 'provider' && view === 'provider');
+                           if (isUser) {
+                               return <UserMessage key={message.id} message={message} view={view} />;
+                           }
+                           return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />;
+                        })}
                     </div>
                 </ScrollArea>
             </CardContent>
