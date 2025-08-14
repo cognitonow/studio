@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, User, UserSwitch } from "lucide-react"
+import { Search, Send, User } from "lucide-react"
 import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation } from "@/lib/data"
 import { useState, useEffect } from "react"
 import type { Conversation, Message } from "@/lib/types"
@@ -74,11 +74,6 @@ export default function MessagesPage() {
       setConversations(updatedConvos);
     }
   }
-
-  const toggleView = () => {
-    setActiveConversation(undefined);
-    setView(current => current === 'client' ? 'provider' : 'client');
-  }
   
   const activeMessages = activeConversation ? 
     (view === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
@@ -92,10 +87,6 @@ export default function MessagesPage() {
     return (
         <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
              <p className="text-muted-foreground">No active conversations.</p>
-             <Button onClick={toggleView}>
-                <UserSwitch className="mr-2 h-4 w-4" />
-                Switch to {view === 'client' ? 'Provider' : 'Client'} View
-            </Button>
         </div>
     )
   }
@@ -117,10 +108,6 @@ export default function MessagesPage() {
           <CardHeader>
             <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-headline">Chats</CardTitle>
-                 <Button onClick={toggleView} size="sm" variant="outline">
-                    <UserSwitch className="mr-2 h-4 w-4" />
-                    {view === 'client' ? 'Provider View' : 'Client View'}
-                </Button>
             </div>
             <div className="relative pt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
