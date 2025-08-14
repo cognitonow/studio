@@ -408,6 +408,12 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                         description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
                         bookingId: booking.id
                     });
+                    addNotification('client', {
+                         icon: 'cancellation',
+                        title: 'Booking Cancelled',
+                        description: `You have successfully cancelled your booking with ${booking.providerName}.`,
+                        bookingId: booking.id
+                    });
                 } else { // Cancelled by provider
                     addNotification('client', {
                         icon: 'cancellation',
