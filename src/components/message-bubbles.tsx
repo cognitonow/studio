@@ -27,7 +27,7 @@ export function UserMessage({ message, view }: UserMessageProps) {
                 <div className={cn(
                     "rounded-lg px-4 py-3 max-w-md",
                     "bg-primary text-primary-foreground",
-                    message.isAi && 'bg-purple-100 dark:bg-purple-900/50'
+                    message.isAi && 'bg-purple-100 dark:bg-purple-900/50 text-foreground'
                 )}>
                     <p className="text-sm">{message.text}</p>
                     {message.isAi && message.bookingId && (
@@ -65,25 +65,10 @@ export function ProviderMessage({ message, activeConversation }: ProviderMessage
             <div className="flex flex-col gap-1 items-start">
                 <div className={cn(
                     "rounded-lg px-4 py-3 max-w-md",
-                    "bg-muted",
-                    message.isAi && 'bg-purple-100 dark:bg-purple-900/50'
+                    "bg-muted"
                 )}>
                     <p className="text-sm">{message.text}</p>
-                     {message.isAi && message.bookingId && (
-                        <Button asChild size="sm" className="mt-3">
-                            <Link href={`/booking/manage/${message.bookingId}`}>
-                                <CreditCard className="mr-2 h-4 w-4" />
-                                Manage Booking
-                            </Link>
-                        </Button>
-                    )}
                 </div>
-                {message.isAi && (
-                    <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
-                        <Sparkles className="w-3 h-3" />
-                        <span>Sent by AI Assistant</span>
-                    </div>
-                )}
             </div>
         </div>
     );
