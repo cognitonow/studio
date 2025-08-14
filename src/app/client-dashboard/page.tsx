@@ -46,9 +46,20 @@ export default function ClientDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const data = getClientDashboardData();
-    setDashboardData(data);
-    setIsLoading(false);
+    const fetchData = () => {
+        const data = getClientDashboardData();
+        setDashboardData(data);
+        setIsLoading(false);
+    };
+
+    fetchData();
+
+    // Re-fetch when the window gets focus, to catch updates
+    window.addEventListener('focus', fetchData);
+
+    return () => {
+        window.removeEventListener('focus', fetchData);
+    };
   }, []);
   
   const favoriteProviderPortfolio = dashboardData?.favoriteProvider?.portfolio.slice(0, 3);
