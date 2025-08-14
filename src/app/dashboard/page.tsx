@@ -33,17 +33,21 @@ import { ServiceManagementCard } from '@/components/service-management-card';
 
 export default function ProviderDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const provider = providers[2]; // Mocking Chloe's Hair Haven
+  const provider = providers[2]; // Mocking Chloe's Hair Haven as the logged-in provider
   const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set(provider.portfolio.slice(0, 3).map(p => p.id)));
 
 
   useEffect(() => {
-    setBookings(getProviderBookings());
-  }, []);
+    if (provider) {
+      setBookings(getProviderBookings(provider.id));
+    }
+  }, [provider]);
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status);
-    setBookings(getProviderBookings());
+    if (provider) {
+      setBookings(getProviderBookings(provider.id));
+    }
   };
   
   const handleFeaturedImageSelect = (imageId: string) => {

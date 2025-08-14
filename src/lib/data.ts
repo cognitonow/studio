@@ -277,9 +277,10 @@ export const getBookings = () => {
     return { upcoming, past };
 };
 
-export const getProviderBookings = () => {
-    // Return a new array to ensure React state updates trigger re-renders
-    return [...bookings].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+export const getProviderBookings = (providerId: string) => {
+    return [...bookings]
+        .filter(b => b.providerId === providerId)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
 const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
@@ -508,6 +509,7 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
+
 
 
 
