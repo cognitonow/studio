@@ -1,72 +1,41 @@
 
+'use client'
+
 import Image from 'next/image';
 import Link from 'next/link';
-<<<<<<< HEAD
-import { getProviderById, isFavourite, toggleFavourite } from '@/lib/data';
+import { getProviderById, getBookingHistoryForProvider } from '@/lib/data';
 import { notFound, useParams } from 'next/navigation';
-=======
-import { getProviderById, providers } from '@/lib/data';
-import { notFound } from 'next/navigation';
->>>>>>> parent of a28a80b (do 1)
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, Send } from 'lucide-react';
-import type { Metadata, ResolvingMetadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProviderChatHistory } from '@/components/provider-chat-history';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useEffect, useState } from 'react';
+import type { Booking } from '@/lib/types';
  
-<<<<<<< HEAD
 export default function ProviderDetailPage() {
   const params = useParams();
   const id = params.id as string;
-=======
-type Props = {
-  params: { id: string }
-}
- 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { id } = params;
-  const provider = getProviderById(id)
- 
-  if (!provider) {
-    return {
-      title: 'Provider Not Found',
-    }
-  }
-
-  return {
-    title: `${provider.name} | Beauty Book`,
-    description: provider.bio,
-  }
-}
-
-export async function generateStaticParams() {
-  return providers.map((provider) => ({
-    id: provider.id,
-  }));
-}
-
-export default function ProviderDetailPage({ params: { id } }: { params: { id: string } }) {
->>>>>>> parent of a28a80b (do 1)
+  const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
+  
   const provider = getProviderById(id);
+
+  useEffect(() => {
+    if (provider) {
+        setBookingHistory(getBookingHistoryForProvider(provider.id));
+    }
+  }, [provider]);
+
 
   if (!provider) {
     notFound();
   }
-  
-  const bookingHistory = [
-    { id: "1", service: "Balayage", date: "2024-07-16", status: "Completed", price: 180 },
-    { id: "2", service: "Haircut", date: "2024-05-20", status: "Completed", price: 50 },
-  ];
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -200,18 +169,20 @@ export default function ProviderDetailPage({ params: { id } }: { params: { id: s
                         <TableHead>Service</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Price</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {bookingHistory.map(booking => (
+                      {bookingHistory.length > 0 ? bookingHistory.map(booking => (
                         <TableRow key={booking.id}>
-                          <TableCell className="font-medium">{booking.service}</TableCell>
-                          <TableCell>{booking.date}</TableCell>
+                          <TableCell className="font-medium">{booking.serviceIds.join(', ')}</TableCell>
+                          <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                           <TableCell><Badge>{booking.status}</Badge></TableCell>
-                          <TableCell className="text-right">${booking.price}</TableCell>
                         </TableRow>
-                      ))}
+                      )) : (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center h-24">No previous bookings with this provider.</TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </CardContent>

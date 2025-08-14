@@ -9,6 +9,7 @@ export type Provider = {
   rating: number;
   reviewCount: number;
   isFeatured?: boolean;
+  isFavourite?: boolean;
   bio: string;
   portfolio: { id: string; url: string; dataAiHint: string }[];
   services: Service[];

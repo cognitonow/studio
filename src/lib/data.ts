@@ -1,5 +1,4 @@
 
-
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message } from './types';
 import { format, formatDistanceToNow, isSameDay, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -144,7 +143,8 @@ export const providers: Provider[] = [
     reviews: [reviews[0]],
     badges: ['Top Rated', 'Quick Responder', 'Nail Art Pro'],
     location: 'New York, NY',
-    playlist: 'top-rated-nails'
+    playlist: 'top-rated-nails',
+    isFavourite: true,
   },
   {
     id: '2', name: 'Glow & Go Esthetics', specialty: 'Skincare', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'skincare product', rating: 5.0, reviewCount: 88, isFeatured: true,
@@ -158,7 +158,8 @@ export const providers: Provider[] = [
     reviews: [reviews[1]],
     badges: ['Skincare Guru', '5-Star Safety', 'Client Favorite'],
     location: 'Miami, FL',
-    playlist: 'rejuvenating-facials'
+    playlist: 'rejuvenating-facials',
+    isFavourite: false,
   },
   {
     id: '3', name: 'Chloe\'s Hair Haven', specialty: 'Hair Color', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'hair salon', rating: 4.8, reviewCount: 212,
@@ -171,7 +172,8 @@ export const providers: Provider[] = [
     reviews: [reviews[3]],
     badges: ['Color Whiz', 'Bridal Expert'],
     location: 'Los Angeles, CA',
-    playlist: 'wedding-specialists'
+    playlist: 'wedding-specialists',
+    isFavourite: true,
   },
   {
     id: '4', name: 'Bridal Beauty Co.', specialty: 'Wedding Makeup', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'makeup brushes', rating: 5.0, reviewCount: 56,
@@ -181,7 +183,8 @@ export const providers: Provider[] = [
     reviews: [],
     badges: ['Bridal Expert', 'On-Location Pro'],
     location: 'Chicago, IL',
-    playlist: 'wedding-specialists'
+    playlist: 'wedding-specialists',
+    isFavourite: false,
   },
   {
     id: '5', name: 'The Relaxation Station', specialty: 'Massage Therapy', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'massage oil', rating: 4.9, reviewCount: 301, isFeatured: true,
@@ -191,7 +194,8 @@ export const providers: Provider[] = [
     reviews: [],
     badges: ['Pain Relief Pro', 'Top Rated'],
     location: 'Austin, TX',
-    playlist: 'rejuvenating-facials'
+    playlist: 'rejuvenating-facials',
+    isFavourite: false,
   },
 ];
 
@@ -444,7 +448,6 @@ export const getUnreadMessageCount = () => {
 };
 
 export const markAllMessagesAsRead = (conversationId?: number) => {
-    // console.log(`markAllMessagesAsRead called for conversationId: ${conversationId}`);
     if (conversationId) {
         const convo = conversations.find(c => c.id === conversationId);
         if (convo) {
@@ -484,7 +487,7 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => b.status !== 'Completed' && b.status !== 'Cancelled' && new Date(b.date) >= new Date())
+        .filter(b => b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay')
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
@@ -515,7 +518,7 @@ export const getClientDashboardData = () => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     // Mock logic for favorite and suggested providers
-    const favoriteProvider = providers[0];
+    const favoriteProvider = providers.find(p => p.isFavourite);
     const suggestedProvider = providers[1];
     const activeBooking = getActiveBooking();
 
@@ -561,7 +564,8 @@ export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
-export const getExploreQueueProviders = () => providers.slice(0, 2);
-    
-
-    
+export const getExploreQueueProviders = () => providers.slice(3, 5); // Mock: return providers 4 and 5
+export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
+export const getBookingHistoryForProvider = (providerId: string) => {
+    return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
+}
