@@ -49,6 +49,8 @@ export default function ClientBookingsPage() {
     switch (status) {
       case 'Pending':
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+      case 'Review Order and Pay':
+        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Payment Required</Badge>;
       case 'Confirmed':
         return <Badge className="bg-blue-100 text-blue-800">Confirmed</Badge>;
       case 'Completed':

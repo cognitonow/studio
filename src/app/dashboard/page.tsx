@@ -80,6 +80,8 @@ export default function ProviderDashboardPage() {
     switch (status) {
       case 'Pending':
         return <Badge variant="secondary">Pending</Badge>;
+      case 'Review Order and Pay':
+        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Awaiting Payment</Badge>;
       case 'Confirmed':
         return <Badge className="bg-blue-500 text-white hover:bg-blue-600">Confirmed</Badge>;
       case 'Completed':
@@ -113,8 +115,15 @@ export default function ProviderDashboardPage() {
             <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
                 <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
             </Button>,
-            <Button key={`confirm-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</Button>,
-            <Button key={`cancel-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Cancel</Button>
+            <Button key={`confirm-${booking.id}`} size="sm" onClick={() => handleStatusChange(booking.id, 'Review Order and Pay')}>Approve</Button>,
+            <Button key={`cancel-${booking.id}`} size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>Decline</Button>
+        );
+        break;
+      case 'Review Order and Pay':
+        actions.push(
+            <Button key={`manage-${booking.id}`} size="sm" variant="outline" asChild>
+                <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+            </Button>
         );
         break;
       case 'Confirmed':

@@ -66,7 +66,7 @@ export type Booking = {
     providerName: string;
     serviceIds: string[];
     date: string;
-    status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
+    status: 'Pending' | 'Review Order and Pay' | 'Confirmed' | 'Completed' | 'Cancelled';
     clientName?: string; // Optional client name for provider view
     isPaid: boolean;
 };

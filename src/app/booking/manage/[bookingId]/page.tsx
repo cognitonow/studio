@@ -143,9 +143,9 @@ export default function ManageBookingPage() {
   
   const handleConfirmPayment = () => {
     if (booking) {
-        updateBooking(booking.id, { isPaid: true });
+        updateBooking(booking.id, { isPaid: true, status: 'Confirmed' });
         // Manually update the state to reflect the change immediately
-        setBooking(prev => prev ? { ...prev, isPaid: true } : null);
+        setBooking(prev => prev ? { ...prev, isPaid: true, status: 'Confirmed' } : null);
         toast({
             title: "Payment Successful!",
             description: "Your booking is paid and confirmed.",
@@ -157,7 +157,7 @@ export default function ManageBookingPage() {
   const totalDuration = bookedServices.reduce((acc, service) => acc + service.duration, 0);
 
   const isReadOnly = booking.status === 'Completed' || booking.status === 'Cancelled' || booking.isPaid;
-  const showPaymentForm = booking.status === 'Confirmed' && !booking.isPaid;
+  const showPaymentForm = booking.status === 'Review Order and Pay' && !booking.isPaid;
 
 
   return (

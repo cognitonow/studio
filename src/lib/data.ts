@@ -203,7 +203,7 @@ export const playlists: Playlist[] = [
 let bookings: Booking[] = [
     { id: "1", providerId: "3", providerName: "Chloe's Hair Haven", serviceIds: ["hair-22"], date: "2024-08-15T14:00:00.000Z", status: "Confirmed", clientName: 'Emily R.', isPaid: true },
     { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.', isPaid: true },
-    { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Confirmed", clientName: 'Jane D.', isPaid: false },
+    { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Review Order and Pay", clientName: 'Jane D.', isPaid: false },
     { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey', isPaid: true },
     { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled', isPaid: false },
@@ -267,7 +267,7 @@ let notifications: Notification[] = [
 export const getBookings = () => {
     const today = startOfDay(new Date());
     const upcoming = bookings
-        .filter(b => new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed'))
+        .filter(b => new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay'))
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const past = bookings
@@ -347,24 +347,26 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `${booking.clientName} has cancelled their booking for ${new Date(booking.date).toLocaleDateString()}.`,
                     bookingId: booking.id
                 });
-            } else if (status === 'Confirmed') {
+            } else if (status === 'Review Order and Pay') {
                  // Provider-facing notification
                 addNotification({
                     icon: 'confirmation',
-                    title: 'Booking Confirmed!',
-                    description: `You confirmed ${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()}.`,
+                    title: 'Booking Approved!',
+                    description: `You approved ${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()}. Waiting for payment.`,
                     bookingId: booking.id
                 });
 
                 // Client-facing notification
                 clientNotification({
                     icon: 'payment',
-                    title: 'Booking Confirmed - Payment Required',
-                    description: `${booking.providerName} has confirmed your booking! Please complete payment to secure your spot.`,
+                    title: 'Action Required - Review & Pay',
+                    description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
                     bookingId: booking.id
                 });
 
+            } else if (status === 'Confirmed') {
                 await sendAutomatedMessage(booking, draftBookingConfirmation);
+
             } else if (status === 'Completed') {
                 booking.isPaid = true; // For simplicity, assume payment is captured on completion
                 addNotification({
@@ -390,7 +392,13 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
 export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking>) => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
+        const originalBooking = { ...bookings[bookingIndex] };
         bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
+        
+        // If payment was made and status changes from Review to Confirmed
+        if (updatedDetails.isPaid && originalBooking.status === 'Review Order and Pay') {
+            updateBookingStatus(bookingId, 'Confirmed');
+        }
     }
 };
 
@@ -456,7 +464,7 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
     const upcomingBookings = bookings
-        .filter(b => (b.status === 'Confirmed' || b.status === 'Pending') && new Date(b.date) >= new Date())
+        .filter(b => (b.status === 'Confirmed' || b.status === 'Pending' || b.status === 'Review Order and Pay') && new Date(b.date) >= new Date())
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
@@ -509,11 +517,3 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
-
-
-
-
-
-
-
-
