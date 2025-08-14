@@ -38,9 +38,18 @@ export default function ProviderDashboardPage() {
 
 
   useEffect(() => {
-    if (provider) {
-      setBookings(getProviderBookings(provider.id));
-    }
+    const fetchBookings = () => {
+        if (provider) {
+            setBookings(getProviderBookings(provider.id));
+        }
+    };
+    fetchBookings();
+
+    // Re-fetch when the window gets focus, to catch updates from other tabs
+    window.addEventListener('focus', fetchBookings);
+    return () => {
+        window.removeEventListener('focus', fetchBookings);
+    };
   }, [provider]);
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
