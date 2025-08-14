@@ -21,6 +21,8 @@ export function ServiceManagementCard() {
     const [price, setPrice] = useState<number | string>('');
     const [duration, setDuration] = useState<number | string>('');
     const [description, setDescription] = useState<string>('');
+    const [customServiceName, setCustomServiceName] = useState('');
+
 
     // State for the edit dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -33,18 +35,35 @@ export function ServiceManagementCard() {
 
 
     const handleAddService = () => {
-        const serviceToAdd = allServices.find(s => s.id === selectedServiceId);
-        if (serviceToAdd && !providerServices.find(s => s.id === selectedServiceId)) {
-            const newService = {
-                ...serviceToAdd,
-                price: typeof price === 'number' ? price : serviceToAdd.price,
-                duration: typeof duration === 'number' ? duration : serviceToAdd.duration,
-                description: description || serviceToAdd.description,
+        let serviceToAdd: Service | undefined;
+
+        if (selectedServiceId === 'custom') {
+            if (!customServiceName || !selectedCategory) return;
+            serviceToAdd = {
+                id: `custom-${Date.now()}`,
+                categoryId: selectedCategory,
+                name: customServiceName,
+                description: description,
+                price: Number(price),
+                duration: Number(duration),
             };
-            setProviderServices(prev => [...prev, newService].sort((a,b) => a.name.localeCompare(b.name)));
-            // Reset form
+        } else {
+            const baseService = allServices.find(s => s.id === selectedServiceId);
+            if (!baseService) return;
+            serviceToAdd = {
+                ...baseService,
+                price: typeof price === 'number' ? price : baseService.price,
+                duration: typeof duration === 'number' ? duration : baseService.duration,
+                description: description || baseService.description,
+            };
+        }
+
+        if (serviceToAdd && !providerServices.find(s => s.id === serviceToAdd!.id)) {
+            setProviderServices(prev => [...prev, serviceToAdd!].sort((a,b) => a.name.localeCompare(b.name)));
+             // Reset form
             setSelectedCategory('');
             setSelectedServiceId('');
+            setCustomServiceName('');
             setPrice('');
             setDuration('');
             setDescription('');
@@ -57,11 +76,18 @@ export function ServiceManagementCard() {
 
     const handleServiceSelect = (serviceId: string) => {
         setSelectedServiceId(serviceId);
-        const service = allServices.find(s => s.id === serviceId);
-        if (service) {
-            setPrice(service.price);
-            setDuration(service.duration);
-            setDescription(service.description);
+        if (serviceId === 'custom') {
+            setCustomServiceName('');
+            setPrice('');
+            setDuration('');
+            setDescription('');
+        } else {
+            const service = allServices.find(s => s.id === serviceId);
+            if (service) {
+                setPrice(service.price);
+                setDuration(service.duration);
+                setDescription(service.description);
+            }
         }
     }
 
@@ -166,12 +192,19 @@ export function ServiceManagementCard() {
                                     <SelectValue placeholder="Select Service" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {filteredServices.length > 0 ? filteredServices.map(service => (
+                                    {filteredServices.length > 0 && filteredServices.map(service => (
                                         <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                                    )) : <SelectItem value="none" disabled>No available services</SelectItem>}
+                                    ))}
+                                    <SelectItem value="custom">Create Custom Service</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
+                         {selectedServiceId === 'custom' && (
+                            <div className="space-y-2 col-span-2">
+                                <Label htmlFor="custom-name">Custom Service Name</Label>
+                                <Input id="custom-name" value={customServiceName} onChange={e => setCustomServiceName(e.target.value)} placeholder="e.g., Express Manicure" />
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <Label htmlFor="price">Price ($)</Label>
                             <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} disabled={!selectedServiceId} />
@@ -185,7 +218,7 @@ export function ServiceManagementCard() {
                         <Label htmlFor="description">Description</Label>
                         <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter a description for the service." disabled={!selectedServiceId} />
                     </div>
-                     <Button onClick={handleAddService} disabled={!selectedServiceId} className="mt-2">
+                     <Button onClick={handleAddService} disabled={!selectedServiceId || (selectedServiceId === 'custom' && !customServiceName)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Service
                     </Button>
