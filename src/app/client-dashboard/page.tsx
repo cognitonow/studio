@@ -4,7 +4,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign, Clock, User, Pencil } from "lucide-react"
+import { ArrowRight, Calendar, Heart, Star, List, Repeat, DollarSign, Clock, User, Pencil, MapPin } from "lucide-react"
 import Link from "next/link"
 import { providers, getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -49,9 +49,6 @@ export default function ClientDashboardPage() {
     setDashboardData(data);
     setIsLoading(false);
   }, []);
-
-  const favoriteProviderFirstService = dashboardData?.favoriteProvider?.services[0];
-
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -199,51 +196,63 @@ export default function ClientDashboardPage() {
 
 
         {/* Favourite Provider */}
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1 flex flex-col">
           <CardHeader>
              <CardTitle className="flex items-center gap-2 font-headline">
                 <Heart className="w-6 h-6 text-primary"/>
                 Favorite Provider
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-grow space-y-4">
             {isLoading || !dashboardData?.favoriteProvider ? (
                 <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                        <Skeleton className="h-20 w-20 rounded-full" />
+                        <Skeleton className="h-16 w-16 rounded-full" />
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-32" />
                             <Skeleton className="h-4 w-24" />
                         </div>
                     </div>
-                    <Skeleton className="h-10 w-full" />
+                     <Skeleton className="h-4 w-full" />
+                     <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-10 w-full mt-4" />
                 </div>
             ) : (
-                <>
-                <Link href={`/provider/${dashboardData.favoriteProvider.id}`} className="block group">
-                <div className="flex items-center gap-4">
-                    <Avatar className="h-20 w-20">
-                        <AvatarImage src={dashboardData.favoriteProvider.avatarUrl} data-ai-hint={dashboardData.favoriteProvider.dataAiHint} />
-                        <AvatarFallback>{dashboardData.favoriteProvider.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <h3 className="text-lg font-semibold group-hover:underline">{dashboardData.favoriteProvider.name}</h3>
-                        <p className="text-sm text-muted-foreground">{dashboardData.favoriteProvider.specialty}</p>
-                        <div className="flex items-center gap-1 mt-1">
+                <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-16 w-16">
+                            <AvatarImage src={dashboardData.favoriteProvider.avatarUrl} data-ai-hint={dashboardData.favoriteProvider.dataAiHint} />
+                            <AvatarFallback>{dashboardData.favoriteProvider.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <h3 className="text-lg font-semibold">{dashboardData.favoriteProvider.name}</h3>
+                            <p className="text-sm text-muted-foreground">{dashboardData.favoriteProvider.specialty}</p>
+                        </div>
+                    </div>
+                    <div className="text-sm space-y-2 mt-4">
+                        <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-primary fill-primary" />
                             <span>{dashboardData.favoriteProvider.rating} ({dashboardData.favoriteProvider.reviewCount} reviews)</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-muted-foreground" />
+                            <span>{dashboardData.favoriteProvider.location}</span>
+                        </div>
                     </div>
-                </div>
-                </Link>
-                {favoriteProviderFirstService && (
-                    <Button asChild className="w-full mt-6">
-                        <Link href={`/book/${dashboardData.favoriteProvider.id}?service=${favoriteProviderFirstService.id}`}>
-                            Book Again
+                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2 flex-grow">
+                        {dashboardData.favoriteProvider.bio}
+                    </p>
+                     <div className="flex flex-wrap gap-2 mt-2">
+                        {dashboardData.favoriteProvider.badges.slice(0, 2).map(badge => (
+                            <Badge key={badge} variant="secondary">{badge}</Badge>
+                        ))}
+                    </div>
+                    <Button asChild className="w-full mt-4">
+                        <Link href={`/provider/${dashboardData.favoriteProvider.id}`}>
+                            View Profile
                         </Link>
                     </Button>
-                )}
-              </>
+                </div>
             )}
           </CardContent>
         </Card>
