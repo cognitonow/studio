@@ -17,6 +17,7 @@ import Link from "next/link"
 import { getBookings, getServicesByIds } from "@/lib/data"
 import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
+import { CreditCard } from "lucide-react"
 
 export default function ClientBookingsPage() {
   const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
@@ -43,6 +44,24 @@ export default function ClientBookingsPage() {
   const renderServices = (serviceIds: string[]) => {
     const services = getServicesByIds(serviceIds);
     return services.map(s => s.name).join(', ');
+  }
+  
+  const renderBookingActions = (booking: Booking) => {
+    if (booking.status === 'Review Order and Pay') {
+        return (
+            <Button size="sm" asChild>
+                <Link href={`/booking/manage/${booking.id}`}>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Make Payment
+                </Link>
+            </Button>
+        )
+    }
+    return (
+        <Button variant="outline" size="sm" asChild>
+            <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+        </Button>
+    )
   }
 
   const getStatusBadge = (status: Booking['status']) => {
@@ -101,9 +120,7 @@ export default function ClientBookingsPage() {
                         {getStatusBadge(booking.status)}
                       </TableCell>
                       <TableCell className="text-right">
-                          <Button variant="outline" size="sm" asChild>
-                            <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-                          </Button>
+                          {renderBookingActions(booking)}
                       </TableCell>
                     </TableRow>
                   )) : (
