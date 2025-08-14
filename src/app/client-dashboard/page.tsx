@@ -56,6 +56,8 @@ export default function ClientDashboardPage() {
   const subImage1 = favoriteProviderPortfolio?.[1] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'hair styling' };
   const subImage2 = favoriteProviderPortfolio?.[2] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'makeup application' };
 
+  const activeBookingTotalCost = dashboardData?.activeBooking?.services.reduce((acc, service) => acc + service.price, 0) ?? 0;
+
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">Client Dashboard</h1>
@@ -168,6 +170,10 @@ export default function ClientDashboardPage() {
                             <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-muted-foreground" />
                                 <span>{format(new Date(dashboardData.activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(dashboardData.activeBooking.date), { addSuffix: true })})</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <DollarSign className="w-4 h-4 text-muted-foreground" />
+                                <span className="font-semibold">${activeBookingTotalCost.toFixed(2)}</span>
                             </div>
                         </div>
                         <Button asChild className="w-full">
