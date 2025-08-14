@@ -3,16 +3,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { 
-    providers as allProviders, 
-    getFeaturedProviders, 
-    serviceCategories, 
-    services as allServices, 
-    dublinDistricts, 
-    getProvidersByPlaylist,
-    addToExploreQueue,
-    getExploreQueueProviders
-} from '@/lib/data';
+import { providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts, getProvidersByPlaylist } from '@/lib/data';
 import { ProviderCard } from '@/components/provider-card';
 import {
   Carousel,
@@ -38,11 +29,8 @@ import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import type { Provider } from '@/lib/types';
 import { ProviderProfileView } from '@/components/provider-profile-view';
-import { useToast } from '@/hooks/use-toast';
 
 function ExploreStack() {
-  const { toast } = useToast();
-  const [providers, setProviders] = useState<Provider[]>(allProviders);
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | 'up' | 'none'>('none');
   const [exploreQueue, setExploreQueue] = useState<Provider[]>([]);
@@ -56,15 +44,9 @@ function ExploreStack() {
   };
   
   const handleLike = () => {
-    const currentProvider = providers[activeIndex];
-    addToExploreQueue(currentProvider.id);
     setDirection('up');
-
-    toast({
-        title: "Added to your Explore Queue!",
-        description: `${currentProvider.name} has been saved for you to review later.`,
-    });
-
+    const currentProvider = providers[activeIndex];
+    setExploreQueue(prev => [...prev, currentProvider]);
     setTimeout(() => {
         setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
         setDirection('none');
@@ -81,7 +63,12 @@ function ExploreStack() {
   
   const handleProfileView = () => {
     const currentProvider = providers[activeIndex];
-    addToExploreQueue(currentProvider.id);
+    setExploreQueue(prev => {
+        if (!prev.find(p => p.id === currentProvider.id)) {
+            return [...prev, currentProvider];
+        }
+        return prev;
+    });
   };
 
   const getCardStyle = (index: number) => {
@@ -128,8 +115,6 @@ function ExploreStack() {
         height: '100%',
     };
   };
-
-  if (!providers.length) return null;
 
   return (
     <div className="flex flex-col items-center">

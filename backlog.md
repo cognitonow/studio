@@ -6,7 +6,6 @@ This document contains a list of features, improvements, and ideas for future de
 
 - [x] Sign up flow
 - [ ] Client Dashboard
-- [ ] Functional "My Lists" page
 
 ## Improvements
 

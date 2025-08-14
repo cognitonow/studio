@@ -264,9 +264,6 @@ let notifications: Notification[] = [
     }
   ];
 
-let exploreQueue: string[] = [];
-let favouriteProviders: string[] = ['1', '3'];
-
 export const getBookings = () => {
     const upcoming = bookings
         .filter(b => new Date(b.date) >= new Date() && b.status === 'Confirmed')
@@ -428,38 +425,11 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
         .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
-export const addToExploreQueue = (providerId: string) => {
-    if (!exploreQueue.includes(providerId)) {
-        exploreQueue.push(providerId);
-    }
-}
-
-export const getExploreQueueProviders = () => {
-    return providers.filter(p => exploreQueue.includes(p.id));
-}
-
-export const getFavouriteProviders = () => {
-    return providers.filter(p => favouriteProviders.includes(p.id));
-}
-
-export const isFavourite = (providerId: string) => {
-    return favouriteProviders.includes(providerId);
-}
-
-export const toggleFavourite = (providerId: string) => {
-    const index = favouriteProviders.indexOf(providerId);
-    if (index > -1) {
-        favouriteProviders.splice(index, 1);
-        return false;
-    } else {
-        favouriteProviders.push(providerId);
-        return true;
-    }
-}
-
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
+
+    
