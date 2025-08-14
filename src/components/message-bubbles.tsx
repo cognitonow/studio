@@ -20,7 +20,7 @@ interface ProviderMessageProps extends MessageProps {
     activeConversation: Conversation;
 }
 
-export function UserMessage({ message, view }: UserMessageProps) {
+export const UserMessage = ({ message, view }: UserMessageProps) => {
     return (
         <div className="flex items-end gap-3 justify-end">
             <div className="flex flex-col gap-1 items-end">
@@ -55,7 +55,7 @@ export function UserMessage({ message, view }: UserMessageProps) {
 }
 
 
-export function ProviderMessage({ message, activeConversation }: ProviderMessageProps) {
+export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
     return (
         <div className="flex items-end gap-3">
             <Avatar className="w-8 h-8">
