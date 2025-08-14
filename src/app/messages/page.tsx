@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -7,26 +8,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, Sparkles, User, Phone, Video, CreditCard } from "lucide-react"
-import { getConversations, getMessages, markAllMessagesAsRead } from "@/lib/data"
+import { getConversations, getMessages, markAllMessagesAsRead, startConversationWithProvider } from "@/lib/data"
 import { useState, useEffect } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const convos = getConversations();
     setConversations(convos);
     setMessages(getMessages());
 
-    if (convos.length > 0) {
+    const providerIdToChat = searchParams.get('providerId');
+    if (providerIdToChat) {
+        const existingConvo = convos.find(c => c.providerId === providerIdToChat);
+        if (existingConvo) {
+            setActiveConversation(existingConvo);
+        } else {
+            const newConvo = startConversationWithProvider(providerIdToChat);
+            if (newConvo) {
+                setConversations(prev => [newConvo, ...prev]);
+                setActiveConversation(newConvo);
+            } else if (convos.length > 0) {
+                 setActiveConversation(convos[0]);
+            }
+        }
+    } else if (convos.length > 0) {
       setActiveConversation(convos[0]);
     }
-  }, []);
+  }, [searchParams]);
   
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);

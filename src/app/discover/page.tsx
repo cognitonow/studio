@@ -29,11 +29,13 @@ import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import type { Provider } from '@/lib/types';
 import { ProviderProfileView } from '@/components/provider-profile-view';
+import { useRouter } from 'next/navigation';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | 'up' | 'none'>('none');
   const [exploreQueue, setExploreQueue] = useState<Provider[]>([]);
+  const router = useRouter();
 
   const handleNext = () => {
     setDirection('right');
@@ -70,6 +72,13 @@ function ExploreStack() {
         return prev;
     });
   };
+
+  const handleOpenChat = () => {
+      const provider = providers[activeIndex];
+      if (provider) {
+          router.push(`/messages?providerId=${provider.id}`);
+      }
+  }
 
   const getCardStyle = (index: number) => {
     const offset = index - activeIndex;
@@ -149,7 +158,7 @@ function ExploreStack() {
                 <ProviderProfileView provider={providers[activeIndex]} />
             </DialogContent>
           </Dialog>
-          <Button onClick={handleNext} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
+          <Button onClick={handleOpenChat} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
             <MessageCircle className="h-10 w-10 fill-primary text-primary" />
           </Button>
         </div>

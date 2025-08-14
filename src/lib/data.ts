@@ -461,6 +461,27 @@ export const markAllMessagesAsRead = (conversationId?: number) => {
     }
 };
 
+export const startConversationWithProvider = (providerId: string): Conversation | undefined => {
+    const provider = getProviderById(providerId);
+    if (!provider) return undefined;
+    
+    let convo = conversations.find(c => c.providerId === providerId);
+    if (convo) return convo;
+
+    const newConvo: Conversation = {
+        id: conversations.length + 1,
+        providerId: provider.id,
+        name: provider.name,
+        avatar: provider.avatarUrl,
+        dataAiHint: provider.dataAiHint,
+        lastMessage: "Start a new conversation!",
+        time: "Just now",
+        unread: 0,
+    };
+    conversations.unshift(newConvo);
+    return newConvo;
+}
+
 export const getBookedTimes = (providerId: string, date: Date): string[] => {
     return bookings
         .filter(b => b.providerId === providerId && isSameDay(new Date(b.date), date) && b.status !== 'Cancelled')
@@ -522,4 +543,3 @@ export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
 export const getExploreQueueProviders = () => providers.slice(0, 2);
     
-
