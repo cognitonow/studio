@@ -47,21 +47,29 @@ export default function ClientBookingsPage() {
   }
   
   const renderBookingActions = (booking: Booking) => {
-    if (booking.status === 'Review Order and Pay') {
-        return (
-            <Button size="sm" asChild>
-                <Link href={`/booking/manage/${booking.id}`}>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Make Payment
-                </Link>
-            </Button>
-        )
+    switch (booking.status) {
+        case 'Review Order and Pay':
+            return (
+                <Button size="sm" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Make Payment
+                    </Link>
+                </Button>
+            );
+        case 'Pending':
+             return (
+                <Button variant="outline" size="sm" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>View</Link>
+                </Button>
+            )
+        default:
+             return (
+                <Button variant="outline" size="sm" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                </Button>
+            );
     }
-    return (
-        <Button variant="outline" size="sm" asChild>
-            <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
-        </Button>
-    )
   }
 
   const getStatusBadge = (status: Booking['status']) => {
