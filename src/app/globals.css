@@ -5,16 +5,16 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Soft gray */
+    --background: 240 100% 99%; /* Soft gray (#F9F9F9) */
     --foreground: 240 10% 3.9%;
-
-    --card: 0 0% 100%;
+ 
+    --card: 240 100% 99%;
     --card-foreground: 240 10% 3.9%;
  
-    --popover: 0 0% 100%;
+    --popover: 240 100% 99%;
     --popover-foreground: 240 10% 3.9%;
  
-    --primary: 0 79% 63%; /* Coral-red */
+    --primary: 0 79% 63%; /* Coral-red (#E64B4B) */
     --primary-foreground: 0 0% 98%;
  
     --secondary: 240 4.8% 95.9%;
@@ -23,7 +23,7 @@
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
  
-    --accent: 355 79% 58%; /* Crimson */
+    --accent: 355 79% 58%; /* Crimson (#DC3545) */
     --accent-foreground: 0 0% 98%;
  
     --destructive: 0 84.2% 60.2%;
@@ -71,9 +71,7 @@
     --footer: 30 6% 18%;
     --footer-foreground: 0 0% 80%;
   }
-}
- 
-@layer base {
+
   * {
     @apply border-border;
   }
