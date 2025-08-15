@@ -132,13 +132,10 @@ setDescription('');
             id: isCustom ? serviceToEdit.id : editedServiceId,
         };
 
-        setProviderServices(prev => 
-            prev.map(s => 
-                s.id === serviceToEdit.id 
-                ? updatedService
-                : s
-            )
-        );
+        setProviderServices(prevServices => prevServices.map(s => 
+            s.id === serviceToEdit.id ? updatedService : s
+        ));
+        
         setIsEditDialogOpen(false);
         setServiceToEdit(null);
         setHasUnsavedChanges(true);
@@ -184,7 +181,6 @@ setDescription('');
         : [];
 
     const isEditingCustom = serviceToEdit?.id.startsWith('custom-');
-
 
     return (
         <Card>
@@ -322,7 +318,7 @@ setDescription('');
                                         <Select onValueChange={handleEditServiceSelect} value={editedServiceId} disabled={!editedCategory}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select Service" />
-                                            </Trigger>
+                                            </SelectTrigger>
                                             <SelectContent>
                                                 {filteredEditServices.length > 0 ? filteredEditServices.map(service => (
                                                     <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
@@ -359,3 +355,5 @@ setDescription('');
         </Card>
     );
 }
+
+    
