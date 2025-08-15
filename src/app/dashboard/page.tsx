@@ -122,6 +122,14 @@ export default function ProviderDashboardPage() {
     );
   }
 
+  const currentBookings = bookings.filter(
+    b => b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay'
+  );
+
+  const pastBookings = bookings.filter(
+    b => b.status === 'Completed' || b.status === 'Cancelled'
+  );
+
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -246,40 +254,92 @@ export default function ProviderDashboardPage() {
         </TabsContent>
 
         <TabsContent value="bookings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Manage Bookings</CardTitle>
-              <CardDescription>View and manage all your client bookings.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Service(s)</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bookings.map(booking => (
-                    <TableRow key={booking.id}>
-                      <TableCell className="font-medium">{booking.clientName}</TableCell>
-                      <TableCell>{renderServices(booking.serviceIds)}</TableCell>
-                      <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={booking.status} view="provider" />
-                      </TableCell>
-                       <TableCell className="text-right">
-                        {getBookingActions(booking)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="current">
+            <TabsList>
+                <TabsTrigger value="current">Current Bookings</TabsTrigger>
+                <TabsTrigger value="past">Past Bookings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="current">
+                <Card>
+                    <CardHeader>
+                    <CardTitle>Current Bookings</CardTitle>
+                    <CardDescription>View and manage all your active and pending client bookings.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead>Client</TableHead>
+                            <TableHead>Service(s)</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {currentBookings.length > 0 ? currentBookings.map(booking => (
+                            <TableRow key={booking.id}>
+                            <TableCell className="font-medium">{booking.clientName}</TableCell>
+                            <TableCell>{renderServices(booking.serviceIds)}</TableCell>
+                            <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
+                            <TableCell>
+                                <StatusBadge status={booking.status} view="provider" />
+                            </TableCell>
+                            <TableCell className="text-right">
+                                {getBookingActions(booking)}
+                            </TableCell>
+                            </TableRow>
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center h-24">No current bookings.</TableCell>
+                            </TableRow>
+                        )}
+                        </TableBody>
+                    </Table>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+             <TabsContent value="past">
+                <Card>
+                    <CardHeader>
+                    <CardTitle>Past Bookings</CardTitle>
+                    <CardDescription>View your completed and cancelled booking history.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead>Client</TableHead>
+                            <TableHead>Service(s)</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                        {pastBookings.length > 0 ? pastBookings.map(booking => (
+                            <TableRow key={booking.id}>
+                            <TableCell className="font-medium">{booking.clientName}</TableCell>
+                            <TableCell>{renderServices(booking.serviceIds)}</TableCell>
+                            <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
+                            <TableCell>
+                                <StatusBadge status={booking.status} view="provider" />
+                            </TableCell>
+                            <TableCell className="text-right">
+                                {getBookingActions(booking)}
+                            </TableCell>
+                            </TableRow>
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center h-24">No past bookings.</TableCell>
+                            </TableRow>
+                        )}
+                        </TableBody>
+                    </Table>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
         
         <TabsContent value="stats" className="space-y-4">
