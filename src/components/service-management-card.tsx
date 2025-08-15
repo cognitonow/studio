@@ -8,14 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { List, PlusCircle, Trash2, Edit } from 'lucide-react';
-import { services as allServices, serviceCategories, providerServices as initialProviderServices } from '@/lib/data';
+import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
+import { services as allServices, serviceCategories, providerServices as initialProviderServices, updateProviderServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export function ServiceManagementCard() {
+    const { toast } = useToast();
     const [providerServices, setProviderServices] = useState<Service[]>(initialProviderServices);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedServiceId, setSelectedServiceId] = useState<string>('');
     const [price, setPrice] = useState<number | string>('');
@@ -68,11 +71,13 @@ export function ServiceManagementCard() {
             setPrice('');
             setDuration('');
             setDescription('');
+            setHasUnsavedChanges(true);
         }
     };
 
     const handleRemoveService = (serviceId: string) => {
         setProviderServices(prev => prev.filter(s => s.id !== serviceId));
+        setHasUnsavedChanges(true);
     };
 
     const handleServiceSelect = (serviceId: string) => {
@@ -112,7 +117,7 @@ export function ServiceManagementCard() {
         setIsEditDialogOpen(true);
     }
     
-    const handleSaveChanges = () => {
+    const handleSaveDialogChanges = () => {
         if (!serviceToEdit) return;
 
         const isCustom = serviceToEdit.id.startsWith('custom-');
@@ -136,6 +141,7 @@ export function ServiceManagementCard() {
         );
         setIsEditDialogOpen(false);
         setServiceToEdit(null);
+        setHasUnsavedChanges(true);
     }
     
     const handleEditCategoryChange = (categoryId: string) => {
@@ -158,6 +164,17 @@ export function ServiceManagementCard() {
         }
     }
 
+    const handleSaveChangesToDataSource = () => {
+        // Here we'd call the function to update the main data source
+        // For now, we'll use a mock function. This assumes provider ID '3' for Chloe.
+        updateProviderServices('3', providerServices);
+        setHasUnsavedChanges(false);
+        toast({
+            title: "Services Updated",
+            description: "Your list of services has been successfully saved.",
+        });
+    };
+
     const filteredServices = selectedCategory
         ? allServices.filter(s => s.categoryId === selectedCategory && !providerServices.some(ps => ps.id === s.id))
         : [];
@@ -172,8 +189,18 @@ export function ServiceManagementCard() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
-                <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle className="flex items-center gap-2"><List className="w-5 h-5" />Service Management</CardTitle>
+                        <CardDescription>Add, edit, or remove the services you offer.</CardDescription>
+                    </div>
+                     {hasUnsavedChanges && (
+                        <Button onClick={handleSaveChangesToDataSource}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Changes
+                        </Button>
+                    )}
+                </div>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4 p-4 border rounded-lg">
@@ -295,7 +322,7 @@ export function ServiceManagementCard() {
                                         <Select onValueChange={handleEditServiceSelect} value={editedServiceId} disabled={!editedCategory}>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select Service" />
-                                            </SelectTrigger>
+                                            </Trigger>
                                             <SelectContent>
                                                 {filteredEditServices.length > 0 ? filteredEditServices.map(service => (
                                                     <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
@@ -324,7 +351,7 @@ export function ServiceManagementCard() {
                             <DialogClose asChild>
                                 <Button type="button" variant="secondary">Cancel</Button>
                             </DialogClose>
-                            <Button type="button" onClick={handleSaveChanges}>Save Changes</Button>
+                            <Button type="button" onClick={handleSaveDialogChanges}>Save Changes</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

@@ -561,6 +561,11 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
         }
 
         if (updatedFields.length > 0) {
+             const metadata = {
+                updatedFields,
+                newDate: format(new Date(newBooking.date), "PPP p"),
+                newServices: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
+            };
             // Notify client of the update
             addNotification('client', {
                 icon: 'confirmation',
@@ -577,7 +582,7 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
             });
 
             // Send AI messages to both client and provider
-            await sendAutomatedMessage(newBooking, draftBookingUpdate, { updatedFields }, 'both');
+            await sendAutomatedMessage(newBooking, draftBookingUpdate, metadata, 'both');
         }
     }
 };
@@ -777,6 +782,15 @@ export const getClientHistoryByName = (clientName: string) => {
         averageSpend,
         previousBookings,
     };
+};
+
+export const updateProviderServices = (providerId: string, newServices: Service[]) => {
+    const provider = providers.find(p => p.id === providerId);
+    if (provider) {
+        provider.services = newServices;
+    }
+    // In a real app, this would also update the main `services` array if new custom services were added,
+    // but for this mock setup, we'll just update the provider's list.
 };
 
 
