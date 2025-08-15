@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
-import { services as allServices, serviceCategories, saveProviderServices, getProviderById } from '@/lib/data';
+import { services as allServices, serviceCategories, saveProviderServices, getProviderById, providers } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -28,7 +28,6 @@ export function ServiceManagementCard() {
     const [addPrice, setAddPrice] = useState<number | string>('');
     const [addDuration, setAddDuration] = useState<number | string>('');
     const [addDescription, setAddDescription] = useState<string>('');
-    const [addCustomServiceName, setAddCustomServiceName] = useState('');
 
     // State for the "Edit" dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -53,24 +52,21 @@ export function ServiceManagementCard() {
         setAddPrice('');
         setAddDuration('');
         setAddDescription('');
-        setAddCustomServiceName('');
     };
     
-    const handleAddPredefinedService = () => {
-        const baseService = allServices.find(s => s.id === addServiceId);
-        if (!baseService || providerServices.find(s => s.id === baseService.id)) return;
-
-        const serviceToAdd: Service = {
-            ...baseService,
-            price: typeof addPrice === 'number' ? addPrice : baseService.price,
-            duration: typeof addDuration === 'number' ? addDuration : baseService.duration,
-            description: addDescription || baseService.description,
-        };
+    const handleAddPredefinedService = (serviceToAdd: Service) => {
+         if (providerServices.find(s => s.id === serviceToAdd.id)) return;
 
         setProviderServices(prev => [...prev, serviceToAdd].sort((a,b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
         resetAddForm();
     };
+    
+    const handleAddService = (serviceId: string) => {
+        const baseService = allServices.find(s => s.id === serviceId);
+        if (!baseService) return;
+        handleAddPredefinedService(baseService);
+    }
 
     const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
         const newCustomService: Service = {
@@ -85,37 +81,11 @@ export function ServiceManagementCard() {
         setHasUnsavedChanges(true);
     };
 
-
     const handleRemoveService = (serviceId: string) => {
         setProviderServices(prev => prev.filter(s => s.id !== serviceId));
         setHasUnsavedChanges(true);
     };
-
-    const handleServiceSelect = (serviceId: string) => {
-        setAddServiceId(serviceId);
-        if (serviceId === 'custom') {
-            setAddCustomServiceName('');
-            setAddPrice('');
-            setAddDuration('');
-            setAddDescription('');
-        } else {
-            const service = allServices.find(s => s.id === serviceId);
-            if (service) {
-                setAddPrice(service.price);
-                setAddDuration(service.duration);
-                setAddDescription(service.description);
-            }
-        }
-    }
-
-    const handleCategoryChange = (categoryId: string) => {
-        setAddCategory(categoryId);
-        setAddServiceId('');
-        setAddPrice('');
-        setAddDuration('');
-        setAddDescription('');
-    }
-
+    
     const handleOpenEditDialog = (service: Service) => {
         setServiceToEdit(service);
         setEditedCategory(service.categoryId);
@@ -180,10 +150,6 @@ export function ServiceManagementCard() {
         });
     };
 
-    const filteredAddServices = addCategory
-        ? allServices.filter(s => s.categoryId === addCategory && !providerServices.some(ps => ps.id === s.id))
-        : [];
-        
     const filteredEditServices = editedCategory
         ? allServices.filter(s => s.categoryId === editedCategory)
         : [];
@@ -211,50 +177,23 @@ export function ServiceManagementCard() {
                     <h4 className="font-semibold">Add a New Service</h4>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Category</Label>
-                            <Select onValueChange={handleCategoryChange} value={addCategory}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {serviceCategories.map(cat => (
-                                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                           
                         </div>
                         <div className="space-y-2">
-                            <Label>Service</Label>
-                            <Select onValueChange={handleServiceSelect} value={addServiceId} disabled={!addCategory}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Service" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {filteredAddServices.length > 0 && filteredAddServices.map(service => (
-                                        <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            
                         </div>
                          
                         <div className="space-y-2">
-                            <Label htmlFor="price">Price ($)</Label>
-                            <Input id="price" type="number" value={addPrice} onChange={(e) => setAddPrice(Number(e.target.value))} disabled={!addServiceId} />
+                           
                         </div>
                         <div className="space-y-2">
-                             <Label htmlFor="duration">Duration (min)</Label>
-                            <Input id="duration" type="number" value={addDuration} onChange={(e) => setAddDuration(Number(e.target.value))} disabled={!addServiceId} />
+                            
                         </div>
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" value={addDescription} onChange={(e) => setAddDescription(e.target.value)} placeholder="Enter a description for the service." disabled={!addServiceId} />
+                       
                     </div>
                      <div className='flex items-center gap-4'>
-                        <Button onClick={handleAddPredefinedService} disabled={!addServiceId}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Add Pre-defined Service
-                        </Button>
                         <AddServiceDialog
                           providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
                           onAddService={handleAddPredefinedService}
@@ -262,7 +201,7 @@ export function ServiceManagementCard() {
                         >
                              <Button variant="secondary">
                                 <PlusCircle className="mr-2 h-4 w-4" />
-                                Add Custom Service
+                                Add Service
                             </Button>
                         </AddServiceDialog>
                      </div>
