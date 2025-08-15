@@ -6,6 +6,7 @@ import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation'
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
 import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation';
+import { draftNewBookingRequest } from '@/ai/flows/draft-new-booking-request';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -269,6 +270,15 @@ let clientNotifications: Notification[] = [
         read: true,
         bookingId: 'some-id'
     },
+     {
+      id: 4,
+      icon: 'cancellation',
+      title: 'Booking Cancelled',
+      description: "You have successfully cancelled your booking with The Relaxation Station.",
+      time: '1 day ago',
+      read: true,
+      bookingId: 'some-other-id',
+    },
 ];
 
 let providerNotifications: Notification[] = [
@@ -484,7 +494,7 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
     }
 };
 
-export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
+export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
     const newBooking: Booking = {
         id: String(bookings.length + 1),
         status: 'Pending',
@@ -492,7 +502,6 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     };
     bookings.unshift(newBooking);
 
-    // This is a provider notification
     addNotification('provider', {
         icon: 'new-booking',
         title: 'New Booking Request!',
@@ -500,7 +509,6 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
         bookingId: newBooking.id
     });
     
-    // Create a new provider conversation if one doesn't exist
     let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName);
     if (!providerConvo) {
         providerConvo = {
@@ -519,15 +527,18 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
     
     // Add the initial message from the client to the provider's message list
     const serviceNames = getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', ');
+    const clientMessage = `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`;
     providerMessages.push({
         id: providerMessages.length + 1,
         conversationId: providerConvo.id,
         sender: 'user',
-        text: `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`,
+        text: clientMessage,
     });
-    providerConvo.lastMessage = `Request for ${serviceNames}.`;
+    providerConvo.lastMessage = clientMessage;
     providerConvo.unread = (providerConvo.unread || 0) + 1;
-
+    
+    // Send an AI message to the provider
+    await sendAutomatedMessage(newBooking, draftNewBookingRequest);
 };
 
 
@@ -697,3 +708,4 @@ export const getBookingHistoryForProvider = (providerId: string) => {
     
 
     
+
