@@ -783,9 +783,13 @@ export const getClientHistoryByName = (clientName: string) => {
 };
 
 export const saveProviderServices = (providerId: string, updatedServices: Service[]) => {
+    console.log(`[data.ts] saveProviderServices called for providerId: ${providerId}`);
+    console.log('[data.ts] Received updatedServices:', updatedServices);
+
     // Add any new custom services to the main services list to make them "real"
     updatedServices.forEach(service => {
         if (service.id.startsWith('custom-') && !services.find(s => s.id === service.id)) {
+            console.log(`[data.ts] Adding new custom service to global list:`, service);
             services.push(service);
         }
     });
@@ -793,8 +797,14 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
     // Update the provider's list of services in the main providers array
     const providerIndex = providers.findIndex(p => p.id === providerId);
     if (providerIndex !== -1) {
+        console.log(`[data.ts] Found provider ${providers[providerIndex].name} at index ${providerIndex}.`);
+        console.log(`[data.ts] Services before update:`, providers[providerIndex].services);
         providers[providerIndex].services = updatedServices;
+        console.log(`[data.ts] Services after update:`, providers[providerIndex].services);
+    } else {
+        console.error(`[data.ts] Provider with ID ${providerId} not found.`);
     }
+     console.log('[data.ts] Final global services list:', services);
 };
 
 
@@ -808,3 +818,5 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
+    

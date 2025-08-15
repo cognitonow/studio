@@ -171,6 +171,7 @@ setDescription('');
     }
 
     const handleSaveChangesToDataSource = () => {
+        console.log('[ServiceManagementCard] Saving services:', providerServices);
         // This function now also adds custom services to the main `services` list
         // This assumes provider ID '3' for Chloe.
         saveProviderServices('3', providerServices);
@@ -364,3 +365,4 @@ setDescription('');
         </Card>
     );
 }
+    
