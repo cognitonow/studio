@@ -24,24 +24,17 @@ interface AddServiceDialogProps {
   children: React.ReactNode;
   providerServices: Service[];
   onAddService: (service: Service) => void;
+  onAddCustomService: (name: string, price: number, duration: number) => void;
 }
 
-export function AddServiceDialog({ children, providerServices, onAddService }: AddServiceDialogProps) {
+export function AddServiceDialog({ children, providerServices, onAddService, onAddCustomService }: AddServiceDialogProps) {
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
   const [customDuration, setCustomDuration] = useState('');
   
-  const handleAddCustomService = () => {
+  const handleAddCustomClick = () => {
     if (customName && customPrice && customDuration) {
-        const newCustomService: Service = {
-            id: `custom-${Date.now()}`,
-            categoryId: 'custom',
-            name: customName,
-            description: 'Custom service added by provider.',
-            price: Number(customPrice),
-            duration: Number(customDuration),
-        };
-        onAddService(newCustomService);
+        onAddCustomService(customName, Number(customPrice), Number(customDuration));
         // Reset and close
         setCustomName('');
         setCustomPrice('');
@@ -79,7 +72,7 @@ export function AddServiceDialog({ children, providerServices, onAddService }: A
                 </div>
             </div>
              <DialogClose asChild>
-                <Button onClick={handleAddCustomService} disabled={!customName || !customPrice || !customDuration}>
+                <Button onClick={handleAddCustomClick} disabled={!customName || !customPrice || !customDuration}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Custom Service
                 </Button>

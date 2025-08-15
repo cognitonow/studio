@@ -15,20 +15,22 @@ import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { AddServiceDialog } from './manage-booking/add-service-dialog';
 
 export function ServiceManagementCard() {
     const { toast } = useToast();
     const [providerServices, setProviderServices] = useState<Service[]>([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const [selectedServiceId, setSelectedServiceId] = useState<string>('');
-    const [price, setPrice] = useState<number | string>('');
-    const [duration, setDuration] = useState<number | string>('');
-    const [description, setDescription] = useState<string>('');
-    const [customServiceName, setCustomServiceName] = useState('');
+    
+    // State for the "Add" form
+    const [addCategory, setAddCategory] = useState('');
+    const [addServiceId, setAddServiceId] = useState('');
+    const [addPrice, setAddPrice] = useState<number | string>('');
+    const [addDuration, setAddDuration] = useState<number | string>('');
+    const [addDescription, setAddDescription] = useState<string>('');
+    const [addCustomServiceName, setAddCustomServiceName] = useState('');
 
-
-    // State for the edit dialog
+    // State for the "Edit" dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
     const [editedCategory, setEditedCategory] = useState('');
@@ -39,50 +41,50 @@ export function ServiceManagementCard() {
     const [editedName, setEditedName] = useState('');
 
     useEffect(() => {
-        // Load initial services for the hardcoded provider '3'
         const provider = getProviderById('3');
         if (provider) {
             setProviderServices([...provider.services]);
         }
     }, []);
 
-
-    const handleAddService = () => {
-        let serviceToAdd: Service | undefined;
-
-        if (selectedServiceId === 'custom') {
-            if (!customServiceName || !selectedCategory) return;
-            serviceToAdd = {
-                id: `custom-${Date.now()}`,
-                categoryId: selectedCategory,
-                name: customServiceName,
-                description: description,
-                price: Number(price),
-                duration: Number(duration),
-            };
-        } else {
-            const baseService = allServices.find(s => s.id === selectedServiceId);
-            if (!baseService) return;
-            serviceToAdd = {
-                ...baseService,
-                price: typeof price === 'number' ? price : baseService.price,
-                duration: typeof duration === 'number' ? duration : baseService.duration,
-                description: description || baseService.description,
-            };
-        }
-
-        if (serviceToAdd && !providerServices.find(s => s.id === serviceToAdd!.id)) {
-            setProviderServices(prev => [...prev, serviceToAdd!].sort((a,b) => a.name.localeCompare(b.name)));
-             // Reset form
-            setSelectedCategory('');
-            setSelectedServiceId('');
-            setCustomServiceName('');
-            setPrice('');
-            setDuration('');
-setDescription('');
-            setHasUnsavedChanges(true);
-        }
+    const resetAddForm = () => {
+        setAddCategory('');
+        setAddServiceId('');
+        setAddPrice('');
+        setAddDuration('');
+        setAddDescription('');
+        setAddCustomServiceName('');
     };
+    
+    const handleAddPredefinedService = () => {
+        const baseService = allServices.find(s => s.id === addServiceId);
+        if (!baseService || providerServices.find(s => s.id === baseService.id)) return;
+
+        const serviceToAdd: Service = {
+            ...baseService,
+            price: typeof addPrice === 'number' ? addPrice : baseService.price,
+            duration: typeof addDuration === 'number' ? addDuration : baseService.duration,
+            description: addDescription || baseService.description,
+        };
+
+        setProviderServices(prev => [...prev, serviceToAdd].sort((a,b) => a.name.localeCompare(b.name)));
+        setHasUnsavedChanges(true);
+        resetAddForm();
+    };
+
+    const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
+        const newCustomService: Service = {
+            id: `custom-${Date.now()}`,
+            categoryId: 'custom', // Or derive from a selection if available
+            name: name,
+            description: 'Custom service added by provider.',
+            price: price,
+            duration: duration,
+        };
+        setProviderServices(prev => [...prev, newCustomService].sort((a, b) => a.name.localeCompare(b.name)));
+        setHasUnsavedChanges(true);
+    };
+
 
     const handleRemoveService = (serviceId: string) => {
         setProviderServices(prev => prev.filter(s => s.id !== serviceId));
@@ -90,29 +92,28 @@ setDescription('');
     };
 
     const handleServiceSelect = (serviceId: string) => {
-        setSelectedServiceId(serviceId);
+        setAddServiceId(serviceId);
         if (serviceId === 'custom') {
-            setCustomServiceName('');
-            setPrice('');
-            setDuration('');
-            setDescription('');
+            setAddCustomServiceName('');
+            setAddPrice('');
+            setAddDuration('');
+            setAddDescription('');
         } else {
             const service = allServices.find(s => s.id === serviceId);
             if (service) {
-                setPrice(service.price);
-                setDuration(service.duration);
-                setDescription(service.description);
+                setAddPrice(service.price);
+                setAddDuration(service.duration);
+                setAddDescription(service.description);
             }
         }
     }
 
     const handleCategoryChange = (categoryId: string) => {
-        setSelectedCategory(categoryId);
-        // Reset service selection when category changes
-        setSelectedServiceId('');
-        setPrice('');
-        setDuration('');
-        setDescription('');
+        setAddCategory(categoryId);
+        setAddServiceId('');
+        setAddPrice('');
+        setAddDuration('');
+        setAddDescription('');
     }
 
     const handleOpenEditDialog = (service: Service) => {
@@ -171,9 +172,6 @@ setDescription('');
     }
 
     const handleSaveChangesToDataSource = () => {
-        console.log('[ServiceManagementCard] Saving services:', providerServices);
-        // This function now also adds custom services to the main `services` list
-        // This assumes provider ID '3' for Chloe.
         saveProviderServices('3', providerServices);
         setHasUnsavedChanges(false);
         toast({
@@ -182,8 +180,8 @@ setDescription('');
         });
     };
 
-    const filteredServices = selectedCategory
-        ? allServices.filter(s => s.categoryId === selectedCategory && !providerServices.some(ps => ps.id === s.id))
+    const filteredAddServices = addCategory
+        ? allServices.filter(s => s.categoryId === addCategory && !providerServices.some(ps => ps.id === s.id))
         : [];
         
     const filteredEditServices = editedCategory
@@ -214,7 +212,7 @@ setDescription('');
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Category</Label>
-                            <Select onValueChange={handleCategoryChange} value={selectedCategory}>
+                            <Select onValueChange={handleCategoryChange} value={addCategory}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
@@ -227,41 +225,47 @@ setDescription('');
                         </div>
                         <div className="space-y-2">
                             <Label>Service</Label>
-                            <Select onValueChange={handleServiceSelect} value={selectedServiceId} disabled={!selectedCategory}>
+                            <Select onValueChange={handleServiceSelect} value={addServiceId} disabled={!addCategory}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Service" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {filteredServices.length > 0 && filteredServices.map(service => (
+                                    {filteredAddServices.length > 0 && filteredAddServices.map(service => (
                                         <SelectItem key={service.id} value={service.id}>{service.name}</SelectItem>
                                     ))}
-                                    <SelectItem value="custom">Create Custom Service</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                         {selectedServiceId === 'custom' && (
-                            <div className="space-y-2 col-span-2">
-                                <Label htmlFor="custom-name">Custom Service Name</Label>
-                                <Input id="custom-name" value={customServiceName} onChange={e => setCustomServiceName(e.target.value)} placeholder="e.g., Express Manicure" />
-                            </div>
-                        )}
+                         
                         <div className="space-y-2">
                             <Label htmlFor="price">Price ($)</Label>
-                            <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} disabled={!selectedServiceId} />
+                            <Input id="price" type="number" value={addPrice} onChange={(e) => setAddPrice(Number(e.target.value))} disabled={!addServiceId} />
                         </div>
                         <div className="space-y-2">
                              <Label htmlFor="duration">Duration (min)</Label>
-                            <Input id="duration" type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} disabled={!selectedServiceId} />
+                            <Input id="duration" type="number" value={addDuration} onChange={(e) => setAddDuration(Number(e.target.value))} disabled={!addServiceId} />
                         </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter a description for the service." disabled={!selectedServiceId} />
+                        <Textarea id="description" value={addDescription} onChange={(e) => setAddDescription(e.target.value)} placeholder="Enter a description for the service." disabled={!addServiceId} />
                     </div>
-                     <Button onClick={handleAddService} disabled={!selectedServiceId || (selectedServiceId === 'custom' && !customServiceName)}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Service
-                    </Button>
+                     <div className='flex items-center gap-4'>
+                        <Button onClick={handleAddPredefinedService} disabled={!addServiceId}>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add Pre-defined Service
+                        </Button>
+                        <AddServiceDialog
+                          providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
+                          onAddService={handleAddPredefinedService}
+                          onAddCustomService={handleAddCustomServiceToState}
+                        >
+                             <Button variant="secondary">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Custom Service
+                            </Button>
+                        </AddServiceDialog>
+                     </div>
                 </div>
                 
                 <div className="mt-6">
@@ -365,4 +369,3 @@ setDescription('');
         </Card>
     );
 }
-    
