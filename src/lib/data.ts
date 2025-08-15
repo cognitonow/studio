@@ -690,9 +690,20 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
 };
 
 export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
-    const upcomingBookings = bookings
-        .filter(b => (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && new Date(b.date) >= startOfDay(new Date()))
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const activeBookings = bookings.filter(b => 
+        (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && 
+        new Date(b.date) >= startOfDay(new Date())
+    );
+
+    // Prioritize bookings that require payment
+    const needsPayment = activeBookings.find(b => b.status === 'Review Order and Pay');
+    if (needsPayment) {
+        const bookingServices = getServicesByIds(needsPayment.serviceIds);
+        return { ...needsPayment, services: bookingServices };
+    }
+    
+    // Otherwise, get the soonest upcoming booking
+    const upcomingBookings = activeBookings.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     if (upcomingBookings.length > 0) {
         const nextBooking = upcomingBookings[0];
@@ -773,3 +784,4 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
