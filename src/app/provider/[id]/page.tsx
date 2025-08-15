@@ -18,10 +18,13 @@ import { useEffect, useState } from 'react';
 import type { Booking, Provider } from '@/lib/types';
 import { StatusBadge } from '@/components/status-badge';
 import { allBadges } from '@/lib/badges';
+import { useUserStore } from '@/hooks/use-user-store';
+import { AuthDialog } from '@/components/auth-dialog';
  
 export default function ProviderDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const { user } = useUserStore();
 
   const [provider, setProvider] = useState<Provider | undefined>(() => getProviderById(id));
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
@@ -45,6 +48,39 @@ export default function ProviderDetailPage() {
 
   if (!provider) {
     notFound();
+  }
+
+  const AuthButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
+    if (user) {
+      return <Button asChild>{children}</Button>;
+    }
+    return (
+      <AuthDialog>
+        <Button>{children}</Button>
+      </AuthDialog>
+    );
+  };
+  
+  const AuthLinkButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
+    if (user) {
+        return <Button asChild variant="outline"><Link href={href}>{children}</Link></Button>;
+    }
+     return (
+      <AuthDialog>
+        <Button variant="outline">{children}</Button>
+      </AuthDialog>
+    );
+  }
+  
+  const AuthFavouriteButton = ({ children }: { children: React.ReactNode }) => {
+    if (user) {
+        return <Button variant="secondary">{children}</Button>;
+    }
+     return (
+      <AuthDialog>
+        <Button variant="secondary">{children}</Button>
+      </AuthDialog>
+    );
   }
 
   return (
@@ -149,12 +185,10 @@ export default function ProviderDetailPage() {
                   <CardDescription>Have a question for {provider.name}? Send them a message directly.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button asChild>
-                    <Link href={`/messages?providerId=${provider.id}`}>
+                  <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
                       <MessageSquare className="mr-2 h-4 w-4" />
                       Chat with {provider.name}
-                    </Link>
-                  </Button>
+                  </AuthLinkButton>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -214,23 +248,21 @@ export default function ProviderDetailPage() {
                           <p className="font-bold text-lg">${service.price}</p>
                           <p className="text-sm text-muted-foreground">{service.duration} mins</p>
                         </div>
-                        <Button asChild>
+                        <AuthButton href={`/book/${provider.id}?service=${service.id}`}>
                           <Link href={`/book/${provider.id}?service=${service.id}`}>Book Now</Link>
-                        </Button>
+                        </AuthButton>
                       </div>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
               <div className="flex flex-col gap-2 mt-6">
-                <Button variant="secondary">
+                <AuthFavouriteButton>
                   <Heart className="w-4 h-4 mr-2"/> Save to Favourites
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link href={`/messages?providerId=${provider.id}`}>
+                </AuthFavouriteButton>
+                <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
                     <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
-                  </Link>
-                </Button>
+                </AuthLinkButton>
               </div>
             </CardContent>
           </Card>

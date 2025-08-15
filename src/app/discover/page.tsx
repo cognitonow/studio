@@ -30,12 +30,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import type { Provider } from '@/lib/types';
 import { ProviderProfileView } from '@/components/provider-profile-view';
 import { useRouter } from 'next/navigation';
+import { useUserStore } from '@/hooks/use-user-store';
+import { AuthDialog } from '@/components/auth-dialog';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | 'up' | 'none'>('none');
   const [exploreQueue, setExploreQueue] = useState<Provider[]>([]);
   const router = useRouter();
+  const { user } = useUserStore();
 
   const handleNext = () => {
     setDirection('right');
@@ -80,49 +83,15 @@ function ExploreStack() {
       }
   }
 
-  const getCardStyle = (index: number) => {
-    const offset = index - activeIndex;
-    const isVisible = Math.abs(offset) <= 2; // Show active, and 2 cards behind
-
-    if (!isVisible) {
-      return { opacity: 0, zIndex: 0, transform: 'scale(0.5)', position: 'absolute', width: '100%', height: '100%' };
+  const ChatButtonWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (user) {
+      return <div onClick={handleOpenChat}>{children}</div>;
     }
-    
-    // Invert the stacking: top card (offset 0) is smallest, bottom cards (offset > 0) are larger.
-    const scale = 1 - offset * 0.05;
-    const translateY = offset * -30;
-    const translateX = offset * -20;
-    
-    let transform = `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`;
-    let opacity = 1;
-    let zIndex = providers.length - offset; // Higher offset (further back) gets lower z-index
-
-    if (offset < 0) { // Cards that have been swiped past
-      opacity = 0;
-      transform = `translateX(0px) translateY(0px) scale(1)`;
-    } else if (offset === 0) { // Active card
-        zIndex = providers.length + 1; // Always on top
-        if (direction === 'right') {
-            transform = 'translateX(100%) rotate(15deg) scale(0.9)';
-        } else if (direction === 'left') {
-            transform = 'translateX(-100%) rotate(-15deg) scale(0.9)';
-        } else if (direction === 'up') {
-            transform = 'translateY(-100%) rotate(0deg) scale(0.9)';
-        } else {
-            transform = `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`;
-        }
-    }
-
-
-    return {
-        transition: 'all 0.3s ease-in-out',
-        transform,
-        opacity,
-        zIndex,
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-    };
+    return (
+      <AuthDialog>
+        {children}
+      </AuthDialog>
+    );
   };
 
   return (
@@ -158,9 +127,11 @@ function ExploreStack() {
                 <ProviderProfileView provider={providers[activeIndex]} />
             </DialogContent>
           </Dialog>
-          <Button onClick={handleOpenChat} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
-            <MessageCircle className="h-10 w-10 fill-primary text-primary" />
-          </Button>
+           <ChatButtonWrapper>
+              <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
+                <MessageCircle className="h-10 w-10 fill-primary text-primary" />
+              </Button>
+           </ChatButtonWrapper>
         </div>
       </div>
     </div>
