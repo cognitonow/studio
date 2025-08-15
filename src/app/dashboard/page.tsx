@@ -19,7 +19,7 @@ import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
 import { getProviderBookings, updateBookingStatus, getServicesByIds, providers } from '@/lib/data';
 import type { Booking } from '@/lib/types';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import Link from 'next/link';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -122,13 +122,15 @@ export default function ProviderDashboardPage() {
     );
   }
 
-  const currentBookings = bookings.filter(
-    b => b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay'
-  );
+  const today = startOfDay(new Date());
 
-  const pastBookings = bookings.filter(
-    b => b.status === 'Completed' || b.status === 'Cancelled'
-  );
+  const currentBookings = bookings.filter(b => 
+    new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay')
+  ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const pastBookings = bookings.filter(b => 
+      new Date(b.date) < today || b.status === 'Completed' || b.status === 'Cancelled'
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 
   return (
