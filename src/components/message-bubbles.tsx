@@ -26,25 +26,10 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
             <div className="flex flex-col gap-1 items-end">
                 <div className={cn(
                     "rounded-lg px-4 py-3 max-w-md",
-                    "bg-primary text-primary-foreground",
-                    message.isAi && 'bg-purple-100 dark:bg-purple-900/50 text-foreground'
+                    "bg-primary text-primary-foreground"
                 )}>
                     <p className="text-sm">{message.text}</p>
-                    {message.isAi && message.bookingId && (
-                        <Button asChild size="sm" className="mt-3">
-                            <Link href={`/booking/manage/${message.bookingId}`}>
-                                <CreditCard className="mr-2 h-4 w-4" />
-                                {view === 'client' ? 'Review & Pay' : 'Manage Booking'}
-                            </Link>
-                        </Button>
-                    )}
                 </div>
-                 {message.isAi && (
-                    <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pr-2">
-                        <Sparkles className="w-3 h-3" />
-                        <span>Sent by AI Assistant</span>
-                    </div>
-                )}
             </div>
             <Avatar className="w-8 h-8">
                 <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
@@ -55,6 +40,7 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
 };
 
 export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
+    const view = activeConversation.clientId ? 'provider' : 'client';
     return (
         <div className="flex items-end gap-3">
             <Avatar className="w-8 h-8">
@@ -71,7 +57,7 @@ export const ProviderMessage = ({ message, activeConversation }: ProviderMessage
                      {message.isAi && message.bookingId && (
                         <Button asChild size="sm" className="mt-3">
                             <Link href={`/booking/manage/${message.bookingId}`}>
-                                View Booking Details
+                                {view === 'client' ? 'Review & Pay' : 'Manage Booking'}
                             </Link>
                         </Button>
                     )}

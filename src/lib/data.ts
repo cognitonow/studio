@@ -312,7 +312,7 @@ let providerNotifications: Notification[] = [
     {
         id: 4,
         icon: 'confirmation',
-        title: "Payment Received!",
+        title: 'Payment Received!',
         description: "Jane D.'s payment has been received for her manicure.",
         time: "3 days ago",
         read: true,
@@ -353,6 +353,52 @@ const addNotification = (recipient: UserRole, notification: Omit<Notification, '
     }
 };
 
+export const addMessage = (
+    conversationId: number, 
+    sender: 'user' | 'provider', 
+    text: string, 
+    view: 'client' | 'provider',
+    isAi: boolean = false,
+    bookingId?: string,
+) => {
+    const isProviderView = view === 'provider';
+    const conversationList = isProviderView ? providerConversations : conversations;
+    const messageList = isProviderView ? providerMessages : messages;
+
+    const conversation = conversationList.find(c => c.id === conversationId);
+    if (!conversation) return;
+
+    // Add the message
+    messageList.push({
+        id: messageList.length + 1,
+        conversationId,
+        sender,
+        text,
+        isAi,
+        bookingId
+    });
+
+    // Update conversation metadata
+    conversation.lastMessage = text;
+    conversation.time = 'Just now';
+    conversation.unread = (conversation.unread || 0) + 1;
+
+    // Trigger a notification for the recipient
+    if (isProviderView && sender === 'user') { // Provider receiving from client
+        addNotification('provider', {
+            icon: 'message',
+            title: `New Message from ${conversation.name}`,
+            description: text,
+        });
+    } else if (!isProviderView && sender === 'provider') { // Client receiving from provider
+        addNotification('client', {
+            icon: 'message',
+            title: `New Message from ${conversation.name}`,
+            description: text,
+        });
+    }
+};
+
 const sendAutomatedMessage = async (
     booking: Booking,
     messageGenerator: (input: any) => Promise<{ message: string }>,
@@ -376,31 +422,12 @@ const sendAutomatedMessage = async (
             if (to === 'client') {
                 const conversation = conversations.find(c => c.providerId === booking.providerId);
                 if (conversation) {
-                    messages.push({
-                        id: messages.length + 1,
-                        conversationId: conversation.id,
-                        sender: 'provider',
-                        text: response.message,
-                        isAi: true,
-                        bookingId: booking.id,
-                    });
-                    conversation.lastMessage = response.message;
-                    conversation.time = 'Just now';
-                    conversation.unread = (conversation.unread || 0) + 1;
+                    addMessage(conversation.id, 'provider', response.message, 'client', true, booking.id);
                 }
             } else { // to provider
                 const providerConversation = providerConversations.find(c => c.clientId === booking.clientName);
                  if (providerConversation) {
-                    providerMessages.push({
-                        id: providerMessages.length + 1,
-                        conversationId: providerConversation.id,
-                        sender: 'provider', // From the system/AI, but shown as provider message bubble
-                        text: response.message,
-                        isAi: true,
-                        bookingId: booking.id,
-                    });
-                    providerConversation.lastMessage = response.message;
-                    providerConversation.unread = (providerConversation.unread || 0) + 1;
+                    addMessage(providerConversation.id, 'provider', response.message, 'provider', true, booking.id);
                 }
             }
         } catch (e) {
@@ -576,14 +603,8 @@ export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
     // Add the initial message from the client to the provider's message list
     const serviceNames = getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', ');
     const clientMessage = `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`;
-    providerMessages.push({
-        id: providerMessages.length + 1,
-        conversationId: providerConvo.id,
-        sender: 'user',
-        text: clientMessage,
-    });
-    providerConvo.lastMessage = clientMessage;
-    providerConvo.unread = (providerConvo.unread || 0) + 1;
+
+    addMessage(providerConvo.id, 'user', clientMessage, 'provider');
     
     // Send an AI message to the provider
     await sendAutomatedMessage(newBooking, draftNewBookingRequest, {}, 'provider');

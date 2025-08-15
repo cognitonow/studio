@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, User } from "lucide-react"
-import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation } from "@/lib/data"
-import { useState, useEffect } from "react"
+import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data"
+import { useState, useEffect, useRef } from "react"
 import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -21,19 +21,25 @@ export default function MessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const [isMounted, setIsMounted] = useState(false);
+  const [messageText, setMessageText] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  const fetchConversations = () => {
+     const isProviderView = userRole === 'provider';
+     return isProviderView ? getProviderConversations() : getConversations();
+  }
+
   useEffect(() => {
     if (!isMounted) return;
 
-    const isProviderView = userRole === 'provider';
-    const convos = isProviderView ? getProviderConversations() : getConversations();
-
+    const convos = fetchConversations();
     setConversations(convos);
     
     let initialConvo: Conversation | undefined = undefined;
@@ -68,10 +74,29 @@ export default function MessagesPage() {
     setActiveConversation(convo);
     if (convo.unread > 0) {
       markAllMessagesAsRead(convo.id, userRole);
-      const updatedConvos = userRole === 'provider' ? getProviderConversations() : getConversations();
-      setConversations(updatedConvos);
+      setConversations(fetchConversations());
     }
   }
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageText.trim() || !activeConversation) return;
+
+    const sender = userRole;
+    addMessage(activeConversation.id, sender, messageText, userRole);
+
+    setMessageText("");
+    setConversations(fetchConversations());
+  }
+
+   useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [activeConversation]);
   
   const activeMessages = activeConversation ? 
     (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
@@ -167,10 +192,10 @@ export default function MessagesPage() {
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-6 overflow-hidden">
-                 <ScrollArea className="h-full pr-4">
+                 <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
                     <div className="space-y-6">
                         {activeMessages.map((message) => {
-                           const isUser = (message.sender === 'user' && userRole === 'client') || (message.sender === 'provider' && userRole === 'provider');
+                           const isUser = (message.sender === 'client' && userRole === 'client') || (message.sender === 'provider' && userRole === 'provider');
                            if (isUser) {
                                return <UserMessage key={message.id} message={message} view={userRole} />;
                            }
@@ -180,8 +205,8 @@ export default function MessagesPage() {
                 </ScrollArea>
             </CardContent>
             <div className="p-4 border-t bg-background">
-                <form className="flex w-full items-center space-x-4">
-                    <Input placeholder="Type your message..." className="flex-grow" />
+                <form className="flex w-full items-center space-x-4" onSubmit={handleSendMessage}>
+                    <Input placeholder="Type your message..." className="flex-grow" value={messageText} onChange={(e) => setMessageText(e.target.value)} />
                     <Button type="submit" size="icon">
                         <Send className="h-5 w-5" />
                         <span className="sr-only">Send message</span>
