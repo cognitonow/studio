@@ -28,23 +28,30 @@ interface AddServiceDialogProps {
 }
 
 export function AddServiceDialog({ children, providerServices, onAddService, onAddCustomService = () => {} }: AddServiceDialogProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
   const [customDuration, setCustomDuration] = useState('');
   
   const handleAddCustomClick = () => {
-    if (customName && customPrice && customDuration) {
+    if (customName && customPrice && customDuration && onAddCustomService) {
         onAddCustomService(customName, Number(customPrice), Number(customDuration));
         // Reset and close
         setCustomName('');
         setCustomPrice('');
         setCustomDuration('');
+        setIsOpen(false);
     }
   }
 
+  const handleAddPredefinedClick = (service: Service) => {
+    onAddService(service);
+    setIsOpen(false);
+  }
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
         {children}
       </DialogTrigger>
       <DialogContent className="max-w-md">
@@ -71,12 +78,10 @@ export function AddServiceDialog({ children, providerServices, onAddService, onA
                     <Input id="custom-duration" type="number" value={customDuration} onChange={(e) => setCustomDuration(e.target.value)} placeholder="15" />
                 </div>
             </div>
-             <DialogClose asChild>
-                <Button onClick={handleAddCustomClick} disabled={!customName || !customPrice || !customDuration}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Custom Service
-                </Button>
-            </DialogClose>
+            <Button onClick={handleAddCustomClick} disabled={!customName || !customPrice || !customDuration}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Custom Service
+            </Button>
         </div>
         
         <Separator />
@@ -90,12 +95,10 @@ export function AddServiceDialog({ children, providerServices, onAddService, onA
                         <p className="font-semibold">{service.name}</p>
                         <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
                       </div>
-                      <DialogClose asChild>
-                        <Button size="sm" onClick={() => onAddService(service)}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Add
-                        </Button>
-                      </DialogClose>
+                      <Button size="sm" onClick={() => handleAddPredefinedClick(service)}>
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          Add
+                      </Button>
                 </div>
             ))}
             </div>
