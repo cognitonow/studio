@@ -11,17 +11,58 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, User } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { allBadges } from '@/lib/badges';
+import { useUserStore } from '@/hooks/use-user-store';
+import { AuthDialog } from './auth-dialog';
 
 interface ProviderProfileViewProps {
     provider: Provider;
 }
 
 export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
+  const { user } = useUserStore();
+
   if (!provider) {
     return (
         <div className="flex items-center justify-center h-full">
             <p>Provider not found.</p>
         </div>
+    );
+  }
+
+  const AuthButton = ({ href, children }: { href: string; children: React.ReactNode }) => {
+    if (user) {
+      return (
+        <Button asChild>
+          <Link href={href}>{children}</Link>
+        </Button>
+      );
+    }
+    return (
+      <AuthDialog>
+        <Button>{children}</Button>
+      </AuthDialog>
+    );
+  };
+
+  const AuthLinkButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
+    if (user) {
+        return <Button asChild variant="outline"><Link href={href}>{children}</Link></Button>;
+    }
+     return (
+      <AuthDialog>
+        <Button variant="outline">{children}</Button>
+      </AuthDialog>
+    );
+  }
+
+  const AuthFavouriteButton = ({ children }: { children: React.ReactNode }) => {
+    if (user) {
+        return <Button variant="secondary">{children}</Button>;
+    }
+     return (
+      <AuthDialog>
+        <Button variant="secondary">{children}</Button>
+      </AuthDialog>
     );
   }
 
@@ -136,9 +177,9 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                                 <p className="font-bold text-lg">${service.price}</p>
                                 <p className="text-sm text-muted-foreground">{service.duration} mins</p>
                                 </div>
-                                <Button asChild>
-                                <Link href={`/book/${provider.id}?service=${service.id}`}>Book Now</Link>
-                                </Button>
+                                <AuthButton href={`/book/${provider.id}?service=${service.id}`}>
+                                    Book Now
+                                </AuthButton>
                             </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -151,12 +192,12 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                                 View Full Profile
                             </Link>
                         </Button>
-                        <Button variant="secondary">
-                        <Heart className="w-4 h-4 mr-2"/> Save to Favourites
-                        </Button>
-                        <Button variant="outline">
-                        <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
-                        </Button>
+                        <AuthFavouriteButton>
+                          <Heart className="w-4 h-4 mr-2"/> Save to Favourites
+                        </AuthFavouriteButton>
+                        <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
+                          <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
+                        </AuthLinkButton>
                     </div>
                     </CardContent>
                 </Card>
