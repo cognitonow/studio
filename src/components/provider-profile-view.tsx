@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
+import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, User } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { allBadges } from '@/lib/badges';
 
@@ -145,6 +145,12 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                         ))}
                     </Accordion>
                     <div className="flex flex-col gap-2 mt-6">
+                        <Button asChild>
+                            <Link href={`/provider/${provider.id}`}>
+                                <User className="w-4 h-4 mr-2"/>
+                                View Full Profile
+                            </Link>
+                        </Button>
                         <Button variant="secondary">
                         <Heart className="w-4 h-4 mr-2"/> Save to Favourites
                         </Button>
