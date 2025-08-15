@@ -36,7 +36,7 @@ export function ServiceManagementCard() {
     const [editedServiceId, setEditedServiceId] = useState('');
     const [editedPrice, setEditedPrice] = useState<number | string>('');
     const [editedDuration, setEditedDuration] = useState<number | string>('');
-    const [editedDescription, setEditedDescription] = useState<string>('');
+    const [editedDescription, setEditedDescription] = useState('');
     const [editedName, setEditedName] = useState('');
 
     useEffect(() => {
