@@ -54,30 +54,14 @@ function ProviderDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProvider = () => {
-        if (user) {
-            const currentProvider = getProviderByUserId(user.id);
-            if (currentProvider) {
-                setProvider(currentProvider);
-                setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
-                setIsLoading(false); // Found provider, stop loading
-                return true; // Indicate success
-            }
-        }
-        return false; // Indicate failure
-    };
-
-    if (!fetchProvider()) {
-        // If provider not found immediately, try again after a short delay
-        // This helps resolve race conditions during sign-up
-        const timeoutId = setTimeout(() => {
-            if (!fetchProvider()) {
-                // If still not found, stop loading and show error
-                setIsLoading(false);
-            }
-        }, 1000);
-        return () => clearTimeout(timeoutId);
+    if (user) {
+      const currentProvider = getProviderByUserId(user.id);
+      if (currentProvider) {
+        setProvider(currentProvider);
+        setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
+      }
     }
+    setIsLoading(false);
   }, [user]);
 
   useEffect(() => {
