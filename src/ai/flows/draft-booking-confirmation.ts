@@ -16,6 +16,7 @@ const DraftBookingConfirmationInputSchema = z.object({
   providerName: z.string().describe("The provider's name."),
   serviceName: z.string().describe('The name of the service that has been booked.'),
   bookingDate: z.string().describe('The date and time of the booking.'),
+  recipient: z.enum(['client', 'provider']).describe("Who the message is for."),
 });
 export type DraftBookingConfirmationInput = z.infer<typeof DraftBookingConfirmationInputSchema>;
 
@@ -34,17 +35,23 @@ const prompt = ai.definePrompt({
   output: {schema: DraftBookingConfirmationOutputSchema},
   prompt: `You are a helpful assistant for a beauty service booking app.
 
-  A service provider named {{{providerName}}} has just confirmed a booking for a client named {{{clientName}}}.
-
-  Draft a polite and clear confirmation message from the provider to the client.
+  A booking between provider {{{providerName}}} and client {{{clientName}}} has just been paid for and confirmed.
 
   The booking is for the "{{{serviceName}}}" service on {{{bookingDate}}}.
 
-  The message should be friendly and confirm the details.
+  Draft a polite and clear confirmation message for the {{{recipient}}}.
+
+  If the recipient is the client:
+  - The message should be friendly and confirm all the details.
+  - Let them know the provider is looking forward to seeing them.
+
+  If the recipient is the provider:
+  - Inform them that the client has paid and the booking is now confirmed.
+  - Remind them of the appointment details.
 
   IMPORTANT RULES:
   - Do not include any links or URLs.
-  - Do not identify yourself as a person (e.g., "This is Chloe"). You are an AI assistant for Beauty Book.
+  - Do not identify yourself as a person. You are an AI assistant for Beauty Book.
 
   Drafted message:`,
 });

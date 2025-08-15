@@ -275,7 +275,7 @@ let clientNotifications: Notification[] = [
       id: 4,
       icon: 'cancellation',
       title: 'Booking Cancelled',
-      description: "You have successfully cancelled your booking with The Relaxation Station.",
+      description: `You have successfully cancelled your booking with The Relaxation Station.`,
       time: '1 day ago',
       read: true,
       bookingId: 'some-other-id',
@@ -353,55 +353,68 @@ const addNotification = (recipient: UserRole, notification: Omit<Notification, '
     }
 };
 
-const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: any) => Promise<{ message: string }>, metadata?: any) => {
+const sendAutomatedMessage = async (
+    booking: Booking,
+    messageGenerator: (input: any) => Promise<{ message: string }>,
+    metadata?: any,
+    recipient: 'client' | 'provider' | 'both' = 'client'
+) => {
     const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
     const bookingDateTime = format(new Date(booking.date), "PPP p");
 
-    try {
-        const response = await messageGenerator({
-            clientName: booking.clientName || 'Valued Client',
-            providerName: booking.providerName,
-            serviceName: serviceNames,
-            bookingDate: bookingDateTime,
-            ...metadata,
-        });
-        
-        // This is simplified for mock data. In a real app, you'd have separate conversations for client/provider.
-        const conversation = conversations.find(c => c.providerId === booking.providerId);
-        const providerConversation = providerConversations.find(c => c.clientId === booking.clientName); // This is a bit of a hack for mock data
-
-        if (conversation) {
-             messages.push({
-                id: messages.length + 1,
-                conversationId: conversation.id,
-                sender: 'provider',
-                text: response.message,
-                isAi: true,
-                bookingId: booking.id,
+    const sendMessage = async (to: 'client' | 'provider') => {
+        try {
+            const response = await messageGenerator({
+                clientName: booking.clientName || 'Valued Client',
+                providerName: booking.providerName,
+                serviceName: serviceNames,
+                bookingDate: bookingDateTime,
+                recipient: to,
+                ...metadata,
             });
-            conversation.lastMessage = response.message;
-            conversation.time = 'Just now';
-            // conversation.unread = (conversation.unread || 0) + 1;
+
+            if (to === 'client') {
+                const conversation = conversations.find(c => c.providerId === booking.providerId);
+                if (conversation) {
+                    messages.push({
+                        id: messages.length + 1,
+                        conversationId: conversation.id,
+                        sender: 'provider',
+                        text: response.message,
+                        isAi: true,
+                        bookingId: booking.id,
+                    });
+                    conversation.lastMessage = response.message;
+                    conversation.time = 'Just now';
+                    conversation.unread = (conversation.unread || 0) + 1;
+                }
+            } else { // to provider
+                const providerConversation = providerConversations.find(c => c.clientId === booking.clientName);
+                 if (providerConversation) {
+                    providerMessages.push({
+                        id: providerMessages.length + 1,
+                        conversationId: providerConversation.id,
+                        sender: 'provider', // From the system/AI, but shown as provider message bubble
+                        text: response.message,
+                        isAi: true,
+                        bookingId: booking.id,
+                    });
+                    providerConversation.lastMessage = response.message;
+                    providerConversation.unread = (providerConversation.unread || 0) + 1;
+                }
+            }
+        } catch (e) {
+            console.error(`Failed to draft automated message for ${to}:`, e);
         }
+    };
 
-        if (providerConversation) {
-             providerMessages.push({
-                id: providerMessages.length + 1,
-                conversationId: providerConversation.id,
-                sender: 'provider',
-                text: response.message,
-                isAi: true,
-                bookingId: booking.id,
-            });
-            providerConversation.lastMessage = response.message;
-            providerConversation.unread = (providerConversation.unread || 0) + 1;
-        }
-
-
-    } catch (e) {
-        console.error("Failed to draft automated message:", e);
+    if (recipient === 'client' || recipient === 'both') {
+        await sendMessage('client');
     }
-}
+    if (recipient === 'provider' || recipient === 'both') {
+        await sendMessage('provider');
+    }
+};
 
 export const updateBookingStatus = async (bookingId: string, status: Booking['status'], cancelledBy: 'client' | 'provider' = 'client') => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
@@ -431,8 +444,14 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                         description: `${booking.providerName} has cancelled your booking for ${new Date(booking.date).toLocaleDateString()}.`,
                         bookingId: booking.id
                     });
+                     addNotification('provider', {
+                        icon: 'cancellation',
+                        title: 'Booking Cancelled',
+                        description: `You have successfully cancelled the booking for ${booking.clientName}.`,
+                        bookingId: booking.id
+                    });
                 }
-                await sendAutomatedMessage(booking, draftBookingCancellation, { cancelledBy });
+                await sendAutomatedMessage(booking, draftBookingCancellation, { cancelledBy }, 'both');
             } else if (status === 'Review Order and Pay') {
                 addNotification('provider', {
                     icon: 'confirmation',
@@ -446,7 +465,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
                     bookingId: booking.id
                 });
-                await sendAutomatedMessage(booking, draftBookingApproval);
+                await sendAutomatedMessage(booking, draftBookingApproval, {}, 'both');
             } else if (status === 'Confirmed') {
                  addNotification('client', {
                     icon: 'confirmation',
@@ -456,11 +475,11 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                 });
                 addNotification('provider', {
                     icon: 'confirmation',
-                    title: 'Booking Confirmed!',
+                    title: 'Payment Received!',
                     description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is now confirmed.`,
                     bookingId: booking.id
                 });
-                await sendAutomatedMessage(booking, draftBookingConfirmation);
+                await sendAutomatedMessage(booking, draftBookingConfirmation, {}, 'both');
             } else if (status === 'Completed') {
                 booking.isPaid = true; // For simplicity, assume payment is captured on completion
                 addNotification('provider', {
@@ -475,7 +494,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `Your appointment with ${booking.providerName} is complete. We hope you enjoyed your service!`,
                     bookingId: booking.id,
                 });
-                await sendAutomatedMessage(booking, draftPostBookingMessage);
+                await sendAutomatedMessage(booking, draftPostBookingMessage, {}, 'both');
             }
         }
     }
@@ -517,11 +536,8 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
                 bookingId: newBooking.id
             });
 
-            // Send AI message to client
-            await sendAutomatedMessage(newBooking, (input) => draftBookingUpdate({...input, recipient: 'client'}), { updatedFields });
-            
-            // Send AI message to provider
-            await sendAutomatedMessage(newBooking, (input) => draftBookingUpdate({...input, recipient: 'provider'}), { updatedFields });
+            // Send AI messages to both client and provider
+            await sendAutomatedMessage(newBooking, draftBookingUpdate, { updatedFields }, 'both');
         }
     }
 };
@@ -570,7 +586,7 @@ export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
     providerConvo.unread = (providerConvo.unread || 0) + 1;
     
     // Send an AI message to the provider
-    await sendAutomatedMessage(newBooking, draftNewBookingRequest);
+    await sendAutomatedMessage(newBooking, draftNewBookingRequest, {}, 'provider');
 };
 
 

@@ -16,6 +16,7 @@ const DraftBookingApprovalInputSchema = z.object({
   providerName: z.string().describe("The provider's name."),
   serviceName: z.string().describe('The name of the service that has been booked.'),
   bookingDate: z.string().describe('The date and time of the booking.'),
+  recipient: z.enum(['client', 'provider']).describe("Who the message is for."),
 });
 export type DraftBookingApprovalInput = z.infer<typeof DraftBookingApprovalInputSchema>;
 
@@ -38,9 +39,17 @@ const prompt = ai.definePrompt({
 
   The booking is for the "{{{serviceName}}}" service on {{{bookingDate}}}.
 
-  Draft a polite and clear message from the provider to the client. The message should inform them that their request is approved and that they need to complete payment to confirm the booking.
+  Draft a polite and clear message to the {{{recipient}}}.
+  
+  If the recipient is the client:
+  - Inform them that their request is approved.
+  - Instruct them to complete payment to confirm the booking.
+  - Tell them to click on the message to review their order and pay.
 
-  Instruct the client to click on the message to review their order and pay.
+  If the recipient is the provider:
+  - Confirm that they have successfully approved the booking.
+  - Inform them that a message has been sent to the client asking for payment.
+  - No further action is needed from them at this time.
 
   IMPORTANT RULES:
   - Do not include any links or URLs.
