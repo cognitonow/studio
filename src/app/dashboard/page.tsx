@@ -39,6 +39,7 @@ import { Heart, Repeat, Pencil } from "lucide-react"
 import { getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from '@/components/ui/separator';
 
 
 // Provider Dashboard Component
@@ -569,7 +570,6 @@ function ClientDashboard() {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="font-semibold text-lg">{activeBooking.providerName}</p>
-                                    <p className="text-muted-foreground text-sm">{activeBooking.services.map(s => s.name).join(', ')}</p>
                                 </div>
                                 <StatusBadge status={activeBooking.status} />
                             </div>
@@ -586,6 +586,16 @@ function ClientDashboard() {
                             <div className="flex items-center gap-2">
                                 <DollarSign className="w-4 h-4 text-muted-foreground" />
                                 <span className="font-semibold">${activeBookingTotalCost.toFixed(2)}</span>
+                            </div>
+                            <Separator className="my-3" />
+                            <div className="space-y-2">
+                                <h4 className="font-semibold">Services Booked:</h4>
+                                {activeBooking.services.map(service => (
+                                    <div key={service.id}>
+                                        <p className="font-medium">{service.name}</p>
+                                        <p className="text-xs text-muted-foreground">{service.description}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                         <div className="mt-auto pt-4 space-y-2">
