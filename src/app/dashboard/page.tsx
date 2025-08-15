@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Contact, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Contact, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin, ThumbsUp, ThumbsDown } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -94,7 +94,23 @@ export default function ProviderDashboardPage() {
   };
 
   const getBookingActions = (booking: Booking) => {
-    const now = new Date();
+    if (booking.status === 'Pending') {
+        return (
+            <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Review Order and Pay')}>
+                    <ThumbsUp className="h-4 w-4 mr-2" />
+                    Approve
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>
+                    <ThumbsDown className="h-4 w-4 mr-2" />
+                    Decline
+                </Button>
+                 <Button size="sm" variant="ghost" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                </Button>
+            </div>
+        )
+    }
     
     return (
          <Button size="sm" variant="outline" asChild>
