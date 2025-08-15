@@ -219,7 +219,7 @@ let bookings: Booking[] = [
     { id: "7", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-3"], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: "Confirmed", clientName: 'Alex Ray', isPaid: true },
 ];
 
-export let providerServices: Service[] = providers[2].services;
+export const providerServices: Service[] = providers.find(p => p.id === '3')?.services || [];
 
 let conversations: Conversation[] = [
   { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you have any questions!", time: "2h", unread: 0 },
@@ -288,7 +288,7 @@ let providerNotifications: Notification[] = [
       id: 1,
       icon: 'new-booking',
       title: "New Booking Request!",
-      description: "Alex Ray has requested a Haircut for this Friday.",
+      description: "Alex Ray has requested a booking for a Haircut for this Friday.",
       time: "1 hour ago",
       read: false,
       bookingId: '5'
@@ -785,12 +785,10 @@ export const getClientHistoryByName = (clientName: string) => {
 };
 
 export const updateProviderServices = (providerId: string, newServices: Service[]) => {
-    const provider = providers.find(p => p.id === providerId);
-    if (provider) {
-        provider.services = newServices;
+    const providerIndex = providers.findIndex(p => p.id === providerId);
+    if (providerIndex !== -1) {
+        providers[providerIndex].services = newServices;
     }
-    // In a real app, this would also update the main `services` array if new custom services were added,
-    // but for this mock setup, we'll just update the provider's list.
 };
 
 
@@ -804,3 +802,5 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
+export const initialProviderServices = providers.find(p => p.id === '3')?.services || [];
