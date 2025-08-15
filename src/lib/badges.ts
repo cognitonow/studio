@@ -1,5 +1,5 @@
 
-import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy, Scissors, Eye, Hand, Layers } from 'lucide-react';
+import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy, Scissors, Eye, Hand, Layers, Sparkles, Wind } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface BadgeInfo {
@@ -92,12 +92,28 @@ export const allBadges: BadgeInfo[] = [
     rules: 'Complete 10+ "Bridal Makeup" or "Updo" services.',
     category: 'Specialty',
   },
+   {
+    id: 'makeup-virtuoso',
+    name: 'Makeup Virtuoso',
+    icon: Sparkles,
+    description: 'A highly skilled makeup artist, praised for their versatile and flawless application.',
+    rules: 'Complete 30+ services from the "Makeup" category.',
+    category: 'Specialty',
+  },
   {
     id: 'pain-relief-pro',
     name: 'Pain Relief Pro',
     icon: Award,
     description: 'Specializes in therapies and treatments aimed at alleviating pain.',
     rules: 'Complete 20+ "Massage" or "Cupping Therapy" services.',
+    category: 'Specialty',
+  },
+  {
+    id: 'body-wellness-expert',
+    name: 'Body Wellness Expert',
+    icon: Wind,
+    description: 'A professional focused on holistic body treatments that rejuvenate and restore.',
+    rules: 'Complete 25+ services from the "Body" category, such as scrubs and wraps.',
     category: 'Specialty',
   },
    {
