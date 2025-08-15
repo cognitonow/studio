@@ -55,11 +55,7 @@ export default function SignupPage() {
 
     setGlobalRole(role);
     
-    if (role === 'provider') {
-      router.push('/dashboard');
-    } else {
-      router.push('/client-dashboard');
-    }
+    router.push('/dashboard');
   };
 
   return (
