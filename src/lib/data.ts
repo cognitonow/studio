@@ -1,6 +1,7 @@
 
 
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -826,6 +827,27 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
      console.log('[data.ts] Final global services list:', services);
 };
 
+
+export const addReview = (providerId: string, rating: number, comment: string) => {
+  const provider = providers.find(p => p.id === providerId);
+  if (!provider) return;
+
+  const newReview: Review = {
+    id: `review-${provider.reviews.length + 1}-${Date.now()}`,
+    author: 'Alex Ray', // Mocked user
+    avatarUrl: 'https://placehold.co/100x100.png',
+    dataAiHint: 'person face',
+    rating,
+    comment,
+  };
+
+  provider.reviews.unshift(newReview);
+  provider.reviewCount += 1;
+  
+  // Recalculate average rating
+  const totalRating = provider.reviews.reduce((acc, r) => acc + r.rating, 0);
+  provider.rating = totalRating / provider.reviewCount;
+};
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
 export const getProviderByUserId = (userId: string) => providers.find(p => p.userId === userId);
