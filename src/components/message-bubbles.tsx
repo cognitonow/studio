@@ -58,12 +58,12 @@ export const ProviderMessage = ({ message, activeConversation, view }: ProviderM
                 <div className={cn(
                     "rounded-lg px-4 py-3 max-w-md",
                     message.isAi 
-                        ? "bg-accent/10 border border-accent/20 text-foreground" 
+                        ? "bg-purple-100 border border-purple-200 text-purple-900" 
                         : "bg-muted"
                 )}>
                     <p className="text-sm">{message.text}</p>
                      {message.isAi && showButton && booking && (
-                        <Button asChild size="sm" className="mt-3">
+                        <Button asChild size="sm" className="mt-3 bg-purple-600 hover:bg-purple-700 text-white">
                             <Link href={`/booking/manage/${booking.id}`}>
                                 {view === 'client' && booking.status === 'Review Order and Pay' ? 'Review & Pay' : 'Manage Booking'}
                             </Link>
@@ -71,7 +71,7 @@ export const ProviderMessage = ({ message, activeConversation, view }: ProviderM
                     )}
                 </div>
                 {message.isAi && (
-                    <div className="flex items-center gap-1 text-xs text-accent pl-2">
+                    <div className="flex items-center gap-1 text-xs text-purple-600 pl-2">
                         <Sparkles className="w-3 h-3" />
                         <span>Sent by AI Assistant</span>
                     </div>
