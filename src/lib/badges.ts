@@ -1,6 +1,4 @@
 
-'use server';
-
 import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
