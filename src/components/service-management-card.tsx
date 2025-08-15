@@ -9,9 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
 import { services as allServices, serviceCategories, saveProviderServices, getProviderById } from '@/lib/data';
 import type { Service } from '@/lib/types';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { AddServiceDialogContent } from './manage-booking/add-service-dialog-content';
+import { AddServiceDialogContent } from '@/components/manage-booking/add-service-dialog';
 
 interface ServiceManagementCardProps {
     providerId: string;
@@ -35,7 +35,7 @@ export function ServiceManagementCard({ providerId }: ServiceManagementCardProps
 
         setProviderServices(prev => [...prev, serviceToAdd].sort((a,b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
-        setIsAddServiceDialogOpen(false); // Close dialog after adding
+        setIsAddServiceDialogOpen(false);
     };
     
     const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
@@ -49,7 +49,7 @@ export function ServiceManagementCard({ providerId }: ServiceManagementCardProps
         };
         setProviderServices(prev => [...prev, newCustomService].sort((a, b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
-        setIsAddServiceDialogOpen(false); // Close dialog after adding
+        setIsAddServiceDialogOpen(false);
     };
 
 
