@@ -61,7 +61,10 @@ function ProviderDashboard() {
         setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
       }
     }
-    setIsLoading(false);
+    // Only set loading to false if we have a user and have attempted to find a provider
+    if (user) {
+      setIsLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -84,7 +87,7 @@ function ProviderDashboard() {
   }, [provider]);
 
   if (isLoading) {
-      return <div className="container mx-auto py-12 px-4">Loading Provider Dashboard...</div>;
+      return <div className="container mx-auto py-12 px-4 text-center">Loading Provider Dashboard...</div>;
   }
   
   if (!provider) {
@@ -794,5 +797,3 @@ export default function DashboardPage() {
     
     return <ClientDashboard />;
 }
-
-    

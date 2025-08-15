@@ -1,4 +1,5 @@
 
+
 import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -31,14 +32,14 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
         await setDoc(doc(db, "users", user.uid), userData);
 
         if (role === 'provider') {
-            // Special case for demo: if provider@example.com logs in, assign them to the rich "Glow & Go" profile
+            // Special case for demo: if provider@example.com signs up, assign them to the rich "Glow & Go" profile
             if (email === 'provider@example.com') {
                 const existingProvider = providers.find(p => p.id === '2'); // Glow & Go Esthetics
                 if (existingProvider) {
                     existingProvider.userId = user.uid;
                 }
             } else {
-                // Otherwise, create a new blank provider profile as before
+                // Otherwise, create a new blank provider profile
                 const newProviderProfile: Provider = {
                     id: String(providers.length + 1),
                     userId: user.uid,
