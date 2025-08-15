@@ -6,6 +6,9 @@ This document contains a list of features, improvements, and ideas for future de
 
 - [x] Sign up flow
 - [x] Client Dashboard
+- [ ] Sign up process
+- [ ] Featured page
+- [ ] Adding in the legal and FAQs
 
 ## Improvements
 
