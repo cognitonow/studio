@@ -72,13 +72,11 @@ function ProviderDashboard() {
     };
     
     fetchBookings();
-
-    const intervalId = setInterval(fetchBookings, 5000); 
-
+    
+    // Re-fetch data on window focus to keep it fresh
     window.addEventListener('focus', fetchBookings);
 
     return () => {
-      clearInterval(intervalId);
       window.removeEventListener('focus', fetchBookings);
     };
   }, [provider]);

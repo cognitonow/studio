@@ -157,7 +157,7 @@ export let providers: Provider[] = [
     isFavourite: true,
   },
   {
-    id: '2', userId: 'user-2', name: 'Glow & Go Esthetics', specialty: 'Skincare', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'skincare product', rating: 5.0, reviewCount: 88, isFeatured: true,
+    id: '2', userId: 'provider-user-id', name: 'Glow & Go Esthetics', specialty: 'Skincare', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'skincare product', rating: 5.0, reviewCount: 88, isFeatured: true,
     bio: 'Certified esthetician dedicated to helping you achieve your best skin. Specializing in results-driven facials and advanced skincare treatments.',
     portfolio: [
       { id: 'p4', url: 'https://placehold.co/600x400.png', dataAiHint: 'facial treatment' },

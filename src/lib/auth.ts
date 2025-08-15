@@ -3,7 +3,7 @@
 import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import type { UserRole, Provider } from './types';
+import type { User, UserRole, Provider } from './types';
 import { providers, services } from './data';
 
 interface SignUpCredentials {
@@ -15,6 +15,20 @@ interface SignUpCredentials {
 
 export async function signUp({ name, email, password, role }: SignUpCredentials) {
     try {
+        // Special mock handling for the main provider demo account
+        if (role === 'provider' && email.toLowerCase() === 'provider@example.com') {
+            const providerUser = {
+                id: 'provider-user-id', // Statically defined ID
+                name: 'Glow & Go', // The name of the provider
+                email: email,
+                role: 'provider'
+            };
+            // In a real app, you wouldn't return here, but for the mock flow,
+            // we assume this user is already 'created' and linked.
+            return { user: providerUser };
+        }
+
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
@@ -32,35 +46,27 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
         await setDoc(doc(db, "users", user.uid), userData);
 
         if (role === 'provider') {
-            // Special case for demo: if provider@example.com signs up, assign them to the rich "Glow & Go" profile
-            if (email.toLowerCase() === 'provider@example.com') {
-                const existingProviderIndex = providers.findIndex(p => p.id === '2'); // Glow & Go Esthetics
-                if (existingProviderIndex !== -1) {
-                    providers[existingProviderIndex].userId = user.uid;
-                }
-            } else {
-                // Otherwise, create a new blank provider profile
-                const newProviderProfile: Provider = {
-                    id: String(providers.length + 1),
-                    userId: user.uid,
-                    name: `${name}'s Shop`,
-                    specialty: 'General Beauty Services',
-                    avatarUrl: 'https://placehold.co/100x100.png',
-                    dataAiHint: 'salon interior',
-                    rating: 0,
-                    reviewCount: 0,
-                    isFeatured: false,
-                    isFavourite: false,
-                    bio: `Welcome to the shop for ${name}! Please update your bio.`,
-                    portfolio: [],
-                    services: [],
-                    reviews: [],
-                    badges: [{ name: 'New Pro', level: 'New' }],
-                    location: 'Dublin, Ireland',
-                    playlist: 'top-rated-nails',
-                };
-                providers.push(newProviderProfile);
-            }
+            // Create a new blank provider profile for any other provider email
+            const newProviderProfile: Provider = {
+                id: String(providers.length + 1),
+                userId: user.uid,
+                name: `${name}'s Shop`,
+                specialty: 'General Beauty Services',
+                avatarUrl: 'https://placehold.co/100x100.png',
+                dataAiHint: 'salon interior',
+                rating: 0,
+                reviewCount: 0,
+                isFeatured: false,
+                isFavourite: false,
+                bio: `Welcome to the shop for ${name}! Please update your bio.`,
+                portfolio: [],
+                services: [],
+                reviews: [],
+                badges: [{ name: 'New Pro', level: 'New' }],
+                location: 'Dublin, Ireland',
+                playlist: 'top-rated-nails',
+            };
+            providers.push(newProviderProfile);
         }
 
 
