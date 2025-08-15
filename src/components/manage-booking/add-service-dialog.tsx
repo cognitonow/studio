@@ -24,10 +24,10 @@ interface AddServiceDialogProps {
   children: React.ReactNode;
   providerServices: Service[];
   onAddService: (service: Service) => void;
-  onAddCustomService: (name: string, price: number, duration: number) => void;
+  onAddCustomService?: (name: string, price: number, duration: number) => void;
 }
 
-export function AddServiceDialog({ children, providerServices, onAddService, onAddCustomService }: AddServiceDialogProps) {
+export function AddServiceDialog({ children, providerServices, onAddService, onAddCustomService = () => {} }: AddServiceDialogProps) {
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
   const [customDuration, setCustomDuration] = useState('');
