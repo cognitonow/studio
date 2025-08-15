@@ -280,15 +280,6 @@ let clientNotifications: Notification[] = [
         read: true,
         bookingId: 'some-id'
     },
-     {
-      id: 4,
-      icon: 'cancellation',
-      title: 'Booking Cancelled',
-      description: `You have successfully cancelled your booking with ${"The Relaxation Station"}.`,
-      time: '1 day ago',
-      read: true,
-      bookingId: 'some-other-id',
-    },
 ];
 
 let providerNotifications: Notification[] = [
@@ -542,10 +533,10 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
     if (bookingIndex !== -1) {
         
         const updatedFields: string[] = [];
-        if (new Date(originalBooking.date).toISOString() !== new Date(updatedDetails.date!).toISOString()) {
+        if (updatedDetails.date && new Date(originalBooking.date).toISOString() !== new Date(updatedDetails.date).toISOString()) {
             updatedFields.push('date');
         }
-        if (originalBooking.serviceIds.join(',') !== updatedDetails.serviceIds!.join(',')) {
+        if (updatedDetails.serviceIds && originalBooking.serviceIds.join(',') !== updatedDetails.serviceIds.join(',')) {
             updatedFields.push('services');
         }
         
@@ -862,6 +853,7 @@ export const addReview = async (bookingId: string, rating: number, comment: stri
       rating: newReview.rating,
       comment: newReview.comment,
       providerId: provider.id,
+      id: bookingId,
   };
 
   addNotification('provider', {
