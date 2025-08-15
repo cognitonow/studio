@@ -82,6 +82,7 @@ function ProviderDashboard() {
             if (newSelection.size < 3) {
                 newSelection.add(imageId);
             }
+        }
         return newSelection;
     });
   };
@@ -696,11 +697,13 @@ function ClientDashboard() {
                             <Badge key={badge} variant="secondary">{badge}</Badge>
                         ))}
                     </div>
-                    <Button asChild className="w-full mt-auto pt-4">
-                        <Link href={`/provider/${dashboardData.favoriteProvider.id}`}>
-                            View Profile
-                        </Link>
-                    </Button>
+                    <div className="mt-auto pt-4">
+                        <Button asChild className="w-full">
+                            <Link href={`/provider/${dashboardData.favoriteProvider.id}`}>
+                                View Profile
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             )}
           </CardContent>
@@ -743,5 +746,3 @@ export default function DashboardPage() {
     
     return <ClientDashboard />;
 }
-
-    
