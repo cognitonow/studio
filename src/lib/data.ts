@@ -609,6 +609,13 @@ export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
         description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
         bookingId: newBooking.id
     });
+
+    addNotification('client', {
+        icon: 'confirmation',
+        title: 'Booking Request Sent!',
+        description: `Your request has been sent to ${newBooking.providerName}. We'll notify you of any updates.`,
+        bookingId: newBooking.id
+    });
     
     let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName);
     if (!providerConvo) {
