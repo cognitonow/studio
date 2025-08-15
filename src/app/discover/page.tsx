@@ -40,6 +40,52 @@ function ExploreStack() {
   const router = useRouter();
   const { user } = useUserStore();
 
+  const getCardStyle = (index: number): React.CSSProperties => {
+    const isCurrent = index === activeIndex;
+    const isPrevious = index === activeIndex - 1;
+    const isNext = index === activeIndex + 1;
+
+    let transform = 'translateY(0) scale(1)';
+    let zIndex = providers.length - index;
+    let opacity = 0;
+    let transition = 'transform 0.3s ease, opacity 0.3s ease';
+
+    if (isCurrent) {
+        opacity = 1;
+        zIndex = providers.length + 1;
+        if (direction === 'right') {
+            transform = 'translateX(100%) rotate(15deg) scale(0.8)';
+        } else if (direction === 'left') {
+             transform = 'translateX(-100%) rotate(-15deg) scale(0.8)';
+        } else if (direction === 'up') {
+            transform = 'translateY(-100%) scale(0.8)';
+        }
+    } else if (isNext) {
+        opacity = 1;
+        transform = 'translateY(20px) scale(0.95)';
+    } else if (index > activeIndex) {
+        opacity = 0;
+        transform = `translateY(40px) scale(0.9)`;
+    } else { // Cards that have been swiped away
+        opacity = 0;
+        transform = `translateX(-100%) rotate(-15deg) scale(0.8)`;
+    }
+
+    if(isPrevious) {
+        transition = 'none'; // prevent animation when bringing card back
+    }
+
+    return {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        transform,
+        zIndex,
+        opacity,
+        transition
+    };
+  };
+
   const handleNext = () => {
     setDirection('right');
     setTimeout(() => {
