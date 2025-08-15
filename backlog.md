@@ -9,6 +9,7 @@ This document contains a list of features, improvements, and ideas for future de
 - [ ] Sign up process
 - [ ] Featured page
 - [ ] Adding in the legal and FAQs
+- [ ] Stats page
 
 ## Improvements
 
