@@ -13,7 +13,7 @@ import type { Conversation, Message } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { UserMessage, ProviderMessage } from "@/components/message-bubbles"
+import { UserMessage, ProviderMessage, AiMessage } from "@/components/message-bubbles"
 import { useUserRole } from "@/hooks/use-user-role"
 
 export default function MessagesPage() {
@@ -198,11 +198,13 @@ export default function MessagesPage() {
                  <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
                     <div className="space-y-6">
                         {activeMessages.map((message) => {
-                           const isUserMessage = message.sender === userRole;
-                           if (isUserMessage) {
-                               return <UserMessage key={message.id} message={message} view={userRole} />;
-                           }
-                           return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} view={userRole} />;
+                            if (message.isAi) {
+                                return <AiMessage key={message.id} message={message} activeConversation={activeConversation} view={userRole} />;
+                            }
+                            if (message.sender === userRole) {
+                                return <UserMessage key={message.id} message={message} view={userRole} />;
+                            }
+                            return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />;
                         })}
                     </div>
                 </ScrollArea>
