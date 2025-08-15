@@ -566,38 +566,42 @@ function ClientDashboard() {
                         <CardDescription>Your next appointment is coming up!</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4 flex-grow flex flex-col">
-                        <div className="space-y-2">
+                        <div className="flex-grow">
                             <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="font-semibold text-lg">{activeBooking.providerName}</p>
-                                </div>
+                                <p className="font-semibold text-lg">{activeBooking.providerName}</p>
                                 <StatusBadge status={activeBooking.status} />
                             </div>
-                        </div>
-                        <div className="text-sm space-y-1 flex-grow">
-                            <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-muted-foreground" />
-                                <span>{format(new Date(activeBooking.date), 'PPPP')}</span>
+                            <div className="text-sm space-y-2 mt-2">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                                    <span>{format(new Date(activeBooking.date), 'PPPP')}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-muted-foreground" />
+                                    <span>{format(new Date(activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(activeBooking.date), { addSuffix: true })})</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                                    <span className="font-semibold">${activeBookingTotalCost.toFixed(2)}</span>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-muted-foreground" />
-                                <span>{format(new Date(activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(activeBooking.date), { addSuffix: true })})</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <DollarSign className="w-4 h-4 text-muted-foreground" />
-                                <span className="font-semibold">${activeBookingTotalCost.toFixed(2)}</span>
-                            </div>
-                            <Separator className="my-3" />
-                            <div className="space-y-2">
-                                <h4 className="font-semibold">Services Booked:</h4>
-                                {activeBooking.services.map(service => (
+                            
+                            <Separator className="my-4" />
+                            
+                            <div className="space-y-3">
+                                <h4 className="font-semibold text-sm">Services Booked:</h4>
+                                {activeBooking.services.map((service, index) => (
                                     <div key={service.id}>
-                                        <p className="font-medium">{service.name}</p>
-                                        <p className="text-xs text-muted-foreground">{service.description}</p>
+                                        <div>
+                                            <p className="font-medium">{service.name}</p>
+                                            <p className="text-xs text-muted-foreground">{service.description}</p>
+                                        </div>
+                                         {index < activeBooking.services.length - 1 && <Separator className="mt-3" />}
                                     </div>
                                 ))}
                             </div>
                         </div>
+
                         <div className="mt-auto pt-4 space-y-2">
                             <Button asChild className="w-full">
                                 <Link href={`/booking/manage/${activeBooking.id}`}>
