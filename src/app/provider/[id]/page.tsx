@@ -50,9 +50,13 @@ export default function ProviderDetailPage() {
     notFound();
   }
 
-  const AuthButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
+  const AuthButton = ({ href, children }: { href: string; children: React.ReactNode }) => {
     if (user) {
-      return <Button asChild>{children}</Button>;
+      return (
+        <Button asChild>
+          <Link href={href}>{children}</Link>
+        </Button>
+      );
     }
     return (
       <AuthDialog>
@@ -249,7 +253,7 @@ export default function ProviderDetailPage() {
                           <p className="text-sm text-muted-foreground">{service.duration} mins</p>
                         </div>
                         <AuthButton href={`/book/${provider.id}?service=${service.id}`}>
-                          <Link href={`/book/${provider.id}?service=${service.id}`}>Book Now</Link>
+                           Book Now
                         </AuthButton>
                       </div>
                     </AccordionContent>
