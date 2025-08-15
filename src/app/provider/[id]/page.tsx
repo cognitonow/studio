@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
-import type { Booking } from '@/lib/types';
+import type { Booking, Provider } from '@/lib/types';
 import { StatusBadge } from '@/components/status-badge';
 import { allBadges } from '@/lib/badges';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +28,7 @@ export default function ProviderDetailPage() {
   const id = params.id as string;
   const { toast } = useToast();
 
-  const [provider, setProvider] = useState(() => getProviderById(id));
+  const [provider, setProvider] = useState<Provider | undefined>(() => getProviderById(id));
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
   
   // State for the review form
@@ -48,9 +48,9 @@ export default function ProviderDetailPage() {
 
     addReview(provider.id, reviewRating, reviewComment);
     
-    // Optimistically update the UI
+    // To ensure the UI updates, we get the fresh provider object and update state
     const updatedProvider = getProviderById(id);
-    setProvider(updatedProvider);
+    setProvider(updatedProvider); // This will trigger a re-render with the new review
     
     toast({
         title: "Review Submitted!",
