@@ -1,5 +1,5 @@
 
-import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy } from 'lucide-react';
+import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy, Scissors, Eye, Hand, Layers } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface BadgeInfo {
@@ -34,6 +34,14 @@ export const allBadges: BadgeInfo[] = [
     icon: Heart,
     description: 'A provider who is frequently booked and highly recommended by clients.',
     rules: 'Receive at least 15 "would book again" recommendations from past clients.',
+    category: 'Reputation',
+  },
+    {
+    id: 'new-pro',
+    name: 'New Pro',
+    icon: UserPlus,
+    description: 'A new and promising provider on the Beauty Book platform.',
+    rules: 'Automatically assigned to new providers. Replaced by other badges as they are earned.',
     category: 'Reputation',
   },
   {
@@ -92,13 +100,37 @@ export const allBadges: BadgeInfo[] = [
     rules: 'Complete 20+ "Massage" or "Cupping Therapy" services.',
     category: 'Specialty',
   },
+   {
+    id: 'lash-brow-architect',
+    name: 'Lash & Brow Architect',
+    icon: Eye,
+    description: 'A specialist in shaping perfect brows and stunning lash enhancements.',
+    rules: 'Complete 30+ services from the "Brows & Lashes" category.',
+    category: 'Specialty',
+  },
   {
-    id: 'new-pro',
-    name: 'New Pro',
-    icon: UserPlus,
-    description: 'A new and promising provider on the Beauty Book platform.',
-    rules: 'Automatically assigned to new providers. Replaced by other badges as they are earned.',
-    category: 'Reputation',
+    id: 'braid-weave-master',
+    name: 'Braid & Weave Master',
+    icon: Hand,
+    description: 'An expert in complex braids, twists, and weave installations.',
+    rules: 'Complete 20+ services like "Box Braids", "Knotless Braids", or "Sew-in Weave".',
+    category: 'Specialty',
+  },
+  {
+    id: 'smooth-operator',
+    name: 'Smooth Operator',
+    icon: Scissors,
+    description: 'A professional in hair removal techniques for perfectly smooth skin.',
+    rules: 'Complete 40+ services from the "Hair Removal" category.',
+    category: 'Specialty',
+  },
+  {
+    id: 'extension-expert',
+    name: 'Hair Extension Expert',
+    icon: Layers,
+    description: 'Skilled in adding length and volume with various extension methods.',
+    rules: 'Complete 15+ "Hair Extensions" or "Sew-in Weave" services.',
+    category: 'Specialty',
   },
 ];
 
