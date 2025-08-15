@@ -9,10 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
-import { services as allServices, serviceCategories, saveProviderServices, getProviderById, providers } from '@/lib/data';
+import { services as allServices, serviceCategories, saveProviderServices, getProviderById } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { AddServiceDialog } from './manage-booking/add-service-dialog';
 
@@ -33,7 +33,8 @@ export function ServiceManagementCard() {
     const [editedName, setEditedName] = useState('');
 
     useEffect(() => {
-        const provider = getProviderById('3');
+        // Load initial services for the provider (Chloe's Hair Haven)
+        const provider = getProviderById('3'); 
         if (provider) {
             setProviderServices([...provider.services]);
         }
@@ -46,7 +47,7 @@ export function ServiceManagementCard() {
         setHasUnsavedChanges(true);
         setIsAddServiceDialogOpen(false);
     };
-
+    
     const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
         const newCustomService: Service = {
             id: `custom-${Date.now()}`,
@@ -60,6 +61,7 @@ export function ServiceManagementCard() {
         setHasUnsavedChanges(true);
         setIsAddServiceDialogOpen(false);
     };
+
 
     const handleRemoveService = (serviceId: string) => {
         setProviderServices(prev => prev.filter(s => s.id !== serviceId));
@@ -155,39 +157,19 @@ export function ServiceManagementCard() {
             <CardContent>
                 <div className="space-y-4 p-4 border rounded-lg">
                     <h4 className="font-semibold">Add a New Service</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                           
-                        </div>
-                        <div className="space-y-2">
-                            
-                        </div>
-                         
-                        <div className="space-y-2">
-                           
-                        </div>
-                        <div className="space-y-2">
-                            
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                       
-                    </div>
-                     <div className='flex items-center gap-4'>
-                        <AddServiceDialog
-                          providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
-                          onAddService={handleAddPredefinedService}
-                          onAddCustomService={handleAddCustomServiceToState}
-                          open={isAddServiceDialogOpen}
-                          onOpenChange={setIsAddServiceDialogOpen}
-                        >
-                             <Button variant="secondary">
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                Add Service
-                            </Button>
-                        </AddServiceDialog>
-                     </div>
+                    <Button variant="secondary" onClick={() => setIsAddServiceDialogOpen(true)}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Service
+                    </Button>
                 </div>
+                
+                <AddServiceDialog
+                    providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
+                    onAddService={handleAddPredefinedService}
+                    onAddCustomService={handleAddCustomServiceToState}
+                    open={isAddServiceDialogOpen}
+                    onOpenChange={setIsAddServiceDialogOpen}
+                />
                 
                 <div className="mt-6">
                     <h4 className="font-semibold mb-2">Your Current Services</h4>
@@ -200,7 +182,7 @@ export function ServiceManagementCard() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {providerServices.map(service => (
+                            {providerServices.length > 0 ? providerServices.map(service => (
                                 <TableRow key={service.id}>
                                     <TableCell className="font-medium">{service.name}</TableCell>
                                     <TableCell>${service.price}</TableCell>
@@ -213,7 +195,11 @@ export function ServiceManagementCard() {
                                         </Button>
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center h-24">You have no services configured.</TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </div>
