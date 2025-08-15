@@ -66,7 +66,7 @@ export type Booking = {
     serviceIds: string[];
     date: string; // ISO 8601 format
     status: 'Pending' | 'Review Order and Pay' | 'Confirmed' | 'Completed' | 'Cancelled';
-    clientName?: string;
+    clientName?: string; // Optional client name for provider view
     isPaid: boolean;
 };
 ```
