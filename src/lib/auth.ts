@@ -33,10 +33,10 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
 
         if (role === 'provider') {
             // Special case for demo: if provider@example.com signs up, assign them to the rich "Glow & Go" profile
-            if (email === 'provider@example.com') {
-                const existingProvider = providers.find(p => p.id === '2'); // Glow & Go Esthetics
-                if (existingProvider) {
-                    existingProvider.userId = user.uid;
+            if (email.toLowerCase() === 'provider@example.com') {
+                const existingProviderIndex = providers.findIndex(p => p.id === '2'); // Glow & Go Esthetics
+                if (existingProviderIndex !== -1) {
+                    providers[existingProviderIndex].userId = user.uid;
                 }
             } else {
                 // Otherwise, create a new blank provider profile
