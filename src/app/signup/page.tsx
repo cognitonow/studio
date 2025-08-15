@@ -16,14 +16,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sprout } from "lucide-react";
 import Link from "next/link";
 import { signUp } from "@/lib/auth";
-import type { UserRole } from "@/lib/types";
+import type { User, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/use-user-role";
+import { useUserStore } from "@/hooks/use-user-store";
 
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { setRole: setGlobalRole } = useUserRole();
+  const { setUser: setGlobalUser } = useUserStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,14 +37,14 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signUp({ name, email, password, role });
+    const { user, error } = await signUp({ name, email, password, role });
 
     setIsLoading(false);
 
-    if (error) {
+    if (error || !user) {
       toast({
         title: "Sign Up Failed",
-        description: error.message,
+        description: error?.message || "An unknown error occurred.",
         variant: "destructive",
       });
       return;
@@ -54,6 +56,7 @@ export default function SignupPage() {
     });
 
     setGlobalRole(role);
+    setGlobalUser(user as User);
     
     router.push('/dashboard');
   };

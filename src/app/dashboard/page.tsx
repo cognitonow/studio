@@ -4,6 +4,8 @@
 
 import { useState, useEffect } from 'react';
 import { useUserRole } from '@/hooks/use-user-role';
+import { useUserStore } from '@/hooks/use-user-store';
+
 
 // Provider Dashboard Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds, providers, getActiveBookings } from '@/lib/data';
+import { getProviderBookings, updateBookingStatus, getServicesByIds, providers as allProviders, getActiveBookings, getProviderByUserId } from '@/lib/data';
 import type { Booking, Provider, Service } from '@/lib/types';
 import { format, startOfDay, formatDistanceToNowStrict } from 'date-fns';
 import Link from 'next/link';
@@ -44,10 +46,22 @@ import { Separator } from '@/components/ui/separator';
 
 // Provider Dashboard Component
 function ProviderDashboard() {
+  const { user } = useUserStore();
+  const [provider, setProvider] = useState<Provider | undefined>(undefined);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const provider = providers[2]; // Mocking Chloe's Hair Haven as the logged-in provider
-  const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set(provider.portfolio.slice(0, 3).map(p => p.id)));
+  const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    if (user) {
+      const currentProvider = getProviderByUserId(user.id);
+      setProvider(currentProvider);
+      if (currentProvider) {
+        setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
+      }
+    }
+    setIsLoading(false);
+  }, [user]);
 
   useEffect(() => {
     const fetchBookings = () => {
@@ -56,16 +70,30 @@ function ProviderDashboard() {
       }
     };
     
-    fetchBookings(); // Initial fetch
+    fetchBookings();
 
-    // Set up the event listener to re-fetch when the window gains focus
+    const intervalId = setInterval(fetchBookings, 5000); 
+
     window.addEventListener('focus', fetchBookings);
 
-    // Clean up the event listener when the component unmounts
     return () => {
+      clearInterval(intervalId);
       window.removeEventListener('focus', fetchBookings);
     };
   }, [provider]);
+
+  if (isLoading) {
+      return <div className="container mx-auto py-12 px-4">Loading Provider Dashboard...</div>;
+  }
+  
+  if (!provider) {
+    return (
+        <div className="container mx-auto py-12 px-4 text-center">
+            <h2 className="text-2xl font-bold">Provider Profile Not Found</h2>
+            <p className="text-muted-foreground mt-2">We couldn't find a provider profile associated with your account.</p>
+        </div>
+    );
+  }
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status, 'provider');
@@ -92,16 +120,11 @@ function ProviderDashboard() {
     if (booking.status === 'Pending') {
         return (
             <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => handleStatusChange(booking.id, 'Review Order and Pay')}>
-                    <ThumbsUp className="h-4 w-4 mr-2" />
-                    Approve
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => handleStatusChange(booking.id, 'Cancelled')}>
-                    <ThumbsDown className="h-4 w-4 mr-2" />
-                    Decline
-                </Button>
-                 <Button size="sm" variant="ghost" asChild>
-                    <Link href={`/booking/manage/${booking.id}`}>Manage</Link>
+                <Button size="sm" variant="outline" asChild>
+                    <Link href={`/booking/manage/${booking.id}`}>
+                        <ThumbsUp className="h-4 w-4 mr-2" />
+                        Approve
+                    </Link>
                 </Button>
             </div>
         )
@@ -261,7 +284,7 @@ function ProviderDashboard() {
                 </Card>
                 
                  {/* Service Management */}
-                <ServiceManagementCard />
+                <ServiceManagementCard providerId={provider.id} />
             </div>
           </div>
         </TabsContent>

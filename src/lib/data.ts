@@ -18,6 +18,7 @@ export const serviceCategories: ServiceCategory[] = [
     { id: 'body', name: 'Body' },
     { id: 'makeup', name: 'Makeup' },
     { id: 'medi-spa', name: 'Aesthetic / Medi-Spa' },
+    { id: 'custom', name: 'Custom' },
 ];
 
 export const dublinDistricts: DublinDistrict[] = [
@@ -136,7 +137,7 @@ export const reviews: Review[] = [
 
 export let providers: Provider[] = [
   {
-    id: '1', name: 'Olivia\'s Nail Studio', specialty: 'Nail Art', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'nail art', rating: 4.9, reviewCount: 124, isFeatured: true,
+    id: '1', userId: 'user-1', name: 'Olivia\'s Nail Studio', specialty: 'Nail Art', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'nail art', rating: 4.9, reviewCount: 124, isFeatured: true,
     bio: 'Award-winning nail artist with 10+ years of experience in creating stunning and unique nail designs. Passionate about nail health and using high-quality, non-toxic products.',
     portfolio: [
       { id: 'p1', url: 'https://placehold.co/600x400.png', dataAiHint: 'manicure nails' },
@@ -151,7 +152,7 @@ export let providers: Provider[] = [
     isFavourite: true,
   },
   {
-    id: '2', name: 'Glow & Go Esthetics', specialty: 'Skincare', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'skincare product', rating: 5.0, reviewCount: 88, isFeatured: true,
+    id: '2', userId: 'user-2', name: 'Glow & Go Esthetics', specialty: 'Skincare', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'skincare product', rating: 5.0, reviewCount: 88, isFeatured: true,
     bio: 'Certified esthetician dedicated to helping you achieve your best skin. Specializing in results-driven facials and advanced skincare treatments.',
     portfolio: [
       { id: 'p4', url: 'https://placehold.co/600x400.png', dataAiHint: 'facial treatment' },
@@ -166,7 +167,7 @@ export let providers: Provider[] = [
     isFavourite: false,
   },
   {
-    id: '3', name: 'Chloe\'s Hair Haven', specialty: 'Hair Color', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'hair salon', rating: 4.8, reviewCount: 212,
+    id: '3', userId: 'user-3', name: 'Chloe\'s Hair Haven', specialty: 'Hair Color', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'hair salon', rating: 4.8, reviewCount: 212,
     bio: 'Master colorist and stylist transforming hair with precision and creativity. From subtle enhancements to bold new looks, your hair is in expert hands.',
     portfolio: [
       { id: 'p7', url: 'https://placehold.co/600x400.png', dataAiHint: 'balayage hair' },
@@ -180,7 +181,7 @@ export let providers: Provider[] = [
     isFavourite: true,
   },
   {
-    id: '4', name: 'Bridal Beauty Co.', specialty: 'Wedding Makeup', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'makeup brushes', rating: 5.0, reviewCount: 56,
+    id: '4', userId: 'user-4', name: 'Bridal Beauty Co.', specialty: 'Wedding Makeup', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'makeup brushes', rating: 5.0, reviewCount: 56,
     bio: 'Creating timeless and elegant bridal looks. My goal is to make you feel like the most beautiful version of yourself on your wedding day.',
     portfolio: [],
     services: services.filter(s => s.categoryId === 'makeup'),
@@ -191,7 +192,7 @@ export let providers: Provider[] = [
     isFavourite: false,
   },
   {
-    id: '5', name: 'The Relaxation Station', specialty: 'Massage Therapy', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'massage oil', rating: 4.9, reviewCount: 301, isFeatured: true,
+    id: '5', userId: 'user-5', name: 'The Relaxation Station', specialty: 'Massage Therapy', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'massage oil', rating: 4.9, reviewCount: 301, isFeatured: true,
     bio: 'Licensed massage therapist with a focus on pain relief and relaxation. Each session is tailored to your individual needs.',
     portfolio: [],
     services: services.filter(s => s.categoryId === 'body'),
@@ -809,6 +810,7 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
 
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);
+export const getProviderByUserId = (userId: string) => providers.find(p => p.userId === userId);
 export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
@@ -818,5 +820,3 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
-
-    

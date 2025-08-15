@@ -2,8 +2,16 @@
 
 export type UserRole = 'guest' | 'client' | 'provider';
 
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+};
+
 export type Provider = {
   id: string;
+  userId: string;
   name: string;
   specialty: string;
   avatarUrl: string;
