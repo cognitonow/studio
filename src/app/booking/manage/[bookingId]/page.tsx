@@ -80,14 +80,19 @@ export default function ManageBookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   
   useEffect(() => {
-    if (bookingId) {
-      const foundBooking = getBookingById(bookingId);
-      setBooking(foundBooking);
-      if (foundBooking) {
-        setBookedServices(getServicesByIds(foundBooking.serviceIds));
-        setSelectedDate(new Date(foundBooking.date));
+    const fetchBookingData = () => {
+      if (bookingId) {
+        const foundBooking = getBookingById(bookingId);
+        setBooking(foundBooking);
+        if (foundBooking) {
+          setBookedServices(getServicesByIds(foundBooking.serviceIds));
+          setSelectedDate(new Date(foundBooking.date));
+        }
       }
-    }
+    };
+    fetchBookingData();
+    window.addEventListener('focus', fetchBookingData);
+    return () => window.removeEventListener('focus', fetchBookingData);
   }, [bookingId]);
   
   const provider = providers.find(p => p.id === booking?.providerId);
@@ -137,7 +142,7 @@ export default function ManageBookingPage() {
     if (booking) {
       updateBookingStatus(booking.id, 'Cancelled', cancelledBy);
       toast({
-        title: "Booking Cancelled",
+        title: booking.status === 'Pending' ? 'Request Cancelled' : 'Booking Cancelled',
         description: "The appointment has been successfully cancelled.",
         variant: "destructive",
       });
@@ -148,6 +153,10 @@ export default function ManageBookingPage() {
   const handleApproveBooking = () => {
       if (booking) {
           updateBookingStatus(booking.id, 'Review Order and Pay', 'provider');
+          toast({
+            title: 'Request Approved!',
+            description: 'The client has been notified to complete payment.'
+          });
           router.push('/dashboard');
       }
   }
@@ -177,8 +186,7 @@ export default function ManageBookingPage() {
   const canProviderAmend = userRole === 'provider' && ['Pending', 'Review Order and Pay', 'Confirmed'].includes(booking.status);
   const canProviderEditDateTime = userRole === 'provider' && ['Pending', 'Confirmed'].includes(booking.status);
   const needsProviderAction = userRole === 'provider' && booking.status === 'Pending';
-  const canProviderCancel = userRole === 'provider' && booking.status === 'Confirmed';
-
+  const canProviderCancel = userRole === 'provider' && ['Review Order and Pay', 'Confirmed'].includes(booking.status);
 
   // Shared statuses
   const canSaveChanges = canProviderAmend; // For now, only providers can save changes after initial booking
@@ -253,7 +261,7 @@ export default function ManageBookingPage() {
                 <Separator className="my-6" />
                 {canProviderAmend && (
                     <AddServiceDialog 
-                    providerServices={provider.services}
+                    providerServices={allServices.filter(s => s.categoryId === provider.services[0].categoryId)}
                     onAddService={handleAddService}
                     >
                     <Button variant="outline" className="w-full">
@@ -332,7 +340,7 @@ export default function ManageBookingPage() {
                             </Button>
                         </CancelBookingDialog>
                          <Button size="lg" variant="outline" asChild>
-                            <Link href={`/messages?providerId=${booking.providerId}`}>
+                            <Link href={`/messages?providerId=${booking.providerId}&clientId=${booking.clientName}`}>
                                 <MessageSquare className="mr-2 h-4 w-4" />
                                 Chat with Client
                             </Link>
