@@ -45,7 +45,7 @@ export const dublinDistricts: DublinDistrict[] = [
     { id: 'd24', name: 'Dublin 24' },
 ];
 
-export const services: Service[] = [
+export let services: Service[] = [
   // Hair
   { id: 'hair-1', categoryId: 'hair', name: 'Haircut', description: 'Professional haircut service.', price: 50, duration: 45 },
   { id: 'hair-2', categoryId: 'hair', name: 'Blowout', description: 'Professional blowout service.', price: 40, duration: 30 },
@@ -134,7 +134,7 @@ export const reviews: Review[] = [
   { id: '4', author: 'Emily R.', title: 'Graphic Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman face', rating: 5, comment: 'I am so in love with my new hair color. Chloe is a genius! She perfectly captured the look I was going for.' },
 ];
 
-export const providers: Provider[] = [
+export let providers: Provider[] = [
   {
     id: '1', name: 'Olivia\'s Nail Studio', specialty: 'Nail Art', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'nail art', rating: 4.9, reviewCount: 124, isFeatured: true,
     bio: 'Award-winning nail artist with 10+ years of experience in creating stunning and unique nail designs. Passionate about nail health and using high-quality, non-toxic products.',
@@ -784,7 +784,15 @@ export const getClientHistoryByName = (clientName: string) => {
     };
 };
 
-export const updateProviderServices = (providerId: string, newServices: Service[]) => {
+export const saveProviderServices = (providerId: string, newServices: Service[]) => {
+    // Add any new custom services to the main services list
+    newServices.forEach(service => {
+        if (service.id.startsWith('custom-') && !services.find(s => s.id === service.id)) {
+            services.push(service);
+        }
+    });
+
+    // Update the provider's list of services
     const providerIndex = providers.findIndex(p => p.id === providerId);
     if (providerIndex !== -1) {
         providers[providerIndex].services = newServices;
@@ -804,3 +812,4 @@ export const getBookingHistoryForProvider = (providerId: string) => {
 }
 
 export const initialProviderServices = providers.find(p => p.id === '3')?.services || [];
+

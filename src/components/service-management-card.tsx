@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState } from 'react';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
-import { services as allServices, serviceCategories, providerServices as initialProviderServices, updateProviderServices } from '@/lib/data';
+import { services as allServices, serviceCategories, providerServices as initialProviderServices, saveProviderServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -162,9 +163,9 @@ setDescription('');
     }
 
     const handleSaveChangesToDataSource = () => {
-        // Here we'd call the function to update the main data source
-        // For now, we'll use a mock function. This assumes provider ID '3' for Chloe.
-        updateProviderServices('3', providerServices);
+        // This function now also adds custom services to the main `services` list
+        // This assumes provider ID '3' for Chloe.
+        saveProviderServices('3', providerServices);
         setHasUnsavedChanges(false);
         toast({
             title: "Services Updated",
@@ -357,3 +358,4 @@ setDescription('');
 }
 
     
+
