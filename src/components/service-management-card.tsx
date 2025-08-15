@@ -12,9 +12,9 @@ import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
 import { services as allServices, serviceCategories, saveProviderServices, getProviderById } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { AddServiceDialog } from './manage-booking/add-service-dialog';
+import { AddServiceDialogContent } from './manage-booking/add-service-dialog';
 
 export function ServiceManagementCard() {
     const { toast } = useToast();
@@ -45,7 +45,6 @@ export function ServiceManagementCard() {
 
         setProviderServices(prev => [...prev, serviceToAdd].sort((a,b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
-        setIsAddServiceDialogOpen(false);
     };
     
     const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
@@ -59,7 +58,6 @@ export function ServiceManagementCard() {
         };
         setProviderServices(prev => [...prev, newCustomService].sort((a, b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
-        setIsAddServiceDialogOpen(false);
     };
 
 
@@ -155,21 +153,23 @@ export function ServiceManagementCard() {
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4 p-4 border rounded-lg">
-                    <h4 className="font-semibold">Add a New Service</h4>
-                    <Button variant="secondary" onClick={() => setIsAddServiceDialogOpen(true)}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Service
-                    </Button>
-                </div>
-                
-                <AddServiceDialog
-                    providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
-                    onAddService={handleAddPredefinedService}
-                    onAddCustomService={handleAddCustomServiceToState}
-                    open={isAddServiceDialogOpen}
-                    onOpenChange={setIsAddServiceDialogOpen}
-                />
+                <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+                    <DialogTrigger asChild>
+                         <div className="space-y-4 p-4 border rounded-lg">
+                            <h4 className="font-semibold">Add a New Service</h4>
+                            <Button variant="secondary">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Service
+                            </Button>
+                        </div>
+                    </DialogTrigger>
+                    <AddServiceDialogContent
+                        providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
+                        onAddService={handleAddPredefinedService}
+                        onAddCustomService={handleAddCustomServiceToState}
+                        onClose={() => setIsAddServiceDialogOpen(false)}
+                    />
+                </Dialog>
                 
                 <div className="mt-6">
                     <h4 className="font-semibold mb-2">Your Current Services</h4>
