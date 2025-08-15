@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Provider } from '@/lib/types';
@@ -12,8 +13,8 @@ interface ProviderCardProps {
 
 export function ProviderCard({ provider }: ProviderCardProps) {
   return (
-    <Link href={`/provider/${provider.id}`} className="block group">
-      <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-primary/20 group-hover:shadow-lg">
+    <Link href={`/provider/${provider.id}`} className="block group h-full">
+      <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-primary/20 group-hover:shadow-lg flex flex-col">
         <CardHeader className="p-0">
           <div className="relative h-48 w-full">
             <Image
@@ -23,21 +24,19 @@ export function ProviderCard({ provider }: ProviderCardProps) {
               className="object-cover"
               data-ai-hint={provider.dataAiHint}
             />
-             <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm p-1 rounded-md">
+             <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm p-1 px-2 rounded-md">
               <Star className="w-4 h-4 fill-primary text-primary" />
               <span className="font-semibold">{provider.rating.toFixed(1)}</span>
               <span className="text-xs text-muted-foreground">({provider.reviewCount})</span>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="p-4 flex-grow">
           <CardTitle className="text-lg font-bold mb-1 truncate font-headline">{provider.name}</CardTitle>
           <p className="text-sm text-muted-foreground">{provider.specialty}</p>
         </CardContent>
         <CardFooter className="p-4 pt-0">
-           <Button variant="outline" className="w-full" asChild={false}>
-              Book now
-           </Button>
+           <p className="text-primary text-sm font-semibold group-hover:underline">View Profile &rarr;</p>
         </CardFooter>
       </Card>
     </Link>

@@ -3,8 +3,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { CreditCard, Sparkles } from "lucide-react"
-import type { Message, Conversation, Booking } from "@/lib/types"
+import { Sparkles } from "lucide-react"
+import type { Message, Conversation, Booking, UserRole } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { getBookingById } from "@/lib/data"
@@ -14,11 +14,12 @@ interface MessageProps {
 }
 
 interface UserMessageProps extends MessageProps {
-    view: 'client' | 'provider';
+    view: UserRole;
 }
 
 interface ProviderMessageProps extends MessageProps {
     activeConversation: Conversation;
+    view: UserRole;
 }
 
 export const UserMessage = ({ message, view }: UserMessageProps) => {
@@ -40,8 +41,7 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
     );
 };
 
-export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
-    const view = activeConversation.clientId ? 'provider' : 'client';
+export const ProviderMessage = ({ message, activeConversation, view }: ProviderMessageProps) => {
     
     // Fetch the booking to check its status
     const booking = message.bookingId ? getBookingById(message.bookingId) : null;

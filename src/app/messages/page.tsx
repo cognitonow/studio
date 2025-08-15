@@ -57,13 +57,21 @@ export default function MessagesPage() {
                     initialConvo = newConvo;
                 }
             }
-            // Clean up URL after handling the param
-            router.replace('/messages');
+        }
+    } else if (userRole === 'provider') {
+        const clientIdToChat = searchParams.get('clientId');
+        if (clientIdToChat) {
+            const existingConvo = convos.find(c => c.clientId === clientIdToChat);
+            if (existingConvo) {
+                initialConvo = existingConvo;
+            }
         }
     }
     
-    if (!initialConvo && convos.length > 0) {
-        initialConvo = convos[0];
+    if (initialConvo) {
+      router.replace('/messages'); // Clean up URL params after handling
+    } else if (convos.length > 0) {
+      initialConvo = convos[0];
     }
     
     setActiveConversation(initialConvo);
@@ -176,30 +184,25 @@ export default function MessagesPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                        {userRole === 'client' ? (
-                             <Link href={`/provider/${activeConversation.providerId}`}>
+                    {userRole === 'client' && (
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`/provider/${activeConversation.providerId}`}>
                                 <User className="mr-2 h-4 w-4" />
                                 View Profile
                             </Link>
-                        ) : (
-                             <Link href={`/booking/manage/1`}>
-                                <User className="mr-2 h-4 w-4" />
-                                View Client History
-                            </Link>
-                        )}
-                    </Button>
+                        </Button>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="flex-grow p-6 overflow-hidden">
                  <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
                     <div className="space-y-6">
                         {activeMessages.map((message) => {
-                           const isUser = (message.sender === 'client' && userRole === 'client') || (message.sender === 'provider' && userRole === 'provider');
-                           if (isUser) {
+                           const isUserMessage = message.sender === userRole;
+                           if (isUserMessage) {
                                return <UserMessage key={message.id} message={message} view={userRole} />;
                            }
-                           return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />;
+                           return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} view={userRole} />;
                         })}
                     </div>
                 </ScrollArea>
