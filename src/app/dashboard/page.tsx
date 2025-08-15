@@ -95,6 +95,14 @@ export default function ProviderDashboardPage() {
             </div>
         )
     }
+
+    if (booking.status === 'Completed' || booking.status === 'Cancelled') {
+        return (
+            <Button size="sm" variant="secondary" asChild>
+                <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
+            </Button>
+        )
+    }
     
     return (
          <Button size="sm" variant="outline" asChild>
