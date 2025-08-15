@@ -1,8 +1,3 @@
-
-
-
-
-
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -11,6 +6,7 @@ import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
 import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation';
 import { draftNewBookingRequest } from '@/ai/flows/draft-new-booking-request';
 import { draftBookingUpdate } from '@/ai/flows/draft-booking-update';
+import { draftNewReviewMessage } from '@/ai/flows/draft-new-review';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -420,46 +416,26 @@ export const addMessage = (
 };
 
 const sendAutomatedMessage = async (
-    booking: Booking,
+    data: any,
     messageGenerator: (input: any) => Promise<{ message: string }>,
-    metadata: any = {},
     recipient: 'client' | 'provider' | 'both' = 'client'
 ) => {
-    
-    // Default values
-    let payload: any = {
-        clientName: booking.clientName || 'Valued Client',
-        providerName: booking.providerName,
-        recipient: '',
-    };
-    
-    // Add fields based on the message type
-    if (messageGenerator === draftBookingUpdate) {
-         payload.newDate = format(new Date(booking.date), "PPP p");
-         payload.newServices = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
-         payload.updatedFields = metadata.updatedFields || [];
-    } else {
-        payload.serviceName = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
-        payload.bookingDate = format(new Date(booking.date), "PPP p");
-    }
-
-    // Add any other metadata
-    payload = { ...payload, ...metadata };
-
     const sendMessage = async (to: 'client' | 'provider') => {
         try {
-            payload.recipient = to;
+            const payload = { ...data, recipient: to };
             const response = await messageGenerator(payload);
+            const providerId = data.providerId || data.providerName; // Handle both booking and review cases
+            const clientName = data.clientName || data.author;
 
             if (to === 'client') {
-                const conversation = conversations.find(c => c.providerId === booking.providerId);
+                const conversation = conversations.find(c => c.providerId === providerId);
                 if (conversation) {
-                    addMessage(conversation.id, 'provider', response.message, 'client', true, booking.id);
+                    addMessage(conversation.id, 'provider', response.message, 'client', true, data.id);
                 }
             } else { // to provider
-                const providerConversation = providerConversations.find(c => c.clientId === booking.clientName);
+                const providerConversation = providerConversations.find(pc => pc.clientId === clientName);
                  if (providerConversation) {
-                    addMessage(providerConversation.id, 'provider', response.message, 'provider', true, booking.id);
+                    addMessage(providerConversation.id, 'provider', response.message, 'provider', true, data.id);
                 }
             }
         } catch (e) {
@@ -481,6 +457,15 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
         const booking = bookings[bookingIndex];
         if (booking.status !== status) {
             booking.status = status;
+
+            const basePayload = {
+                clientName: booking.clientName || 'Valued Client',
+                providerName: booking.providerName,
+                serviceName: getServicesByIds(booking.serviceIds).map(s => s.name).join(', '),
+                bookingDate: format(new Date(booking.date), "PPP p"),
+                id: booking.id,
+                providerId: booking.providerId,
+            };
 
             if (status === 'Cancelled') {
                 if (cancelledBy === 'client') {
@@ -510,7 +495,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                         bookingId: booking.id
                     });
                 }
-                await sendAutomatedMessage(booking, draftBookingCancellation, { cancelledBy }, 'both');
+                await sendAutomatedMessage({ ...basePayload, cancelledBy }, draftBookingCancellation, 'both');
             } else if (status === 'Review Order and Pay') {
                 addNotification('provider', {
                     icon: 'confirmation',
@@ -524,7 +509,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `${booking.providerName} has approved your booking! Please review and complete payment to confirm your spot.`,
                     bookingId: booking.id
                 });
-                await sendAutomatedMessage(booking, draftBookingApproval, {}, 'both');
+                await sendAutomatedMessage(basePayload, draftBookingApproval, 'both');
             } else if (status === 'Confirmed') {
                  addNotification('client', {
                     icon: 'confirmation',
@@ -538,7 +523,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `${booking.clientName}'s booking for ${new Date(booking.date).toLocaleDateString()} is now confirmed.`,
                     bookingId: booking.id
                 });
-                await sendAutomatedMessage(booking, draftBookingConfirmation, {}, 'both');
+                await sendAutomatedMessage(basePayload, draftBookingConfirmation, 'both');
             } else if (status === 'Completed') {
                 booking.isPaid = true; // For simplicity, assume payment is captured on completion
                 addNotification('provider', {
@@ -553,7 +538,7 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
                     description: `Your appointment with ${booking.providerName} is complete. We hope you enjoyed your service!`,
                     bookingId: booking.id,
                 });
-                await sendAutomatedMessage(booking, draftPostBookingMessage, {}, 'both');
+                await sendAutomatedMessage(basePayload, draftPostBookingMessage, 'both');
             }
         }
     }
@@ -580,10 +565,14 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
         }
 
         if (updatedFields.length > 0) {
-             const metadata = {
+             const payload = {
+                clientName: newBooking.clientName || 'Valued Client',
+                providerName: newBooking.providerName,
                 updatedFields,
                 newDate: format(new Date(newBooking.date), "PPP p"),
                 newServices: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
+                id: newBooking.id,
+                providerId: newBooking.providerId,
             };
             // Notify client of the update
             addNotification('client', {
@@ -601,7 +590,7 @@ export const updateBooking = async (bookingId: string, updatedDetails: Partial<B
             });
 
             // Send AI messages to both client and provider
-            await sendAutomatedMessage(newBooking, draftBookingUpdate, metadata, 'both');
+            await sendAutomatedMessage(payload, draftBookingUpdate, 'both');
         }
     }
 };
@@ -643,8 +632,16 @@ export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
 
     addMessage(providerConvo.id, 'user', clientMessage, 'provider');
     
-    // Send an AI message to the provider
-    await sendAutomatedMessage(newBooking, draftNewBookingRequest, {}, 'provider');
+    // Send an AI message to the provider AND client
+    const payload = {
+      clientName: newBooking.clientName || 'Valued Client',
+      providerName: newBooking.providerName,
+      serviceName: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
+      bookingDate: format(new Date(newBooking.date), "PPP p"),
+      id: newBooking.id,
+      providerId: newBooking.providerId,
+    };
+    await sendAutomatedMessage(payload, draftNewBookingRequest, 'both');
 };
 
 
@@ -829,8 +826,8 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
 };
 
 
-export const addReview = (providerId: string, rating: number, comment: string) => {
-  const provider = providers.find(p => p.id === providerId);
+export const addReview = async (providerId: string, rating: number, comment: string) => {
+  const provider = getProviderById(providerId);
   if (!provider) return;
 
   const newReview: Review = {
@@ -849,6 +846,31 @@ export const addReview = (providerId: string, rating: number, comment: string) =
   // Recalculate average rating
   const totalRating = provider.reviews.reduce((acc, r) => acc + r.rating, 0);
   provider.rating = totalRating / provider.reviewCount;
+  
+  // Add notifications and AI messages
+  const payload = {
+      clientName: newReview.author,
+      providerName: provider.name,
+      rating: newReview.rating,
+      comment: newReview.comment,
+      providerId: provider.id,
+  };
+
+  addNotification('provider', {
+      icon: 'confirmation', // or a new 'review' icon
+      title: 'You have a new review!',
+      description: `Alex Ray left a ${rating}-star review.`,
+      bookingId: undefined, // Reviews are not tied to bookings yet
+  });
+
+  addNotification('client', {
+      icon: 'confirmation',
+      title: 'Review Submitted',
+      description: `Thank you for your feedback for ${provider.name}.`,
+      bookingId: undefined,
+  });
+
+  await sendAutomatedMessage(payload, draftNewReviewMessage, 'both');
 };
 
 export const getProviderById = (id: string) => providers.find(p => p.id === id);

@@ -9,3 +9,4 @@ import '@/ai/flows/draft-booking-approval.ts';
 import '@/ai/flows/draft-booking-cancellation.ts';
 import '@/ai/flows/draft-new-booking-request.ts';
 import '@/ai/flows/draft-booking-update.ts';
+import '@/ai/flows/draft-new-review.ts';
