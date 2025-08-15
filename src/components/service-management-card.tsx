@@ -142,7 +142,7 @@ export function ServiceManagementCard() {
         setIsEditDialogOpen(false);
         setServiceToEdit(null);
         setHasUnsavedChanges(true);
-    }
+    };
     
     const handleEditCategoryChange = (categoryId: string) => {
         setEditedCategory(categoryId);
