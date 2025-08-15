@@ -1,4 +1,7 @@
+'use client';
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,8 +15,53 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sprout } from "lucide-react";
 import Link from "next/link";
+import { signUp } from "@/lib/auth";
+import type { UserRole } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export default function SignupPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const { setRole: setGlobalRole } = useUserRole();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>('client');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await signUp({ name, email, password, role });
+
+    setIsLoading(false);
+
+    if (error) {
+      toast({
+        title: "Sign Up Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success!",
+      description: "Your account has been created.",
+    });
+
+    setGlobalRole(role);
+    
+    if (role === 'provider') {
+      router.push('/dashboard');
+    } else {
+      router.push('/client-dashboard');
+    }
+  };
+
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-md shadow-lg">
@@ -29,10 +77,10 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSignUp}>
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" required />
+              <Input id="name" placeholder="John Doe" required value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -41,15 +89,17 @@ export default function SignupPage() {
                 type="email"
                 placeholder="john.doe@example.com"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>I am a...</Label>
-              <RadioGroup defaultValue="client" className="grid grid-cols-2 gap-4">
+              <RadioGroup value={role} onValueChange={(value: UserRole) => setRole(value)} className="grid grid-cols-2 gap-4">
                 <div>
                   <RadioGroupItem value="client" id="client" className="peer sr-only" />
                   <Label
@@ -74,8 +124,8 @@ export default function SignupPage() {
                 </div>
               </RadioGroup>
             </div>
-            <Button type="submit" className="w-full" size="lg">
-              Sign Up
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? 'Signing Up...' : 'Sign Up'}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
