@@ -57,8 +57,9 @@ export const ProviderMessage = ({ message, activeConversation, view }: ProviderM
             <div className="flex flex-col gap-1 items-start">
                 <div className={cn(
                     "rounded-lg px-4 py-3 max-w-md",
-                    "bg-muted",
-                    message.isAi && 'bg-purple-100 dark:bg-purple-900/50 text-foreground'
+                    message.isAi 
+                        ? "bg-accent/10 border border-accent/20 text-foreground" 
+                        : "bg-muted"
                 )}>
                     <p className="text-sm">{message.text}</p>
                      {message.isAi && showButton && booking && (
@@ -70,7 +71,7 @@ export const ProviderMessage = ({ message, activeConversation, view }: ProviderM
                     )}
                 </div>
                 {message.isAi && (
-                    <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pl-2">
+                    <div className="flex items-center gap-1 text-xs text-accent pl-2">
                         <Sparkles className="w-3 h-3" />
                         <span>Sent by AI Assistant</span>
                     </div>
