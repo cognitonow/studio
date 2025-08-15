@@ -7,25 +7,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Star, MapPin } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { allBadges, getBadgeInfo } from '@/lib/badges';
 
 
 interface ExploreProviderCardProps {
   provider: Provider;
 }
-
-const badgeDescriptions: Record<string, string> = {
-    'Top Rated': 'This provider has consistently received high ratings from clients.',
-    'Quick Responder': 'This provider is known for their fast response times to inquiries.',
-    'Nail Art Pro': 'An expert in creating intricate and beautiful nail art designs.',
-    'Skincare Guru': 'A specialist in skincare, offering expert advice and treatments.',
-    '5-Star Safety': 'This provider adheres to the highest standards of safety and hygiene.',
-    'Client Favorite': 'A provider who is frequently booked and highly recommended by clients.',
-    'Color Whiz': 'A master of hair color, from subtle highlights to bold transformations.',
-    'Bridal Expert': 'Specializes in creating beautiful looks for weddings and bridal parties.',
-    'On-Location Pro': 'This provider offers services at your location for added convenience.',
-    'Pain Relief Pro': 'Specializes in therapies and treatments aimed at alleviating pain.',
-}
-
 
 export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
   const portfolioImages = provider.portfolio.slice(0, 3);
@@ -86,21 +73,29 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
             <p className="text-foreground/80 leading-relaxed line-clamp-3 h-[4.5rem]">{provider.bio}</p>
 
             <div className="flex flex-wrap gap-2">
-                {provider.badges.slice(0, 3).map(badge => (
-                    <Popover key={badge}>
-                        <PopoverTrigger asChild>
-                            <Badge variant="secondary" className="cursor-pointer">{badge}</Badge>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64">
-                            <div className="space-y-2">
-                                <h4 className="font-semibold">{badge}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                    {badgeDescriptions[badge] || 'This provider has earned a special badge.'}
-                                </p>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                ))}
+                {provider.badges.slice(0, 3).map(badgeName => {
+                    const badgeInfo = getBadgeInfo(badgeName);
+                    if (!badgeInfo) return null;
+                    
+                    return (
+                        <Popover key={badgeInfo.id}>
+                            <PopoverTrigger asChild>
+                                <Badge variant="secondary" className="cursor-pointer">{badgeInfo.name}</Badge>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <div className="space-y-2">
+                                    <h4 className="font-semibold flex items-center gap-2">
+                                        <badgeInfo.icon className="w-4 h-4 text-primary" />
+                                        {badgeInfo.name}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        {badgeInfo.description}
+                                    </p>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    )
+                })}
             </div>
         </CardContent>
     </Card>
