@@ -403,22 +403,34 @@ export const addMessage = (
 const sendAutomatedMessage = async (
     booking: Booking,
     messageGenerator: (input: any) => Promise<{ message: string }>,
-    metadata?: any,
+    metadata: any = {},
     recipient: 'client' | 'provider' | 'both' = 'client'
 ) => {
-    const serviceNames = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
-    const bookingDateTime = format(new Date(booking.date), "PPP p");
+    
+    // Default values
+    let payload: any = {
+        clientName: booking.clientName || 'Valued Client',
+        providerName: booking.providerName,
+        recipient: '',
+    };
+    
+    // Add fields based on the message type
+    if (messageGenerator === draftBookingUpdate) {
+         payload.newDate = format(new Date(booking.date), "PPP p");
+         payload.newServices = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
+         payload.updatedFields = metadata.updatedFields || [];
+    } else {
+        payload.serviceName = getServicesByIds(booking.serviceIds).map(s => s.name).join(', ');
+        payload.bookingDate = format(new Date(booking.date), "PPP p");
+    }
+
+    // Add any other metadata
+    payload = { ...payload, ...metadata };
 
     const sendMessage = async (to: 'client' | 'provider') => {
         try {
-            const response = await messageGenerator({
-                clientName: booking.clientName || 'Valued Client',
-                providerName: booking.providerName,
-                serviceName: serviceNames,
-                bookingDate: bookingDateTime,
-                recipient: to,
-                ...metadata,
-            });
+            payload.recipient = to;
+            const response = await messageGenerator(payload);
 
             if (to === 'client') {
                 const conversation = conversations.find(c => c.providerId === booking.providerId);
