@@ -70,7 +70,7 @@ export function ServiceManagementCard() {
             setCustomServiceName('');
             setPrice('');
             setDuration('');
-            setDescription('');
+setDescription('');
             setHasUnsavedChanges(true);
         }
     };
