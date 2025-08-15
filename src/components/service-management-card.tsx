@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
-import { services as allServices, serviceCategories, providerServices as initialProviderServices, saveProviderServices } from '@/lib/data';
+import { services as allServices, serviceCategories, initialProviderServices, saveProviderServices } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';

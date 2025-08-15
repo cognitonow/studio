@@ -219,7 +219,7 @@ let bookings: Booking[] = [
     { id: "7", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-3"], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: "Confirmed", clientName: 'Alex Ray', isPaid: true },
 ];
 
-export const providerServices: Service[] = providers.find(p => p.id === '3')?.services || [];
+export let providerServices: Service[] = providers.find(p => p.id === '3')?.services || [];
 
 let conversations: Conversation[] = [
   { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you have any questions!", time: "2h", unread: 0 },
@@ -792,11 +792,14 @@ export const saveProviderServices = (providerId: string, newServices: Service[])
         }
     });
 
-    // Update the provider's list of services
+    // Update the provider's list of services in the main providers array
     const providerIndex = providers.findIndex(p => p.id === providerId);
     if (providerIndex !== -1) {
         providers[providerIndex].services = newServices;
     }
+    
+    // Also update the exported providerServices for the current session
+    providerServices = newServices;
 };
 
 
