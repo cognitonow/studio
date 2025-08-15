@@ -4,9 +4,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { CreditCard, Sparkles } from "lucide-react"
-import type { Message, Conversation } from "@/lib/types"
+import type { Message, Conversation, Booking } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { getBookingById } from "@/lib/data"
 
 interface MessageProps {
     message: Message;
@@ -41,6 +42,12 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
 
 export const ProviderMessage = ({ message, activeConversation }: ProviderMessageProps) => {
     const view = activeConversation.clientId ? 'provider' : 'client';
+    
+    // Fetch the booking to check its status
+    const booking = message.bookingId ? getBookingById(message.bookingId) : null;
+
+    const showButton = booking && ['Pending', 'Review Order and Pay', 'Confirmed'].includes(booking.status);
+
     return (
         <div className="flex items-end gap-3">
             <Avatar className="w-8 h-8">
@@ -54,10 +61,10 @@ export const ProviderMessage = ({ message, activeConversation }: ProviderMessage
                     message.isAi && 'bg-purple-100 dark:bg-purple-900/50 text-foreground'
                 )}>
                     <p className="text-sm">{message.text}</p>
-                     {message.isAi && message.bookingId && (
+                     {message.isAi && showButton && booking && (
                         <Button asChild size="sm" className="mt-3">
-                            <Link href={`/booking/manage/${message.bookingId}`}>
-                                {view === 'client' ? 'Review & Pay' : 'Manage Booking'}
+                            <Link href={`/booking/manage/${booking.id}`}>
+                                {view === 'client' && booking.status === 'Review Order and Pay' ? 'Review & Pay' : 'Manage Booking'}
                             </Link>
                         </Button>
                     )}
