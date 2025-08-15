@@ -355,7 +355,6 @@ export function ServiceManagementCard() {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-
             </CardContent>
         </Card>
     );
