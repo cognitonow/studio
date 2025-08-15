@@ -8,7 +8,7 @@ import { useUserRole } from '@/hooks/use-user-role';
 // Provider Dashboard Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin, ThumbsUp, ThumbsDown } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight as ArrowRightIcon } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -35,7 +35,7 @@ import { ServiceManagementCard } from '@/components/service-management-card';
 import { StatusBadge } from '@/components/status-badge';
 
 // Client Dashboard Components
-import { ArrowRight, Heart, Repeat, Pencil } from "lucide-react"
+import { Heart, Repeat, Pencil } from "lucide-react"
 import { getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton";
@@ -136,7 +136,7 @@ function ProviderDashboard() {
 
   const currentBookings = bookings.filter(b => 
     new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay')
-  ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  ).sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime());
 
   const pastBookings = bookings.filter(b => 
       new Date(b.date) < today || b.status === 'Completed' || b.status === 'Cancelled'
@@ -411,12 +411,13 @@ interface ClientDashboardData {
     averageSpend: number;
     previousBookings: Booking[];
     favoriteProvider?: Provider;
-    activeBooking?: (Booking & { services: Service[] });
+    activeBookings: (Booking & { services: Service[] })[];
 }
 
 function ClientDashboard() {
   const [dashboardData, setDashboardData] = useState<ClientDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeBookingIndex, setActiveBookingIndex] = useState(0);
 
   useEffect(() => {
     const fetchData = () => {
@@ -435,12 +436,26 @@ function ClientDashboard() {
     };
   }, []);
   
+  const handleNextBooking = () => {
+    if (dashboardData && dashboardData.activeBookings.length > 1) {
+        setActiveBookingIndex((prevIndex) => (prevIndex + 1) % dashboardData.activeBookings.length);
+    }
+  }
+
+  const handlePrevBooking = () => {
+     if (dashboardData && dashboardData.activeBookings.length > 1) {
+        setActiveBookingIndex((prevIndex) => (prevIndex - 1 + dashboardData.activeBookings.length) % dashboardData.activeBookings.length);
+    }
+  }
+
+  const activeBooking = dashboardData?.activeBookings?.[activeBookingIndex];
+  
   const favoriteProviderPortfolio = dashboardData?.favoriteProvider?.portfolio.slice(0, 3);
   const mainImage = favoriteProviderPortfolio?.[0] ?? { url: 'https://placehold.co/600x400.png', dataAiHint: 'salon interior' };
   const subImage1 = favoriteProviderPortfolio?.[1] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'hair styling' };
   const subImage2 = favoriteProviderPortfolio?.[2] ?? { url: 'https://placehold.co/400x400.png', dataAiHint: 'makeup application' };
 
-  const activeBookingTotalCost = dashboardData?.activeBooking?.services.reduce((acc, service) => acc + service.price, 0) ?? 0;
+  const activeBookingTotalCost = activeBooking?.services.reduce((acc, service) => acc + service.price, 0) ?? 0;
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -511,7 +526,7 @@ function ClientDashboard() {
             <Button asChild className="w-full">
                 <Link href="/bookings">
                     View Booking History
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRightIcon className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
             </>
@@ -520,52 +535,70 @@ function ClientDashboard() {
         </Card>
 
         {/* Active Booking or Management Card */}
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1 flex flex-col">
             {isLoading ? (
                 <CardContent className="p-6">
                     <Skeleton className="h-12 w-3/4 mb-4" />
                     <Skeleton className="h-4 w-1/2 mb-6" />
                     <Skeleton className="h-10 w-full" />
                 </CardContent>
-            ) : dashboardData?.activeBooking ? (
+            ) : activeBooking ? (
                  <>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 font-headline">
-                            <Clock className="w-6 h-6 text-primary"/>
-                            Active Booking
-                        </CardTitle>
+                        <div className="flex justify-between items-center">
+                            <CardTitle className="flex items-center gap-2 font-headline">
+                                <Clock className="w-6 h-6 text-primary"/>
+                                Active Booking
+                            </CardTitle>
+                             {(dashboardData?.activeBookings?.length ?? 0) > 1 && (
+                                <div className="flex items-center gap-2">
+                                    <Button variant="ghost" size="icon" onClick={handlePrevBooking} className="h-7 w-7">
+                                        <ArrowLeft className="h-4 w-4" />
+                                    </Button>
+                                    <span className="text-sm text-muted-foreground">{activeBookingIndex + 1} / {dashboardData?.activeBookings.length}</span>
+                                     <Button variant="ghost" size="icon" onClick={handleNextBooking} className="h-7 w-7">
+                                        <ArrowRightIcon className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                         <CardDescription>Your next appointment is coming up!</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 flex-grow flex flex-col">
                         <div className="space-y-2">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="font-semibold text-lg">{dashboardData.activeBooking.providerName}</p>
-                                    <p className="text-muted-foreground text-sm">{dashboardData.activeBooking.services.map(s => s.name).join(', ')}</p>
+                                    <p className="font-semibold text-lg">{activeBooking.providerName}</p>
+                                    <p className="text-muted-foreground text-sm">{activeBooking.services.map(s => s.name).join(', ')}</p>
                                 </div>
-                                <StatusBadge status={dashboardData.activeBooking.status} />
+                                <StatusBadge status={activeBooking.status} />
                             </div>
                         </div>
                         <div className="text-sm space-y-1">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                                <span>{format(new Date(dashboardData.activeBooking.date), 'PPPP')}</span>
+                                <span>{format(new Date(activeBooking.date), 'PPPP')}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-muted-foreground" />
-                                <span>{format(new Date(dashboardData.activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(dashboardData.activeBooking.date), { addSuffix: true })})</span>
+                                <span>{format(new Date(activeBooking.date), 'p')} ({formatDistanceToNowStrict(new Date(activeBooking.date), { addSuffix: true })})</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <DollarSign className="w-4 h-4 text-muted-foreground" />
                                 <span className="font-semibold">${activeBookingTotalCost.toFixed(2)}</span>
                             </div>
                         </div>
-                        <Button asChild className="w-full">
-                            <Link href={`/booking/manage/${dashboardData.activeBooking.id}`}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Manage Booking
-                            </Link>
-                        </Button>
+                        <div className="mt-auto pt-4 space-y-2">
+                            <Button asChild className="w-full">
+                                <Link href={`/booking/manage/${activeBooking.id}`}>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Manage Booking
+                                </Link>
+                            </Button>
+                            <Button asChild variant="secondary" className="w-full">
+                                <Link href="/bookings">View All Bookings</Link>
+                            </Button>
+                        </div>
                     </CardContent>
                  </>
             ) : (

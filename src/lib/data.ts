@@ -216,6 +216,7 @@ let bookings: Booking[] = [
     { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey', isPaid: true },
     { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
     { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled', isPaid: false },
+    { id: "7", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-3"], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: "Confirmed", clientName: 'Alex Ray', isPaid: true },
 ];
 
 export let providerServices: Service[] = providers[2].services;
@@ -689,32 +690,25 @@ export const getBookedTimes = (providerId: string, date: Date): string[] => {
         .map(b => format(new Date(b.date), 'HH:mm'));
 };
 
-export const getActiveBooking = (): (Booking & { services: Service[] }) | undefined => {
-    const activeBookings = bookings.filter(b => 
-        (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && 
-        new Date(b.date) >= startOfDay(new Date())
-    );
+export const getActiveBookings = (): (Booking & { services: Service[] })[] => {
+    const allActiveBookings = bookings
+        .filter(b => 
+            (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && 
+            new Date(b.date) >= startOfDay(new Date())
+        )
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    // Prioritize bookings that require payment
-    const needsPayment = activeBookings.find(b => b.status === 'Review Order and Pay');
-    if (needsPayment) {
-        const bookingServices = getServicesByIds(needsPayment.serviceIds);
-        return { ...needsPayment, services: bookingServices };
-    }
+    // Prioritize bookings that require payment by moving them to the front
+    const needsPayment = allActiveBookings.filter(b => b.status === 'Review Order and Pay');
+    const others = allActiveBookings.filter(b => b.status !== 'Review Order and Pay');
     
-    // Otherwise, get the soonest upcoming booking
-    const upcomingBookings = activeBookings.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    if (upcomingBookings.length > 0) {
-        const nextBooking = upcomingBookings[0];
-        const bookingServices = getServicesByIds(nextBooking.serviceIds);
-        return {
-            ...nextBooking,
-            services: bookingServices,
-        }
-    }
-    return undefined;
-}
+    const sortedBookings = [...needsPayment, ...others];
+
+    return sortedBookings.map(booking => ({
+        ...booking,
+        services: getServicesByIds(booking.serviceIds),
+    }));
+};
 
 
 export const getClientDashboardData = () => {
@@ -735,7 +729,7 @@ export const getClientDashboardData = () => {
     // Mock logic for favorite and suggested providers
     const favoriteProvider = providers.find(p => p.isFavourite);
     const suggestedProvider = providers[1];
-    const activeBooking = getActiveBooking();
+    const activeBookings = getActiveBookings();
 
     return {
         totalBookings,
@@ -743,7 +737,7 @@ export const getClientDashboardData = () => {
         previousBookings,
         favoriteProvider,
         suggestedProvider,
-        activeBooking,
+        activeBookings,
     };
 }
 
@@ -784,4 +778,3 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
-
