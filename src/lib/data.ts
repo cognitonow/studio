@@ -1,4 +1,5 @@
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -262,15 +263,6 @@ let providerMessages: Message[] = [
 ];
 
 let clientNotifications: Notification[] = [
-     {
-      id: 1,
-      icon: 'payment',
-      title: 'Action Required - Review & Pay',
-      description: "Chloe's Hair Haven has approved your booking! Please review and complete payment to confirm your spot.",
-      time: '1 hour ago',
-      read: false,
-      bookingId: '5',
-    },
     {
       id: 2,
       icon: 'message',
