@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import Image from 'next/image';
@@ -18,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import type { Booking } from '@/lib/types';
 import { StatusBadge } from '@/components/status-badge';
+import { allBadges } from '@/lib/badges';
  
 export default function ProviderDetailPage() {
   const params = useParams();
@@ -60,11 +62,16 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {provider.badges.map(badge => (
-                  <Link href={`/?search=${encodeURIComponent(badge)}`} key={badge}>
-                    <Badge variant="secondary" className="transition-colors hover:bg-secondary/80">{badge}</Badge>
-                  </Link>
-                ))}
+                {provider.badges.map(providerBadge => {
+                  const badgeInfo = allBadges.find(b => b.name === providerBadge.name);
+                  if (!badgeInfo) return null;
+                  const levelInfo = badgeInfo.levels[providerBadge.level];
+                  return (
+                    <Badge key={badgeInfo.id} variant="secondary" className="transition-colors hover:bg-secondary/80">
+                      {levelInfo.name}
+                    </Badge>
+                  )
+                })}
               </div>
             </div>
           </div>

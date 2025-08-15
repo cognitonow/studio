@@ -1,5 +1,6 @@
 
 
+
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -42,6 +43,7 @@ import { getClientDashboardData } from "@/lib/data"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from '@/components/ui/separator';
+import { allBadges } from '@/lib/badges';
 
 
 // Provider Dashboard Component
@@ -210,7 +212,13 @@ function ProviderDashboard() {
                          <div className="space-y-2">
                             <Label>Your Badges</Label>
                              <div className="flex flex-wrap gap-2">
-                                {provider.badges.map(badge => <Badge key={badge} variant="secondary">{badge}</Badge>)}
+                                {provider.badges.map(providerBadge => {
+                                  const badgeInfo = allBadges.find(b => b.name === providerBadge.name);
+                                  if (!badgeInfo) return null;
+                                  return (
+                                    <Badge key={badgeInfo.id} variant="secondary">{badgeInfo.levels[providerBadge.level].name}</Badge>
+                                  )
+                                })}
                             </div>
                         </div>
                     </CardContent>
@@ -730,9 +738,13 @@ function ClientDashboard() {
                         {dashboardData.favoriteProvider.bio}
                     </p>
                      <div className="flex flex-wrap gap-2 mt-2">
-                        {dashboardData.favoriteProvider.badges.slice(0, 2).map(badge => (
-                            <Badge key={badge} variant="secondary">{badge}</Badge>
-                        ))}
+                        {dashboardData.favoriteProvider.badges.slice(0, 2).map(providerBadge => {
+                            const badgeInfo = allBadges.find(b => b.name === providerBadge.name);
+                            if (!badgeInfo) return null;
+                            return (
+                                <Badge key={badgeInfo.id} variant="secondary">{badgeInfo.levels[providerBadge.level].name}</Badge>
+                            )
+                        })}
                     </div>
                     <div className="mt-auto pt-4">
                         <Button asChild className="w-full">

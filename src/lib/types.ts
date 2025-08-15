@@ -1,5 +1,7 @@
 
 
+import type { BadgeLevel } from './badges';
+
 export type UserRole = 'guest' | 'client' | 'provider';
 
 export type User = {
@@ -8,6 +10,11 @@ export type User = {
     email: string;
     role: UserRole;
 };
+
+export type ProviderBadge = {
+  name: string;
+  level: BadgeLevel;
+}
 
 export type Provider = {
   id: string;
@@ -24,7 +31,7 @@ export type Provider = {
   portfolio: { id: string; url: string; dataAiHint: string }[];
   services: Service[];
   reviews: Review[];
-  badges: string[];
+  badges: ProviderBadge[];
   location: string;
   playlist: string;
 };

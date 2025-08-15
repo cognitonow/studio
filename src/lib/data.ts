@@ -1,6 +1,7 @@
 
 
-import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole } from './types';
+
+import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
@@ -146,7 +147,11 @@ export let providers: Provider[] = [
     ],
     services: services.filter(s => s.categoryId === 'nails'),
     reviews: [reviews[0]],
-    badges: ['Top Rated', 'Quick Responder', 'Nail Art Pro'],
+    badges: [
+      { name: 'Top Rated', level: 'Intermediate' }, 
+      { name: 'Quick Responder', level: 'Pro' }, 
+      { name: 'Nail Art Pro', level: 'Pro' }
+    ],
     location: 'New York, NY',
     playlist: 'top-rated-nails',
     isFavourite: true,
@@ -161,7 +166,11 @@ export let providers: Provider[] = [
     ],
     services: services.filter(s => s.categoryId === 'facials' || s.categoryId === 'medi-spa'),
     reviews: [reviews[1]],
-    badges: ['Skincare Guru', '5-Star Safety', 'Client Favorite'],
+    badges: [
+      { name: 'Skincare Guru', level: 'Intermediate' }, 
+      { name: '5-Star Safety', level: 'Pro' }, 
+      { name: 'Client Favorite', level: 'Intermediate' }
+    ],
     location: 'Miami, FL',
     playlist: 'rejuvenating-facials',
     isFavourite: false,
@@ -175,7 +184,10 @@ export let providers: Provider[] = [
     ],
     services: services.filter(s => s.categoryId === 'hair'),
     reviews: [reviews[3]],
-    badges: ['Color Whiz', 'Bridal Expert'],
+    badges: [
+        { name: 'Color Whiz', level: 'Intermediate' }, 
+        { name: 'Bridal Expert', level: 'New' }
+    ],
     location: 'Los Angeles, CA',
     playlist: 'wedding-specialists',
     isFavourite: true,
@@ -186,7 +198,10 @@ export let providers: Provider[] = [
     portfolio: [],
     services: services.filter(s => s.categoryId === 'makeup'),
     reviews: [],
-    badges: ['Bridal Expert', 'On-Location Pro'],
+    badges: [
+        { name: 'Bridal Expert', level: 'Intermediate' }, 
+        { name: 'On-Location Pro', level: 'Pro' }
+    ],
     location: 'Chicago, IL',
     playlist: 'wedding-specialists',
     isFavourite: false,
@@ -197,7 +212,10 @@ export let providers: Provider[] = [
     portfolio: [],
     services: services.filter(s => s.categoryId === 'body'),
     reviews: [],
-    badges: ['Pain Relief Pro', 'Top Rated'],
+    badges: [
+        { name: 'Pain Relief Pro', level: 'Pro' }, 
+        { name: 'Top Rated', level: 'Pro' }
+    ],
     location: 'Austin, TX',
     playlist: 'rejuvenating-facials',
     isFavourite: false,
@@ -275,7 +293,7 @@ let clientNotifications: Notification[] = [
       id: 4,
       icon: 'cancellation',
       title: 'Booking Cancelled',
-      description: `You have successfully cancelled your booking with The Relaxation Station.`,
+      description: `You have successfully cancelled your booking with ${"The Relaxation Station"}.`,
       time: '1 day ago',
       read: true,
       bookingId: 'some-other-id',

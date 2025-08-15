@@ -1,5 +1,6 @@
 
 
+
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Provider } from '@/lib/types';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Star, MapPin } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { allBadges, getBadgeInfo } from '@/lib/badges';
+import { allBadges } from '@/lib/badges';
 
 
 interface ExploreProviderCardProps {
@@ -73,23 +74,28 @@ export function ExploreProviderCard({ provider }: ExploreProviderCardProps) {
             <p className="text-foreground/80 leading-relaxed line-clamp-3 h-[4.5rem]">{provider.bio}</p>
 
             <div className="flex flex-wrap gap-2">
-                {provider.badges.slice(0, 3).map(badgeName => {
-                    const badgeInfo = getBadgeInfo(badgeName);
+                {provider.badges.slice(0, 3).map(providerBadge => {
+                    const badgeInfo = allBadges.find(b => b.name === providerBadge.name);
                     if (!badgeInfo) return null;
                     
+                    const levelInfo = badgeInfo.levels[providerBadge.level];
+
                     return (
                         <Popover key={badgeInfo.id}>
                             <PopoverTrigger asChild>
-                                <Badge variant="secondary" className="cursor-pointer">{badgeInfo.name}</Badge>
+                                <Badge variant="secondary" className="cursor-pointer">{levelInfo.name}</Badge>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
                                 <div className="space-y-2">
                                     <h4 className="font-semibold flex items-center gap-2">
                                         <badgeInfo.icon className="w-4 h-4 text-primary" />
-                                        {badgeInfo.name}
+                                        {levelInfo.name} ({badgeInfo.name})
                                     </h4>
                                     <p className="text-sm text-muted-foreground">
                                         {badgeInfo.description}
+                                    </p>
+                                     <p className="text-xs text-muted-foreground pt-2 border-t">
+                                        Current Level: <span className="font-bold">{providerBadge.level}</span>
                                     </p>
                                 </div>
                             </PopoverContent>
