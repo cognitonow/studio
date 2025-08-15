@@ -68,11 +68,36 @@ When a feature is not working as expected, follow this checklist:
 7.  **Verify Component Re-rendering:** Make sure the component displaying the data is re-rendering after the data changes (see State Management section above).
 8.  **Check Conditional Rendering Logic:** Review the logic that shows/hides UI elements. Is the `useUserRole` hook being used correctly? Is the logic checking the correct booking `status`?
 
-## 6. Testing & Quality Assurance Strategy
+## 6. Backend Functionality Overview
+
+The application's "backend" logic is contained within two main areas: data management functions and specialized AI flows. In total, there are approximately **38 primary backend functions**.
+
+### 6.1. Data Management (`src/lib/data.ts`)
+
+This file acts as the application's mock database and contains roughly **30 functions** for CRUD (Create, Read, Update, Delete) operations.
+
+- **Core Functions:** `getBookings`, `getProviderById`, `getServicesByIds`, `getNotifications`, `getConversations`, `addBooking`, `updateBooking`, `updateBookingStatus`, `addMessage`, `addNotification`.
+- **Dashboard Functions:** `getClientDashboardData`, `getProviderBookings`, `getClientHistoryByName`.
+- **Helper Functions:** `getFeaturedProviders`, `getBookedTimes`, `getUnreadMessageCount`.
+
+### 6.2. AI Flows (`src/ai/flows/`)
+
+There are **8 distinct AI flows**, each handling a specific server-side task with Genkit.
+
+- `draftNewBookingRequest`: Notifies a provider of a new booking request.
+- `draftBookingApproval`: Crafts the message sent when a booking is approved.
+- `draftBookingConfirmation`: Confirms a booking after payment.
+- `draftPostBookingMessage`: Sends a follow-up message after an appointment.
+- `draftBookingUpdate`: Informs users about changes to a booking.
+- `draftBookingCancellation`: Handles cancellation notifications.
+- `draftChatResponse`: Assists users in drafting manual chat messages.
+- `suggestSkillBadges`: Analyzes provider performance to suggest new badges.
+
+## 7. Testing & Quality Assurance Strategy
 
 To ensure a stable and bug-free application, every major feature change should be validated against the following manual testing scenarios.
 
-### 6.1. User Role Testing
+### 7.1. User Role Testing
 
 - **Objective:** Verify that the UI and available actions are correctly tailored to the user's role.
 - **Procedure:**
@@ -81,7 +106,7 @@ To ensure a stable and bug-free application, every major feature change should b
     3.  **As Provider:** Navigate to all pages (`/dashboard`, `/messages`). Confirm that you can see provider-specific UI and that client-specific pages like `/discover` are not in your primary navigation.
     4.  Verify that action buttons (e.g., "Approve Request" vs. "Make Payment") are correctly shown/hidden based on the role.
 
-### 6.2. End-to-End Booking Flow Testing
+### 7.2. End-to-End Booking Flow Testing
 
 - **Objective:** Test the entire lifecycle of a booking from creation to completion, verifying every status change.
 - **Procedure:**
@@ -91,7 +116,7 @@ To ensure a stable and bug-free application, every major feature change should b
     4.  **Complete (Provider):** As the provider, find the `Confirmed` booking and mark it as `Completed`.
     5.  **Cancel (Client/Provider):** Test cancellation at different stages (e.g., cancel a `Pending` request, cancel a `Confirmed` booking).
 
-### 6.3. Notification and AI Message Verification
+### 7.3. Notification and AI Message Verification
 
 - **Objective:** Ensure every critical action triggers the correct notifications and AI-generated chat messages for all relevant parties.
 - **Procedure:**
@@ -101,7 +126,7 @@ To ensure a stable and bug-free application, every major feature change should b
         - The correct, role-specific AI message appears in the chat history for **both** the client and the provider.
         - The action button within the AI message (e.g., "Manage Booking") is only visible when the booking status is active (`Pending`, `Review Order and Pay`, `Confirmed`).
 
-### 6.4. UI and Logic Consistency Checks
+### 7.4. UI and Logic Consistency Checks
 
 - **Objective:** Verify that UI elements and logic are consistent across the application.
 - **Procedure:**
@@ -109,7 +134,7 @@ To ensure a stable and bug-free application, every major feature change should b
     2.  **Action Buttons:** Confirm that button labels accurately reflect their action (e.g., "View Details" for past bookings, "Cancel Request" for pending ones).
     3.  **Date Logic:** Verify that the logic for splitting "Current" and "Past" bookings works correctly on both the client and provider dashboards, considering both the booking's `date` and `status`.
 
-### 6.5. Pathing and Navigation
+### 7.5. Pathing and Navigation
 
 - **Objective:** Ensure all links and buttons navigate to the correct page without errors.
 - **Procedure:**
