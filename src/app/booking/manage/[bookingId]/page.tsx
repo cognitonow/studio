@@ -3,14 +3,15 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { providers, getBookingById, updateBooking, getServicesByIds, updateBookingStatus, services as allServices } from '@/lib/data';
+import { providers, getBookingById, updateBooking, getServicesByIds, updateBookingStatus, services as allServices, saveProviderServices } from '@/lib/data';
 import type { Service, Booking } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
 import { Calendar as CalendarIcon, Clock, PlusCircle, Trash2, XCircle, Save, ArrowLeft, CreditCard, User, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
-import { AddServiceDialog } from '@/components/manage-booking/add-service-dialog';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+import { AddServiceDialogContent } from '@/components/manage-booking/add-service-dialog';
 import { CancelBookingDialog } from '@/components/manage-booking/cancel-booking-dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -78,6 +79,7 @@ export default function ManageBookingPage() {
   const [booking, setBooking] = useState<Booking | null | undefined>(undefined);
   const [bookedServices, setBookedServices] = useState<Service[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState(false);
   
   useEffect(() => {
     const fetchBookingData = () => {
@@ -118,6 +120,23 @@ export default function ManageBookingPage() {
     if (!bookedServices.find(s => s.id === service.id)) {
       setBookedServices(prev => [...prev, service]);
     }
+    setIsAddServiceDialogOpen(false);
+  };
+  
+  const handleAddCustomServiceToBooking = (name: string, price: number, duration: number) => {
+      const newCustomService: Service = {
+        id: `custom-${Date.now()}`,
+        categoryId: 'custom', 
+        name: name,
+        description: 'Custom service added for this booking.',
+        price: price,
+        duration: duration,
+      };
+      
+      // Since this service is booking-specific, we don't save it to the global list here
+      // But we do add it to the current booking's state.
+      setBookedServices(prev => [...prev, newCustomService]);
+      setIsAddServiceDialogOpen(false);
   };
 
   const handleRemoveService = (serviceId: string) => {
@@ -126,10 +145,18 @@ export default function ManageBookingPage() {
   
   const handleSaveChanges = () => {
     if (booking && selectedDate) {
+      
+      // Persist any new custom services to the main list before updating the booking
+      const newCustomServices = bookedServices.filter(s => s.id.startsWith('custom-'));
+      if(newCustomServices.length > 0) {
+        saveProviderServices(provider.id, [...provider.services, ...newCustomServices]);
+      }
+
       updateBooking(booking.id, { 
           date: selectedDate.toISOString(),
           serviceIds: bookedServices.map(s => s.id),
       }, booking);
+      
       toast({
         title: "Booking Updated!",
         description: "The appointment details have been successfully saved.",
@@ -260,15 +287,19 @@ export default function ManageBookingPage() {
                 </div>
                 <Separator className="my-6" />
                 {canProviderAmend && (
-                    <AddServiceDialog 
-                    providerServices={allServices.filter(s => s.categoryId === provider.services[0].categoryId)}
-                    onAddService={handleAddService}
-                    >
-                    <Button variant="outline" className="w-full">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Another Service
-                    </Button>
-                    </AddServiceDialog>
+                    <Dialog open={isAddServiceDialogOpen} onOpenChange={setIsAddServiceDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Add Another Service
+                            </Button>
+                        </DialogTrigger>
+                        <AddServiceDialogContent 
+                            providerServices={provider.services}
+                            onAddService={handleAddService}
+                            onAddCustomService={handleAddCustomServiceToBooking}
+                        />
+                    </Dialog>
                 )}
                 
                 <div className="mt-6 text-right">
@@ -381,3 +412,5 @@ export default function ManageBookingPage() {
     </div>
   );
 }
+
+    

@@ -21,15 +21,13 @@ import { Separator } from "../ui/separator";
 interface AddServiceDialogContentProps {
   providerServices: Service[];
   onAddService: (service: Service) => void;
-  onAddCustomService: (name: string, price: number, duration: number) => void;
-  onClose: () => void;
+  onAddCustomService?: (name: string, price: number, duration: number) => void;
 }
 
 export function AddServiceDialogContent({ 
   providerServices, 
   onAddService, 
-  onAddCustomService,
-  onClose,
+  onAddCustomService = () => {},
 }: AddServiceDialogContentProps) {
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
@@ -42,13 +40,11 @@ export function AddServiceDialogContent({
         setCustomName('');
         setCustomPrice('');
         setCustomDuration('');
-        onClose();
     }
   }
 
   const handleAddPredefinedClick = (service: Service) => {
     onAddService(service);
-    onClose();
   }
 
   return (
@@ -76,10 +72,12 @@ export function AddServiceDialogContent({
                   <Input id="custom-duration" type="number" value={customDuration} onChange={(e) => setCustomDuration(e.target.value)} placeholder="15" />
               </div>
           </div>
-          <Button onClick={handleAddCustomClick} disabled={!customName || !customPrice || !customDuration}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Custom Service
-          </Button>
+          <DialogClose asChild>
+            <Button onClick={handleAddCustomClick} disabled={!customName || !customPrice || !customDuration}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Custom Service
+            </Button>
+          </DialogClose>
       </div>
       
       <Separator />
@@ -88,19 +86,23 @@ export function AddServiceDialogContent({
       <ScrollArea className="h-60">
           <div className="space-y-4 pr-6">
           {providerServices.map(service => (
-              <div key={service.id} className="flex justify-between items-center p-3 rounded-md border">
-                   <div>
-                      <p className="font-semibold">{service.name}</p>
-                      <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
+              <DialogClose asChild key={service.id}>
+                <div className="flex justify-between items-center p-3 rounded-md border">
+                    <div>
+                        <p className="font-semibold">{service.name}</p>
+                        <p className="text-sm text-muted-foreground">${service.price} - {service.duration} min</p>
                     </div>
                     <Button size="sm" onClick={() => handleAddPredefinedClick(service)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add
                     </Button>
-              </div>
+                </div>
+              </DialogClose>
           ))}
           </div>
       </ScrollArea>
     </DialogContent>
   )
 }
+
+    
