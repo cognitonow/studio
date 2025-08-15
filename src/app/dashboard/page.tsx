@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds, providers } from '@/lib/data';
+import { getProviderBookings, updateBookingStatus, getServicesByIds, providers, getActiveBookings } from '@/lib/data';
 import type { Booking, Provider, Service } from '@/lib/types';
 import { format, startOfDay, formatDistanceToNowStrict } from 'date-fns';
 import Link from 'next/link';
@@ -82,7 +82,6 @@ function ProviderDashboard() {
             if (newSelection.size < 3) {
                 newSelection.add(imageId);
             }
-        }
         return newSelection;
     });
   };
@@ -574,7 +573,7 @@ function ClientDashboard() {
                                 <StatusBadge status={activeBooking.status} />
                             </div>
                         </div>
-                        <div className="text-sm space-y-1">
+                        <div className="text-sm space-y-1 flex-grow">
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4 text-muted-foreground" />
                                 <span>{format(new Date(activeBooking.date), 'PPPP')}</span>
@@ -595,13 +594,11 @@ function ClientDashboard() {
                                     Manage Booking
                                 </Link>
                             </Button>
+                            <Button asChild variant="secondary" className="w-full">
+                                <Link href="/bookings">View All Bookings</Link>
+                            </Button>
                         </div>
                     </CardContent>
-                    <div className="p-6 pt-0">
-                         <Button asChild variant="secondary" className="w-full">
-                            <Link href="/bookings">View All Bookings</Link>
-                        </Button>
-                    </div>
                  </>
             ) : (
                 <>
@@ -746,3 +743,5 @@ export default function DashboardPage() {
     
     return <ClientDashboard />;
 }
+
+    
