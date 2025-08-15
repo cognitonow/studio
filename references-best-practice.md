@@ -28,9 +28,9 @@ All automated AI messages are triggered from within `src/lib/data.ts`. Here is a
 | Event/Trigger | File & Function | AI Flow Used | Description |
 | :--- | :--- | :--- | :--- |
 | **New Booking Request** | `addBooking` | `draftNewBookingRequest` | When a **client** submits a new booking request, an AI message is sent to the **provider** informing them of the request. |
-| **Booking Approved** | `updateBookingStatus` | `draftBookingApproval` | When a **provider** approves a 'Pending' booking, an AI message is sent to the **client** asking them to review and pay. |
-| **Booking Confirmed** | `updateBookingStatus` | `draftBookingConfirmation` | After a **client** completes payment, a confirmation message is sent to them. |
-| **Booking Completed** | `updateBookingStatus` | `draftPostBookingMessage` | When a **provider** marks a booking as 'Completed', a follow-up thank you message is sent to the **client**. |
+| **Booking Approved** | `updateBookingStatus` | `draftBookingApproval` | When a **provider** approves a 'Pending' booking, an AI message is sent to the **client** asking them to review and pay. A confirmation is also sent to the **provider**. |
+| **Booking Confirmed** | `updateBookingStatus` | `draftBookingConfirmation` | After a **client** completes payment, a confirmation message is sent to them, and a notification message is sent to the **provider**. |
+| **Booking Completed** | `updateBookingStatus` | `draftPostBookingMessage` | When a **provider** marks a booking as 'Completed', a follow-up thank you message is sent to the **client**, and a confirmation is sent to the **provider**. |
 | **Booking Updated** | `updateBooking` | `draftBookingUpdate` | When a **provider** changes the date or services of a booking, separate, tailored AI messages are sent to **both** the client and the provider detailing the changes. |
 | **Booking Cancelled** | `updateBookingStatus` | `draftBookingCancellation` | When a booking is cancelled by **either** the client or the provider, an AI message is sent to the other party informing them of the cancellation. The message content changes based on who initiated the cancellation. |
 
