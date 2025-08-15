@@ -18,6 +18,7 @@ import { getBookings, getServicesByIds } from "@/lib/data"
 import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
 import { CreditCard } from "lucide-react"
+import { StatusBadge } from "@/components/status-badge"
 
 export default function ClientBookingsPage() {
   const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
@@ -72,23 +73,6 @@ export default function ClientBookingsPage() {
     }
   }
 
-  const getStatusBadge = (status: Booking['status']) => {
-    switch (status) {
-      case 'Pending':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-      case 'Review Order and Pay':
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Payment Required</Badge>;
-      case 'Confirmed':
-        return <Badge className="bg-blue-100 text-blue-800">Confirmed</Badge>;
-      case 'Completed':
-        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
-      case 'Cancelled':
-        return <Badge variant="destructive">Cancelled</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
-
   if (!isMounted) {
     return null; // or a loading skeleton
   }
@@ -125,7 +109,7 @@ export default function ClientBookingsPage() {
                       <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        {getStatusBadge(booking.status)}
+                        <StatusBadge status={booking.status} />
                       </TableCell>
                       <TableCell className="text-right">
                           {renderBookingActions(booking)}
@@ -165,7 +149,7 @@ export default function ClientBookingsPage() {
                       <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        {getStatusBadge(booking.status)}
+                        <StatusBadge status={booking.status} />
                       </TableCell>
                       <TableCell className="text-right">
                           <Button variant="secondary" size="sm" asChild>

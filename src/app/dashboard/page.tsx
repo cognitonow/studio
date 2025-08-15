@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BadgeProgress } from '@/components/badge-progress';
 import { ServiceManagementCard } from '@/components/service-management-card';
+import { StatusBadge } from '@/components/status-badge';
   
 
 export default function ProviderDashboardPage() {
@@ -74,23 +75,6 @@ export default function ProviderDashboardPage() {
         }
         return newSelection;
     });
-  };
-
-  const getStatusBadge = (status: Booking['status']) => {
-    switch (status) {
-      case 'Pending':
-        return <Badge variant="secondary">Pending</Badge>;
-      case 'Review Order and Pay':
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">Awaiting Payment</Badge>;
-      case 'Confirmed':
-        return <Badge className="bg-blue-500 text-white hover:bg-blue-600">Confirmed</Badge>;
-      case 'Completed':
-        return <Badge className="bg-green-500 text-white hover:bg-green-600">Completed</Badge>;
-      case 'Cancelled':
-        return <Badge variant="destructive">Cancelled</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
   };
 
   const getBookingActions = (booking: Booking) => {
@@ -277,7 +261,7 @@ export default function ProviderDashboardPage() {
                       <TableCell>{renderServices(booking.serviceIds)}</TableCell>
                       <TableCell>{format(new Date(booking.date), "PPP p")}</TableCell>
                       <TableCell>
-                        {getStatusBadge(booking.status)}
+                        <StatusBadge status={booking.status} view="provider" />
                       </TableCell>
                        <TableCell className="text-right">
                         {getBookingActions(booking)}

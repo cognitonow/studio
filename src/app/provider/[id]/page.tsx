@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import type { Booking } from '@/lib/types';
+import { StatusBadge } from '@/components/status-badge';
  
 export default function ProviderDetailPage() {
   const params = useParams();
@@ -188,7 +189,7 @@ export default function ProviderDetailPage() {
                         <TableRow key={booking.id}>
                           <TableCell className="font-medium">{booking.serviceIds.join(', ')}</TableCell>
                           <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
-                          <TableCell><Badge>{booking.status}</Badge></TableCell>
+                          <TableCell><StatusBadge status={booking.status} /></TableCell>
                         </TableRow>
                       )) : (
                         <TableRow>

@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { User, Star, Repeat, DollarSign } from "lucide-react"
 import { format } from 'date-fns';
 import { getClientHistoryByName, getServicesByIds } from "@/lib/data";
+import { StatusBadge } from "../status-badge";
 
 interface ClientDetailsProps {
     clientName: string;
@@ -65,7 +66,7 @@ export function ClientDetails({ clientName }: ClientDetailsProps) {
                         <TableRow key={booking.id}>
                             <TableCell className="font-medium">{getServicesByIds(booking.serviceIds).map(s => s.name).join(', ')}</TableCell>
                             <TableCell>{format(new Date(booking.date), 'dd MMM yyyy')}</TableCell>
-                            <TableCell><Badge variant="secondary">{booking.status}</Badge></TableCell>
+                            <TableCell><StatusBadge status={booking.status} view="provider" /></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
