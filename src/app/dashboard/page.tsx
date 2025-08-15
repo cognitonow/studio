@@ -54,14 +54,16 @@ function ProviderDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // We need to wait for the user object to be available from the store
     if (user) {
       const currentProvider = getProviderByUserId(user.id);
       if (currentProvider) {
         setProvider(currentProvider);
         setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
       }
+       // We can stop loading once we've checked for a provider
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [user]);
 
   useEffect(() => {
