@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import React from 'react';
 import { getNotifications, getUnreadMessageCount } from '@/lib/data';
-import { useUserRole } from '@/hooks/use-user-role';
-import type { UserRole } from '@/hooks/use-user-role';
+import { useUserStore } from '@/hooks/use-user-store';
+import type { UserRole } from '@/lib/types';
+
 
 function getNavLinks(role: UserRole) {
     const navConfig = {
@@ -65,8 +66,10 @@ function getNavLinks(role: UserRole) {
             ]
         }
     };
-
-    return navConfig[role] || navConfig.guest;
+    
+    // If the user is logged in, they can access all roles, otherwise only guest view.
+    const user = useUserStore.getState().user;
+    return navConfig[user ? role : 'guest'] || navConfig.guest;
 }
 
 
@@ -111,7 +114,7 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 export function Header() {
   const [isMounted, setIsMounted] = React.useState(false);
-  const { role: userRole, setRole: setUserRole } = useUserRole();
+  const { user, role: userRole, setRole: setUserRole } = useUserStore();
   const [hasUnread, setHasUnread] = React.useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = React.useState(false);
   
@@ -131,7 +134,6 @@ export function Header() {
 
       checkUnreads();
       
-      // Check for new messages every 5 seconds, and on role change
       const interval = setInterval(checkUnreads, 5000); 
 
       return () => clearInterval(interval);
@@ -152,36 +154,38 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1">
-                    {isMounted ? roleLabels[userRole] : roleLabels['client']}
-                    <ChevronDown className="h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuLabel>Switch View</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setUserRole('guest')}>
-                    <Link href="/" className="flex items-center w-full">
-                        <Globe className="mr-2 h-4 w-4"/>
-                        Guest View
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setUserRole('client')}>
-                    <Link href="/discover" className="flex items-center w-full">
-                        <Eye className="mr-2 h-4 w-4"/>
-                        Client View
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setUserRole('provider')}>
-                    <Link href="/dashboard" className="flex items-center w-full">
-                        <Briefcase className="mr-2 h-4 w-4"/>
-                        Provider View
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1">
+                      {isMounted ? roleLabels[userRole] : roleLabels['client']}
+                      <ChevronDown className="h-4 w-4" />
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                  <DropdownMenuLabel>Switch View</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setUserRole('guest')}>
+                      <Link href="/" className="flex items-center w-full">
+                          <Globe className="mr-2 h-4 w-4"/>
+                          Guest View (Log Out)
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setUserRole('client')}>
+                      <Link href="/discover" className="flex items-center w-full">
+                          <Eye className="mr-2 h-4 w-4"/>
+                          Client View
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setUserRole('provider')}>
+                      <Link href="/dashboard" className="flex items-center w-full">
+                          <Briefcase className="mr-2 h-4 w-4"/>
+                          Provider View
+                      </Link>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Mobile Menu Trigger */}

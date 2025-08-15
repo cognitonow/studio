@@ -2,14 +2,50 @@
 'use client';
 
 import { create } from 'zustand';
-import type { User } from '@/lib/types';
+import type { User, UserRole } from '@/lib/types';
+import { getProviderByUserId } from '@/lib/data';
 
 interface UserState {
   user: User | null;
-  setUser: (user: User | null) => void;
+  role: UserRole;
+  isLoading: boolean;
+  login: (user: User) => void;
+  logout: () => void;
+  setRole: (role: UserRole) => void;
+  initialize: () => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
+export const useUserStore = create<UserState>((set, get) => ({
   user: null,
-  setUser: (user) => set({ user }),
+  role: 'client',
+  isLoading: true,
+  login: (user: User) => {
+    let role: UserRole = 'client';
+    // If the user has a provider profile, set their role to provider
+    if (getProviderByUserId(user.id)) {
+      role = 'provider';
+    } else {
+      role = user.role;
+    }
+    
+    set({ user, role, isLoading: false });
+    // In a real app, you might persist this to localStorage
+  },
+  logout: () => {
+    set({ user: null, role: 'guest', isLoading: false });
+  },
+  setRole: (role: UserRole) => {
+     // When manually switching roles for demo purposes, if switching to guest, log out.
+    if (role === 'guest') {
+      set({ user: null, role: 'guest' });
+    } else {
+      set({ role });
+    }
+  },
+  initialize: () => {
+    // In a real app, you would check for a token in localStorage or a cookie
+    // For this mock app, we'll just initialize to a default state.
+    // The login function will handle setting the correct user and role.
+    set({ isLoading: false });
+  },
 }));

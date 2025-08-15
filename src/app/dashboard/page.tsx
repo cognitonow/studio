@@ -1,9 +1,7 @@
 
-
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useUserRole } from '@/hooks/use-user-role';
 import { useUserStore } from '@/hooks/use-user-store';
 
 
@@ -54,23 +52,22 @@ function ProviderDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // We need to wait for the user object to be available from the store
     if (user) {
       const currentProvider = getProviderByUserId(user.id);
       if (currentProvider) {
         setProvider(currentProvider);
         setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
+        setBookings(getProviderBookings(currentProvider.id));
       }
-       // We can stop loading once we've checked for a provider
       setIsLoading(false);
     }
   }, [user]);
-
+  
   useEffect(() => {
+    if (!provider) return;
+    
     const fetchBookings = () => {
-      if (provider) {
-        setBookings(getProviderBookings(provider.id));
-      }
+      setBookings(getProviderBookings(provider.id));
     };
     
     fetchBookings();
@@ -786,7 +783,16 @@ function ClientDashboard() {
 
 
 export default function DashboardPage() {
-    const { role } = useUserRole();
+    const { role, isLoading, user } = useUserStore();
+
+    if (isLoading) {
+        return <div className="container mx-auto py-12 px-4 text-center">Loading...</div>;
+    }
+
+    if (!user) {
+        // You can redirect to login or show a message
+        return <ClientDashboard />; // Default to client/guest view if not logged in
+    }
 
     if (role === 'provider') {
         return <ProviderDashboard />;

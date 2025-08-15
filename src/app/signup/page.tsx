@@ -19,14 +19,12 @@ import Link from "next/link";
 import { signUp } from "@/lib/auth";
 import type { User, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { useUserRole } from "@/hooks/use-user-role";
 import { useUserStore } from "@/hooks/use-user-store";
 
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setRole: setGlobalRole } = useUserRole();
-  const { setUser: setGlobalUser } = useUserStore();
+  const { login } = useUserStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -55,9 +53,9 @@ export default function SignupPage() {
       title: "Success!",
       description: "Your account has been created.",
     });
-
-    setGlobalRole(role);
-    setGlobalUser(user as User);
+    
+    // Use the login function from the store
+    login(user as User);
     
     router.push('/dashboard');
   };
