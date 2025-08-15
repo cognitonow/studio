@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -21,14 +20,8 @@ export function ServiceManagementCard() {
     const { toast } = useToast();
     const [providerServices, setProviderServices] = useState<Service[]>([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState(false);
     
-    // State for the "Add" form
-    const [addCategory, setAddCategory] = useState('');
-    const [addServiceId, setAddServiceId] = useState('');
-    const [addPrice, setAddPrice] = useState<number | string>('');
-    const [addDuration, setAddDuration] = useState<number | string>('');
-    const [addDescription, setAddDescription] = useState<string>('');
-
     // State for the "Edit" dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [serviceToEdit, setServiceToEdit] = useState<Service | null>(null);
@@ -45,33 +38,19 @@ export function ServiceManagementCard() {
             setProviderServices([...provider.services]);
         }
     }, []);
-
-    const resetAddForm = () => {
-        setAddCategory('');
-        setAddServiceId('');
-        setAddPrice('');
-        setAddDuration('');
-        setAddDescription('');
-    };
     
     const handleAddPredefinedService = (serviceToAdd: Service) => {
-         if (providerServices.find(s => s.id === serviceToAdd.id)) return;
+        if (providerServices.find(s => s.id === serviceToAdd.id)) return;
 
         setProviderServices(prev => [...prev, serviceToAdd].sort((a,b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
-        resetAddForm();
+        setIsAddServiceDialogOpen(false);
     };
-    
-    const handleAddService = (serviceId: string) => {
-        const baseService = allServices.find(s => s.id === serviceId);
-        if (!baseService) return;
-        handleAddPredefinedService(baseService);
-    }
 
     const handleAddCustomServiceToState = (name: string, price: number, duration: number) => {
         const newCustomService: Service = {
             id: `custom-${Date.now()}`,
-            categoryId: 'custom', // Or derive from a selection if available
+            categoryId: 'custom', 
             name: name,
             description: 'Custom service added by provider.',
             price: price,
@@ -79,6 +58,7 @@ export function ServiceManagementCard() {
         };
         setProviderServices(prev => [...prev, newCustomService].sort((a, b) => a.name.localeCompare(b.name)));
         setHasUnsavedChanges(true);
+        setIsAddServiceDialogOpen(false);
     };
 
     const handleRemoveService = (serviceId: string) => {
@@ -198,6 +178,8 @@ export function ServiceManagementCard() {
                           providerServices={allServices.filter(s => s.categoryId === 'hair' && !providerServices.some(ps => ps.id === s.id))}
                           onAddService={handleAddPredefinedService}
                           onAddCustomService={handleAddCustomServiceToState}
+                          open={isAddServiceDialogOpen}
+                          onOpenChange={setIsAddServiceDialogOpen}
                         >
                              <Button variant="secondary">
                                 <PlusCircle className="mr-2 h-4 w-4" />

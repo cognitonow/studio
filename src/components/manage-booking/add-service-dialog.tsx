@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -24,11 +23,19 @@ interface AddServiceDialogProps {
   children: React.ReactNode;
   providerServices: Service[];
   onAddService: (service: Service) => void;
-  onAddCustomService?: (name: string, price: number, duration: number) => void;
+  onAddCustomService: (name: string, price: number, duration: number) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function AddServiceDialog({ children, providerServices, onAddService, onAddCustomService = () => {} }: AddServiceDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function AddServiceDialog({ 
+  children, 
+  providerServices, 
+  onAddService, 
+  onAddCustomService,
+  open,
+  onOpenChange
+}: AddServiceDialogProps) {
   const [customName, setCustomName] = useState('');
   const [customPrice, setCustomPrice] = useState('');
   const [customDuration, setCustomDuration] = useState('');
@@ -40,18 +47,16 @@ export function AddServiceDialog({ children, providerServices, onAddService, onA
         setCustomName('');
         setCustomPrice('');
         setCustomDuration('');
-        setIsOpen(false);
     }
   }
 
   const handleAddPredefinedClick = (service: Service) => {
     onAddService(service);
-    setIsOpen(false);
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
         {children}
       </DialogTrigger>
       <DialogContent className="max-w-md">
