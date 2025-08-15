@@ -27,9 +27,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'This provider has consistently received high ratings from clients.',
     category: 'Reputation',
     levels: {
-      'New': { name: 'Rising Star', rules: 'Maintain a 4.5+ rating over 10 reviews.' },
-      'Intermediate': { name: 'Top Rated', rules: 'Maintain a 4.8+ rating over 20 reviews.' },
-      'Pro': { name: 'Five-Star Legend', rules: 'Maintain a 4.9+ rating over 50 reviews.' }
+      'New': { name: 'Rising Star', rules: 'Maintain a 4.5+ rating over 5 reviews.' },
+      'Intermediate': { name: 'Top Rated', rules: 'Maintain a 4.8+ rating over 10 reviews.' },
+      'Pro': { name: 'Five-Star Legend', rules: 'Maintain a 4.9+ rating over 25 reviews.' }
     }
   },
   {
@@ -51,9 +51,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A provider who is frequently booked and highly recommended by clients.',
     category: 'Reputation',
     levels: {
-      'New': { name: 'Go-To Pro', rules: 'Receive 5 "would book again" recommendations.' },
-      'Intermediate': { name: 'Client Favorite', rules: 'Receive 15 "would book again" recommendations.' },
-      'Pro': { name: 'Community Pillar', rules: 'Receive 50 "would book again" recommendations.' }
+      'New': { name: 'Go-To Pro', rules: 'Receive 3 "would book again" recommendations.' },
+      'Intermediate': { name: 'Client Favorite', rules: 'Receive 8 "would book again" recommendations.' },
+      'Pro': { name: 'Community Pillar', rules: 'Receive 25 "would book again" recommendations.' }
     }
   },
     {
@@ -64,8 +64,8 @@ export const allBadges: BadgeInfo[] = [
     category: 'Reputation',
     levels: {
       'New': { name: 'Fresh Talent', rules: 'Automatically assigned to new providers.' },
-      'Intermediate': { name: 'Established Pro', rules: 'Complete your first 10 bookings.' },
-      'Pro': { name: 'Seasoned Veteran', rules: 'Complete 100 bookings.' }
+      'Intermediate': { name: 'Established Pro', rules: 'Complete your first 5 bookings.' },
+      'Pro': { name: 'Seasoned Veteran', rules: 'Complete 50 bookings.' }
     }
   },
   {
@@ -88,8 +88,8 @@ export const allBadges: BadgeInfo[] = [
     category: 'Service Quality',
      levels: {
       'New': { name: 'Mobile Maven', rules: 'Successfully complete 1 on-location booking.' },
-      'Intermediate': { name: 'On-Location Pro', rules: 'Successfully complete 10 on-location bookings.'},
-      'Pro': { name: 'Traveling Pro', rules: 'Complete 25 on-location bookings across multiple districts.' }
+      'Intermediate': { name: 'On-Location Pro', rules: 'Successfully complete 5 on-location bookings.'},
+      'Pro': { name: 'Traveling Pro', rules: 'Complete 13 on-location bookings across multiple districts.' }
     }
   },
   {
@@ -99,9 +99,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'An expert in creating intricate and beautiful nail art designs.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Nail Designer', rules: 'Complete 5+ bookings with "Nail Art".' },
-      'Intermediate': { name: 'Nail Art Pro', rules: 'Complete 25+ bookings with "Nail Art".' },
-      'Pro': { name: 'Nail Maestro', rules: 'Complete 75+ bookings with "Nail Art".' }
+      'New': { name: 'Nail Designer', rules: 'Complete 3+ bookings with "Nail Art".' },
+      'Intermediate': { name: 'Nail Art Pro', rules: 'Complete 13+ bookings with "Nail Art".' },
+      'Pro': { name: 'Nail Maestro', rules: 'Complete 38+ bookings with "Nail Art".' }
     }
   },
   {
@@ -111,9 +111,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A specialist in skincare, offering expert advice and treatments.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Skin Specialist', rules: 'Complete 15+ "Facial" services.' },
-      'Intermediate': { name: 'Skincare Guru', rules: 'Complete 50+ "Facial" or "Medi-Spa" services.' },
-      'Pro': { name: 'Skin Sage', rules: 'Complete 100+ "Facial" or "Medi-Spa" services and hold advanced certification.' }
+      'New': { name: 'Skin Specialist', rules: 'Complete 8+ "Facial" services.' },
+      'Intermediate': { name: 'Skincare Guru', rules: 'Complete 25+ "Facial" or "Medi-Spa" services.' },
+      'Pro': { name: 'Skin Sage', rules: 'Complete 50+ "Facial" or "Medi-Spa" services and hold advanced certification.' }
     }
   },
   {
@@ -123,9 +123,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A master of hair color, from subtle highlights to bold transformations.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Colorist', rules: 'Complete 10+ "Colour" services.' },
-      'Intermediate': { name: 'Color Whiz', rules: 'Complete 25+ "Colour, Highlights, Balayage" services.' },
-      'Pro': { name: 'Hue Hero', rules: 'Complete 75+ "Colour" services and complete a master colorist course.' }
+      'New': { name: 'Colorist', rules: 'Complete 5+ "Colour" services.' },
+      'Intermediate': { name: 'Color Whiz', rules: 'Complete 13+ "Colour, Highlights, Balayage" services.' },
+      'Pro': { name: 'Hue Hero', rules: 'Complete 38+ "Colour" services and complete a master colorist course.' }
     }
   },
   {
@@ -135,9 +135,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'Specializes in creating beautiful looks for weddings and bridal parties.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Bridal Stylist', rules: 'Complete 3+ "Bridal Makeup" or "Updo" services.' },
-      'Intermediate': { name: 'Bridal Expert', rules: 'Complete 10+ "Bridal Makeup" or "Updo" services.' },
-      'Pro': { name: 'Wedding Wizard', rules: 'Complete 25+ "Bridal Makeup" services and be featured in a publication.' }
+      'New': { name: 'Bridal Stylist', rules: 'Complete 2+ "Bridal Makeup" or "Updo" services.' },
+      'Intermediate': { name: 'Bridal Expert', rules: 'Complete 5+ "Bridal Makeup" or "Updo" services.' },
+      'Pro': { name: 'Wedding Wizard', rules: 'Complete 13+ "Bridal Makeup" services and be featured in a publication.' }
     }
   },
    {
@@ -147,9 +147,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A highly skilled makeup artist, praised for their versatile and flawless application.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Makeup Artist', rules: 'Complete 10+ "Makeup" services.' },
-      'Intermediate': { name: 'Makeup Virtuoso', rules: 'Complete 30+ services from the "Makeup" category.' },
-      'Pro': { name: 'Lead Artist', rules: 'Complete 75+ "Makeup" services and work on a professional shoot.' }
+      'New': { name: 'Makeup Artist', rules: 'Complete 5+ "Makeup" services.' },
+      'Intermediate': { name: 'Makeup Virtuoso', rules: 'Complete 15+ services from the "Makeup" category.' },
+      'Pro': { name: 'Lead Artist', rules: 'Complete 38+ "Makeup" services and work on a professional shoot.' }
     }
   },
   {
@@ -159,9 +159,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'Specializes in therapies and treatments aimed at alleviating pain.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Relief Rookie', rules: 'Complete 10+ "Massage" services.' },
-      'Intermediate': { name: 'Pain Relief Pro', rules: 'Complete 25+ "Massage" or "Cupping Therapy" services.' },
-      'Pro': { name: 'Zen Master', rules: 'Complete 75+ pain relief services and hold an advanced certification.' }
+      'New': { name: 'Relief Rookie', rules: 'Complete 5+ "Massage" services.' },
+      'Intermediate': { name: 'Pain Relief Pro', rules: 'Complete 13+ "Massage" or "Cupping Therapy" services.' },
+      'Pro': { name: 'Zen Master', rules: 'Complete 38+ pain relief services and hold an advanced certification.' }
     }
   },
   {
@@ -171,9 +171,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A professional focused on holistic body treatments that rejuvenate and restore.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Wellness Apprentice', rules: 'Complete 10+ services from the "Body" category.' },
-      'Intermediate': { name: 'Body Wellness Expert', rules: 'Complete 25+ services from the "Body" category.' },
-      'Pro': { name: 'Wellness Warrior', rules: 'Complete 60+ "Body" services and develop a signature treatment.' }
+      'New': { name: 'Wellness Apprentice', rules: 'Complete 5+ services from the "Body" category.' },
+      'Intermediate': { name: 'Body Wellness Expert', rules: 'Complete 13+ services from the "Body" category.' },
+      'Pro': { name: 'Wellness Warrior', rules: 'Complete 30+ "Body" services and develop a signature treatment.' }
     }
   },
    {
@@ -183,9 +183,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A specialist in shaping perfect brows and stunning lash enhancements.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Brow & Lash Tech', rules: 'Complete 10+ services from "Brows & Lashes".' },
-      'Intermediate': { name: 'Lash & Brow Architect', rules: 'Complete 30+ services from the "Brows & Lashes" category.' },
-      'Pro': { name: 'Arch Angel', rules: 'Complete 100+ "Brows & Lashes" services and win a competition.' }
+      'New': { name: 'Brow & Lash Tech', rules: 'Complete 5+ services from "Brows & Lashes".' },
+      'Intermediate': { name: 'Lash & Brow Architect', rules: 'Complete 15+ services from the "Brows & Lashes" category.' },
+      'Pro': { name: 'Arch Angel', rules: 'Complete 50+ "Brows & Lashes" services and win a competition.' }
     }
   },
   {
@@ -195,9 +195,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'An expert in complex braids, twists, and weave installations.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Braiding Star', rules: 'Complete 5+ complex braid or weave services.' },
-      'Intermediate': { name: 'Braid & Weave Master', rules: 'Complete 20+ services like "Box Braids" or "Sew-in Weave".' },
-      'Pro': { name: 'Weave Wizard', rules: 'Complete 60+ complex braid/weave services and teach a class.' }
+      'New': { name: 'Braiding Star', rules: 'Complete 3+ complex braid or weave services.' },
+      'Intermediate': { name: 'Braid & Weave Master', rules: 'Complete 10+ services like "Box Braids" or "Sew-in Weave".' },
+      'Pro': { name: 'Weave Wizard', rules: 'Complete 30+ complex braid/weave services and teach a class.' }
     }
   },
   {
@@ -207,9 +207,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'A professional in hair removal techniques for perfectly smooth skin.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Waxing Whiz', rules: 'Complete 15+ "Hair Removal" services.' },
-      'Intermediate': { name: 'Smooth Operator', rules: 'Complete 40+ services from the "Hair Removal" category.' },
-      'Pro': { name: 'Flawless Finisher', rules: 'Complete 100+ "Hair Removal" services and be certified in laser removal.' }
+      'New': { name: 'Waxing Whiz', rules: 'Complete 8+ "Hair Removal" services.' },
+      'Intermediate': { name: 'Smooth Operator', rules: 'Complete 20+ services from the "Hair Removal" category.' },
+      'Pro': { name: 'Flawless Finisher', rules: 'Complete 50+ "Hair Removal" services and be certified in laser removal.' }
     }
   },
   {
@@ -219,9 +219,9 @@ export const allBadges: BadgeInfo[] = [
     description: 'Skilled in adding length and volume with various extension methods.',
     category: 'Specialty',
     levels: {
-      'New': { name: 'Extension Stylist', rules: 'Complete 5+ "Hair Extensions" services.' },
-      'Intermediate': { name: 'Extension Expert', rules: 'Complete 15+ "Hair Extensions" or "Sew-in Weave" services.' },
-      'Pro': { name: 'Mane Master', rules: 'Complete 50+ extension services and be certified in multiple methods.' }
+      'New': { name: 'Extension Stylist', rules: 'Complete 3+ "Hair Extensions" services.' },
+      'Intermediate': { name: 'Extension Expert', rules: 'Complete 8+ "Hair Extensions" or "Sew-in Weave" services.' },
+      'Pro': { name: 'Mane Master', rules: 'Complete 25+ extension services and be certified in multiple methods.' }
     }
   },
 ];
