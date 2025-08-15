@@ -177,6 +177,8 @@ export default function ManageBookingPage() {
   const canProviderAmend = userRole === 'provider' && ['Pending', 'Review Order and Pay', 'Confirmed'].includes(booking.status);
   const canProviderEditDateTime = userRole === 'provider' && ['Pending', 'Confirmed'].includes(booking.status);
   const needsProviderAction = userRole === 'provider' && booking.status === 'Pending';
+  const canProviderCancel = userRole === 'provider' && booking.status === 'Confirmed';
+
 
   // Shared statuses
   const canSaveChanges = canProviderAmend; // For now, only providers can save changes after initial booking
@@ -336,6 +338,15 @@ export default function ManageBookingPage() {
                             </Link>
                         </Button>
                     </>
+                )}
+
+                {canProviderCancel && (
+                     <CancelBookingDialog onConfirm={() => handleCancelBooking('provider')}>
+                        <Button variant="destructive" size="lg" className="w-full">
+                            <XCircle className="mr-2 h-4 w-4" />
+                            Cancel Booking
+                        </Button>
+                    </CancelBookingDialog>
                 )}
 
                 {/* Shared Actions */}
