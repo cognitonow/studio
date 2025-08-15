@@ -1,5 +1,4 @@
 
-
 import type { BadgeLevel } from './badges';
 
 export type UserRole = 'guest' | 'client' | 'provider';
@@ -93,12 +92,13 @@ export type Booking = {
 
 export type Notification = {
   id: number;
-  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation' | 'payment';
+  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation' | 'payment' | 'review';
   title: string;
   description: string;
   time: string;
   read: boolean;
   bookingId?: string;
+  providerId?: string;
 };
 
 export type Conversation = {
