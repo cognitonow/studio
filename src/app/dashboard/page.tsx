@@ -595,11 +595,13 @@ function ClientDashboard() {
                                     Manage Booking
                                 </Link>
                             </Button>
-                            <Button asChild variant="secondary" className="w-full">
-                                <Link href="/bookings">View All Bookings</Link>
-                            </Button>
                         </div>
                     </CardContent>
+                    <div className="p-6 pt-0">
+                         <Button asChild variant="secondary" className="w-full">
+                            <Link href="/bookings">View All Bookings</Link>
+                        </Button>
+                    </div>
                  </>
             ) : (
                 <>
