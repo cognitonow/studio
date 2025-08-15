@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { List, PlusCircle, Trash2, Edit, Save } from 'lucide-react';
-import { services as allServices, serviceCategories, initialProviderServices, saveProviderServices } from '@/lib/data';
+import { services as allServices, serviceCategories, saveProviderServices, getProviderById } from '@/lib/data';
 import type { Service } from '@/lib/types';
 import { Textarea } from './ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export function ServiceManagementCard() {
     const { toast } = useToast();
-    const [providerServices, setProviderServices] = useState<Service[]>(initialProviderServices);
+    const [providerServices, setProviderServices] = useState<Service[]>([]);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedServiceId, setSelectedServiceId] = useState<string>('');
@@ -37,6 +37,14 @@ export function ServiceManagementCard() {
     const [editedDuration, setEditedDuration] = useState<number | string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
     const [editedName, setEditedName] = useState('');
+
+    useEffect(() => {
+        // Load initial services for the hardcoded provider '3'
+        const provider = getProviderById('3');
+        if (provider) {
+            setProviderServices([...provider.services]);
+        }
+    }, []);
 
 
     const handleAddService = () => {
@@ -356,6 +364,3 @@ setDescription('');
         </Card>
     );
 }
-
-    
-

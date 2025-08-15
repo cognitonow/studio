@@ -219,8 +219,6 @@ let bookings: Booking[] = [
     { id: "7", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-3"], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: "Confirmed", clientName: 'Alex Ray', isPaid: true },
 ];
 
-export let providerServices: Service[] = providers.find(p => p.id === '3')?.services || [];
-
 let conversations: Conversation[] = [
   { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you have any questions!", time: "2h", unread: 0 },
   { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Can't wait to see you!", time: "1d", unread: 0 },
@@ -784,9 +782,9 @@ export const getClientHistoryByName = (clientName: string) => {
     };
 };
 
-export const saveProviderServices = (providerId: string, newServices: Service[]) => {
-    // Add any new custom services to the main services list
-    newServices.forEach(service => {
+export const saveProviderServices = (providerId: string, updatedServices: Service[]) => {
+    // Add any new custom services to the main services list to make them "real"
+    updatedServices.forEach(service => {
         if (service.id.startsWith('custom-') && !services.find(s => s.id === service.id)) {
             services.push(service);
         }
@@ -795,11 +793,8 @@ export const saveProviderServices = (providerId: string, newServices: Service[])
     // Update the provider's list of services in the main providers array
     const providerIndex = providers.findIndex(p => p.id === providerId);
     if (providerIndex !== -1) {
-        providers[providerIndex].services = newServices;
+        providers[providerIndex].services = updatedServices;
     }
-    
-    // Also update the exported providerServices for the current session
-    providerServices = newServices;
 };
 
 
@@ -813,6 +808,3 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
-
-export const initialProviderServices = providers.find(p => p.id === '3')?.services || [];
-
