@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Provider } from '@/lib/types';
@@ -9,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
+import { allBadges } from '@/lib/badges';
 
 interface ProviderProfileViewProps {
     provider: Provider;
@@ -47,11 +49,16 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                         </div>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                        {provider.badges.map(badge => (
-                        <Link href={`/?search=${encodeURIComponent(badge)}`} key={badge}>
-                            <Badge variant="secondary" className="transition-colors hover:bg-secondary/80">{badge}</Badge>
-                        </Link>
-                        ))}
+                        {provider.badges.map(providerBadge => {
+                            const badgeInfo = allBadges.find(b => b.name === providerBadge.name);
+                            if (!badgeInfo) return null;
+                            const levelInfo = badgeInfo.levels[providerBadge.level];
+                            return (
+                                <Badge key={badgeInfo.id} variant="secondary" className="transition-colors hover:bg-secondary/80">
+                                {levelInfo.name}
+                                </Badge>
+                            );
+                        })}
                     </div>
                     </div>
                 </div>
