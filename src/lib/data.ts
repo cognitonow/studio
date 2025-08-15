@@ -7,6 +7,7 @@ import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
 import { draftBookingApproval } from '@/ai/flows/draft-booking-approval';
 import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation';
 import { draftNewBookingRequest } from '@/ai/flows/draft-new-booking-request';
+import { draftBookingUpdate } from '@/ai/flows/draft-booking-update';
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -393,7 +394,6 @@ const sendAutomatedMessage = async (booking: Booking, messageGenerator: (input: 
                 bookingId: booking.id,
             });
             providerConversation.lastMessage = response.message;
-            providerConversation.time = 'Just now';
             providerConversation.unread = (providerConversation.unread || 0) + 1;
         }
 
@@ -481,15 +481,47 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
     }
 };
 
-export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking>) => {
+export const updateBooking = async (bookingId: string, updatedDetails: Partial<Booking>, originalBooking: Booking) => {
     const bookingIndex = bookings.findIndex(b => b.id === bookingId);
     if (bookingIndex !== -1) {
-        const originalBooking = { ...bookings[bookingIndex] };
-        bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
         
+        const updatedFields: string[] = [];
+        if (new Date(originalBooking.date).toISOString() !== new Date(updatedDetails.date!).toISOString()) {
+            updatedFields.push('date');
+        }
+        if (originalBooking.serviceIds.join(',') !== updatedDetails.serviceIds!.join(',')) {
+            updatedFields.push('services');
+        }
+        
+        bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
+        const newBooking = bookings[bookingIndex];
+
         // If payment was made and status changes from Review to Confirmed
         if (updatedDetails.isPaid && originalBooking.status === 'Review Order and Pay') {
             updateBookingStatus(bookingId, 'Confirmed');
+        }
+
+        if (updatedFields.length > 0) {
+            // Notify client of the update
+            addNotification('client', {
+                icon: 'confirmation',
+                title: 'Your Booking Was Updated',
+                description: `${newBooking.providerName} has updated the details for your upcoming appointment.`,
+                bookingId: newBooking.id
+            });
+            // Notify provider of the update (confirmation of their own action)
+            addNotification('provider', {
+                icon: 'confirmation',
+                title: 'Booking Updated Successfully',
+                description: `You have successfully updated the booking for ${newBooking.clientName}.`,
+                bookingId: newBooking.id
+            });
+
+            // Send AI message to client
+            await sendAutomatedMessage(newBooking, (input) => draftBookingUpdate({...input, recipient: 'client'}), { updatedFields });
+            
+            // Send AI message to provider
+            await sendAutomatedMessage(newBooking, (input) => draftBookingUpdate({...input, recipient: 'provider'}), { updatedFields });
         }
     }
 };
@@ -704,8 +736,3 @@ export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
-
-    
-
-    
-

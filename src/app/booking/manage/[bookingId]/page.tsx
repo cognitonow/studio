@@ -124,7 +124,7 @@ export default function ManageBookingPage() {
       updateBooking(booking.id, { 
           date: selectedDate.toISOString(),
           serviceIds: bookedServices.map(s => s.id),
-      });
+      }, booking);
       toast({
         title: "Booking Updated!",
         description: "The appointment details have been successfully saved.",
@@ -154,7 +154,7 @@ export default function ManageBookingPage() {
   
   const handleConfirmPayment = () => {
     if (booking) {
-        updateBooking(booking.id, { isPaid: true, status: 'Confirmed' });
+        updateBooking(booking.id, { isPaid: true, status: 'Confirmed' }, booking);
         // Manually update the state to reflect the change immediately
         setBooking(prev => prev ? { ...prev, isPaid: true, status: 'Confirmed' } : null);
         toast({

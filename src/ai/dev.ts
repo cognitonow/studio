@@ -8,3 +8,4 @@ import '@/ai/flows/draft-post-booking-message.ts';
 import '@/ai/flows/draft-booking-approval.ts';
 import '@/ai/flows/draft-booking-cancellation.ts';
 import '@/ai/flows/draft-new-booking-request.ts';
+import '@/ai/flows/draft-booking-update.ts';
