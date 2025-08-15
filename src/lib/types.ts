@@ -47,6 +47,7 @@ export type Service = {
 
 export type Review = {
   id:string;
+  bookingId: string;
   author: string;
   avatarUrl: string;
   dataAiHint?: string;
@@ -87,6 +88,7 @@ export type Booking = {
     status: 'Pending' | 'Review Order and Pay' | 'Confirmed' | 'Completed' | 'Cancelled';
     clientName?: string; // Optional client name for provider view
     isPaid: boolean;
+    reviewId?: string;
 };
 
 export type Notification = {

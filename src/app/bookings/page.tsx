@@ -14,24 +14,109 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { getBookings, getServicesByIds } from "@/lib/data"
+import { getBookings, getServicesByIds, addReview } from "@/lib/data"
 import { useEffect, useState } from "react"
 import type { Booking } from "@/lib/types"
-import { CreditCard } from "lucide-react"
+import { CreditCard, Star, Send } from "lucide-react"
 import { StatusBadge } from "@/components/status-badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
+
+function ReviewDialog({ booking, onReviewSubmit }: { booking: Booking, onReviewSubmit: () => void }) {
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (reviewRating === 0 || !reviewComment.trim()) return;
+
+    addReview(booking.id, reviewRating, reviewComment);
+    
+    toast({
+        title: "Review Submitted!",
+        description: "Thank you for your feedback.",
+    });
+
+    // Reset form and close dialog
+    setReviewRating(0);
+    setReviewComment('');
+    setIsOpen(false);
+    onReviewSubmit();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+            <Star className="mr-2 h-4 w-4" />
+            Leave a Review
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Leave a review for {booking.providerName}</DialogTitle>
+          <DialogDescription>
+            Your feedback helps other users and allows the provider to improve.
+          </DialogDescription>
+        </DialogHeader>
+        <form className="space-y-4" onSubmit={handleSubmitReview}>
+          <div className="space-y-2">
+            <Label>Rating</Label>
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                  <Button 
+                      key={i} 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-muted-foreground hover:text-primary"
+                      onClick={() => setReviewRating(i + 1)}
+                  >
+                    <Star className={cn("w-6 h-6", i < reviewRating && 'text-primary fill-primary')} />
+                  </Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="feedback-comment">Comment</Label>
+            <Textarea 
+              id="feedback-comment" 
+              placeholder="Tell us about your experience..." 
+              rows={4} 
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+            />
+          </div>
+          <DialogClose asChild>
+            <Button type="submit" disabled={reviewRating === 0 || !reviewComment.trim()}>
+              <Send className="mr-2 h-4 w-4" />
+              Submit Feedback
+            </Button>
+          </DialogClose>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 export default function ClientBookingsPage() {
   const [bookings, setBookings] = useState<{ upcoming: Booking[], past: Booking[] }>({ upcoming: [], past: [] });
   const [isMounted, setIsMounted] = useState(false);
 
+  const fetchBookings = () => {
+    const allBookings = getBookings();
+    setBookings(allBookings);
+  };
+  
   useEffect(() => {
     setIsMounted(true);
     // This function will run on mount and every time the component is focused
-    const fetchBookings = () => {
-        const allBookings = getBookings();
-        setBookings(allBookings);
-    };
-
     fetchBookings();
 
     // Re-fetch when the window gets focus, to catch updates from other tabs
@@ -47,7 +132,7 @@ export default function ClientBookingsPage() {
     return services.map(s => s.name).join(', ');
   }
   
-  const renderBookingActions = (booking: Booking) => {
+  const renderUpcomingBookingActions = (booking: Booking) => {
     switch (booking.status) {
         case 'Review Order and Pay':
             return (
@@ -71,6 +156,18 @@ export default function ClientBookingsPage() {
                 </Button>
             );
     }
+  }
+
+  const renderPastBookingActions = (booking: Booking) => {
+    if (booking.status === 'Completed' && !booking.reviewId) {
+        return <ReviewDialog booking={booking} onReviewSubmit={fetchBookings} />;
+    }
+
+    return (
+      <Button variant="secondary" size="sm" asChild>
+        <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
+      </Button>
+    )
   }
 
   if (!isMounted) {
@@ -112,7 +209,7 @@ export default function ClientBookingsPage() {
                         <StatusBadge status={booking.status} />
                       </TableCell>
                       <TableCell className="text-right">
-                          {renderBookingActions(booking)}
+                          {renderUpcomingBookingActions(booking)}
                       </TableCell>
                     </TableRow>
                   )) : (
@@ -152,9 +249,7 @@ export default function ClientBookingsPage() {
                         <StatusBadge status={booking.status} />
                       </TableCell>
                       <TableCell className="text-right">
-                          <Button variant="secondary" size="sm" asChild>
-                            <Link href={`/booking/manage/${booking.id}`}>View Details</Link>
-                          </Button>
+                          {renderPastBookingActions(booking)}
                       </TableCell>
                     </TableRow>
                    )) : (

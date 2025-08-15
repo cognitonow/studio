@@ -1,4 +1,5 @@
 
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -128,11 +129,11 @@ export let services: Service[] = [
   { id: 'medi-6', categoryId: 'medi-spa', name: 'IV Vitamin Drips', description: 'Intravenous vitamin therapy.', price: 250, duration: 60 },
 ];
 
-export const reviews: Review[] = [
-  { id: '1', author: 'Jane D.', title: 'CEO, Acme Inc.', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman portrait', rating: 5, comment: 'Olivia is a true artist! My nails have never looked better. The attention to detail and relaxing atmosphere made it a perfect experience.' },
-  { id: '2', author: 'Sarah K.', title: 'Marketing Manager', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person smiling', rating: 5, comment: 'The most relaxing facial I have ever had. My skin is glowing! I felt so refreshed and rejuvenated afterwards. Highly recommend!' },
-  { id: '3', author: 'Mike P.', title: 'Software Engineer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'man face', rating: 4, comment: 'Great haircut, very professional and clean salon. The stylist listened to what I wanted and gave me a great new look.' },
-  { id: '4', author: 'Emily R.', title: 'Graphic Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman face', rating: 5, comment: 'I am so in love with my new hair color. Chloe is a genius! She perfectly captured the look I was going for.' },
+export let reviews: Review[] = [
+  { id: '1', bookingId: '2', author: 'Jane D.', title: 'CEO, Acme Inc.', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman portrait', rating: 5, comment: 'Olivia is a true artist! My nails have never looked better. The attention to detail and relaxing atmosphere made it a perfect experience.' },
+  { id: '2', bookingId: '1', author: 'Sarah K.', title: 'Marketing Manager', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'person smiling', rating: 5, comment: 'The most relaxing facial I have ever had. My skin is glowing! I felt so refreshed and rejuvenated afterwards. Highly recommend!' },
+  { id: '3', bookingId: '4', author: 'Mike P.', title: 'Software Engineer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'man face', rating: 4, comment: 'Great haircut, very professional and clean salon. The stylist listened to what I wanted and gave me a great new look.' },
+  { id: '4', bookingId: '1', author: 'Emily R.', title: 'Graphic Designer', avatarUrl: 'https://placehold.co/100x100.png', dataAiHint: 'woman face', rating: 5, comment: 'I am so in love with my new hair color. Chloe is a genius! She perfectly captured the look I was going for.' },
 ];
 
 export let providers: Provider[] = [
@@ -229,7 +230,7 @@ export const playlists: Playlist[] = [
 
 let bookings: Booking[] = [
     { id: "1", providerId: "3", providerName: "Chloe's Hair Haven", serviceIds: ["hair-22"], date: "2024-08-15T14:00:00.000Z", status: "Confirmed", clientName: 'Emily R.', isPaid: true },
-    { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.', isPaid: true },
+    { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.', isPaid: true, reviewId: '1' },
     { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Review Order and Pay", clientName: 'Jane D.', isPaid: false },
     { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey', isPaid: true },
     { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
@@ -834,12 +835,16 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
 };
 
 
-export const addReview = async (providerId: string, rating: number, comment: string) => {
-  const provider = getProviderById(providerId);
+export const addReview = async (bookingId: string, rating: number, comment: string) => {
+  const booking = getBookingById(bookingId);
+  if (!booking) return;
+
+  const provider = getProviderById(booking.providerId);
   if (!provider) return;
 
   const newReview: Review = {
     id: `review-${provider.reviews.length + 1}-${Date.now()}`,
+    bookingId: booking.id,
     author: 'Alex Ray', // Mocked user
     avatarUrl: 'https://placehold.co/100x100.png',
     dataAiHint: 'person face',
@@ -848,9 +853,13 @@ export const addReview = async (providerId: string, rating: number, comment: str
     title: 'New Review',
   };
 
+  // Add review to provider
   provider.reviews.unshift(newReview);
   provider.reviewCount += 1;
   
+  // Link review to booking
+  booking.reviewId = newReview.id;
+
   // Recalculate average rating
   const totalRating = provider.reviews.reduce((acc, r) => acc + r.rating, 0);
   provider.rating = totalRating / provider.reviewCount;
@@ -865,17 +874,17 @@ export const addReview = async (providerId: string, rating: number, comment: str
   };
 
   addNotification('provider', {
-      icon: 'confirmation', // or a new 'review' icon
+      icon: 'confirmation',
       title: 'You have a new review!',
       description: `${newReview.author} left a ${rating}-star review.`,
-      bookingId: undefined, // Reviews are not tied to bookings yet
+      bookingId: bookingId,
   });
 
   addNotification('client', {
       icon: 'confirmation',
       title: 'Review Submitted',
       description: `Thank you for your feedback for ${provider.name}.`,
-      bookingId: undefined,
+      bookingId: bookingId,
   });
 
   await sendAutomatedMessage(payload, draftNewReviewMessage, 'both');

@@ -4,63 +4,43 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProviderById, getBookingHistoryForProvider, addReview } from '@/lib/data';
+import { getProviderById, getBookingHistoryForProvider } from '@/lib/data';
 import { notFound, useParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, Send } from 'lucide-react';
+import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import type { Booking, Provider } from '@/lib/types';
 import { StatusBadge } from '@/components/status-badge';
 import { allBadges } from '@/lib/badges';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
  
 export default function ProviderDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { toast } = useToast();
 
   const [provider, setProvider] = useState<Provider | undefined>(() => getProviderById(id));
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
   
-  // State for the review form
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewComment, setReviewComment] = useState('');
-
-
   useEffect(() => {
-    if (provider) {
-        setBookingHistory(getBookingHistoryForProvider(provider.id));
-    }
-  }, [provider]);
+    // This effect ensures that if the data is updated elsewhere (e.g. review submitted on another page),
+    // this component will reflect those changes when it re-focuses.
+    const refreshData = () => {
+      const freshProvider = getProviderById(id);
+      setProvider(freshProvider);
+      if (freshProvider) {
+        setBookingHistory(getBookingHistoryForProvider(freshProvider.id));
+      }
+    };
 
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (reviewRating === 0 || !reviewComment.trim() || !provider) return;
-
-    addReview(provider.id, reviewRating, reviewComment);
-    
-    // To ensure the UI updates, we get the fresh provider object and update state
-    const updatedProvider = getProviderById(id);
-    setProvider(updatedProvider); // This will trigger a re-render with the new review
-    
-    toast({
-        title: "Review Submitted!",
-        description: "Thank you for your feedback.",
-    });
-
-    // Reset form
-    setReviewRating(0);
-    setReviewComment('');
-  };
+    refreshData();
+    window.addEventListener('focus', refreshData);
+    return () => window.removeEventListener('focus', refreshData);
+  }, [id]);
 
 
   if (!provider) {
@@ -131,9 +111,8 @@ export default function ProviderDetailPage() {
           <Tabs defaultValue="reviews">
             <TabsList>
               <TabsTrigger value="reviews">Verified Reviews</TabsTrigger>
-              <TabsTrigger value="feedback">Leave Feedback</TabsTrigger>
               <TabsTrigger value="chat">Chat</TabsTrigger>
-              <TabsTrigger value="booking-history">Booking History</TabsTrigger>
+              <TabsTrigger value="booking-history">Your History</TabsTrigger>
             </TabsList>
             <TabsContent value="reviews">
                 <div className="space-y-6 mt-6">
@@ -158,49 +137,10 @@ export default function ProviderDetailPage() {
                       </CardContent>
                     </Card>
                   ))}
+                   {provider.reviews.length === 0 && (
+                    <p className="text-muted-foreground text-center py-8">This provider doesn't have any reviews yet.</p>
+                   )}
                 </div>
-            </TabsContent>
-            <TabsContent value="feedback">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Share Your Experience</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form className="space-y-4" onSubmit={handleSubmitReview}>
-                    <div className="space-y-2">
-                      <Label>Rating</Label>
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                           <Button 
-                                key={i} 
-                                type="button" 
-                                variant="ghost" 
-                                size="icon" 
-                                className="text-muted-foreground hover:text-primary"
-                                onClick={() => setReviewRating(i + 1)}
-                            >
-                             <Star className={cn("w-6 h-6", i < reviewRating && 'text-primary fill-primary')} />
-                           </Button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="feedback-comment">Comment</Label>
-                      <Textarea 
-                        id="feedback-comment" 
-                        placeholder="Tell us about your experience..." 
-                        rows={4} 
-                        value={reviewComment}
-                        onChange={(e) => setReviewComment(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" disabled={reviewRating === 0 || !reviewComment.trim()}>
-                      <Send className="mr-2 h-4 w-4" />
-                      Submit Feedback
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
             </TabsContent>
             <TabsContent value="chat">
                <Card>
