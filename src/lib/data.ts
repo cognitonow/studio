@@ -1,3 +1,4 @@
+
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
@@ -866,7 +867,7 @@ export const addReview = async (providerId: string, rating: number, comment: str
   addNotification('provider', {
       icon: 'confirmation', // or a new 'review' icon
       title: 'You have a new review!',
-      description: `Alex Ray left a ${rating}-star review.`,
+      description: `${newReview.author} left a ${rating}-star review.`,
       bookingId: undefined, // Reviews are not tied to bookings yet
   });
 
