@@ -131,7 +131,7 @@ export function Header() {
   React.useEffect(() => {
     if (isMounted) {
       const checkUnreads = () => {
-          const notifications = getNotifications();
+          const notifications = getNotifications(userRole);
           setHasUnread(notifications.some(n => !n.read));
 
           const unreadMessagesCount = getUnreadMessageCount(userRole);
