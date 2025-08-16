@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -84,7 +85,7 @@ function MessagesContent() {
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
     if (userRole !== 'guest' && convo.unread > 0) { // Add check for guest role
-      markAllMessagesAsRead(convo.id, userRole as 'client' | 'provider');
+ markAllMessagesAsRead(convo.id, userRole as 'client' | 'provider');
       setConversations(fetchConversations());
     }
   }
@@ -111,7 +112,7 @@ function MessagesContent() {
   }, [activeConversation]);
 
   const activeMessages = activeConversation && userRole !== 'guest' ? // Add check for guest role
-    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id, userRole as 'client'))
+    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id))
     : [];
 
 
