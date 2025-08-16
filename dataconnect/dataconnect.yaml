@@ -1,5 +1,5 @@
 specVersion: "v1"
-serviceId: "y"
+serviceId: "beauty-book-pro"
 location: "europe-west4"
 schema:
   source: "./schema"
