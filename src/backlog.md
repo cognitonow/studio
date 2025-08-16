@@ -18,6 +18,17 @@ This document contains a list of features, improvements, and ideas for future de
 - [ ] Add more sophisticated availability management for providers.
 - [ ] Implement real-time chat with Firebase.
 - [ ] Add profile picture uploads.
+- [x] SEO
+
+### SEO & Accessibility Audit Checklist
+- [x] **Complete OpenGraph Metadata:** Added comprehensive OG and Twitter card tags to the main layout for rich social media previews.
+- [x] **Add Alt Text for Images:** Ensured all images have descriptive alt text for accessibility and image SEO.
+- [x] **Fix Typography Hierarchy:** Verified that heading tags (H1, H2, etc.) are used logically and consistently across all pages.
+- [x] **Update Placeholders & Content:** Removed default favicons and implemented a dynamic copyright year in the footer.
+- [x] **Optimize Mobile Experience:** Added the viewport meta tag to ensure proper scaling on all mobile devices.
+- [x] **Improve Performance:** Verified that all images are served using the `next/image` component to optimize loading times.
+- [x] **Implement SEO Fundamentals:** Added meta descriptions and keywords to the main layout to improve search engine ranking.
+
 
 ## Future Backend Features (Cloud Functions)
 
