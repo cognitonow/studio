@@ -10,58 +10,19 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart, User } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { allBadges } from '@/lib/badges';
-import { useUserStore } from '@/hooks/use-user-store';
-import { AuthDialog } from './auth-dialog';
+import { AuthButton } from './auth-button';
 
 interface ProviderProfileViewProps {
     provider: Provider;
 }
 
 export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
-  const { user } = useUserStore();
 
   if (!provider) {
     return (
         <div className="flex items-center justify-center h-full">
             <p>Provider not found.</p>
         </div>
-    );
-  }
-
-  const AuthButton = ({ href, children }: { href: string; children: React.ReactNode }) => {
-    if (user) {
-      return (
-        <Button asChild>
-          <Link href={href}>{children}</Link>
-        </Button>
-      );
-    }
-    return (
-      <AuthDialog>
-        <Button>{children}</Button>
-      </AuthDialog>
-    );
-  };
-
-  const AuthLinkButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
-    if (user) {
-        return <Button asChild variant="outline"><Link href={href}>{children}</Link></Button>;
-    }
-     return (
-      <AuthDialog>
-        <Button variant="outline">{children}</Button>
-      </AuthDialog>
-    );
-  }
-
-  const AuthFavouriteButton = ({ children }: { children: React.ReactNode }) => {
-    if (user) {
-        return <Button variant="outline">{children}</Button>;
-    }
-     return (
-      <AuthDialog>
-        <Button variant="outline">{children}</Button>
-      </AuthDialog>
     );
   }
 
@@ -191,12 +152,12 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                                 View Full Profile
                             </Link>
                         </Button>
-                        <AuthFavouriteButton>
+                        <AuthButton variant="outline">
                           <Heart className="w-4 h-4 mr-2"/> Save to Favourites
-                        </AuthFavouriteButton>
-                        <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
+                        </AuthButton>
+                        <AuthButton variant="outline" href={`/messages?providerId=${provider.id}`}>
                           <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
-                        </AuthLinkButton>
+                        </AuthButton>
                     </div>
                     </CardContent>
                 </Card>

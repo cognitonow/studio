@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import Image from 'next/image';
@@ -8,7 +7,6 @@ import { getProviderById, getBookingHistoryForProvider } from '@/lib/data';
 import { notFound, useParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Star, MapPin, GalleryHorizontal, MessageSquare, BookMarked, Heart } from 'lucide-react';
@@ -18,13 +16,11 @@ import { useEffect, useState } from 'react';
 import type { Booking, Provider } from '@/lib/types';
 import { StatusBadge } from '@/components/status-badge';
 import { allBadges } from '@/lib/badges';
-import { useUserStore } from '@/hooks/use-user-store';
-import { AuthDialog } from '@/components/auth-dialog';
+import { AuthButton } from '@/components/auth-button';
  
 export default function ProviderDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { user } = useUserStore();
 
   const [provider, setProvider] = useState<Provider | undefined>(() => getProviderById(id));
   const [bookingHistory, setBookingHistory] = useState<Booking[]>([]);
@@ -48,43 +44,6 @@ export default function ProviderDetailPage() {
 
   if (!provider) {
     notFound();
-  }
-
-  const AuthButton = ({ href, children }: { href: string; children: React.ReactNode }) => {
-    if (user) {
-      return (
-        <Button asChild>
-          <Link href={href}>{children}</Link>
-        </Button>
-      );
-    }
-    return (
-      <AuthDialog>
-        <Button>{children}</Button>
-      </AuthDialog>
-    );
-  };
-  
-  const AuthLinkButton = ({ children, href }: { children: React.ReactNode, href: string }) => {
-    if (user) {
-        return <Button asChild variant="outline"><Link href={href}>{children}</Link></Button>;
-    }
-     return (
-      <AuthDialog>
-        <Button variant="outline">{children}</Button>
-      </AuthDialog>
-    );
-  }
-  
-  const AuthFavouriteButton = ({ children }: { children: React.ReactNode }) => {
-    if (user) {
-        return <Button variant="outline">{children}</Button>;
-    }
-     return (
-      <AuthDialog>
-        <Button variant="outline">{children}</Button>
-      </AuthDialog>
-    );
   }
 
   return (
@@ -189,10 +148,10 @@ export default function ProviderDetailPage() {
                   <CardDescription>Have a question for {provider.name}? Send them a message directly.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
+                  <AuthButton href={`/messages?providerId=${provider.id}`} variant="outline">
                       <MessageSquare className="mr-2 h-4 w-4" />
                       Chat with {provider.name}
-                  </AuthLinkButton>
+                  </AuthButton>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -261,12 +220,12 @@ export default function ProviderDetailPage() {
                 ))}
               </Accordion>
               <div className="flex flex-col gap-2 mt-6">
-                <AuthFavouriteButton>
+                <AuthButton variant="outline">
                   <Heart className="w-4 h-4 mr-2"/> Save to Favourites
-                </AuthFavouriteButton>
-                <AuthLinkButton href={`/messages?providerId=${provider.id}`}>
+                </AuthButton>
+                <AuthButton variant="outline" href={`/messages?providerId=${provider.id}`}>
                     <MessageSquare className="w-4 h-4 mr-2"/> Contact Provider
-                </AuthLinkButton>
+                </AuthButton>
               </div>
             </CardContent>
           </Card>
