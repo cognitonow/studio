@@ -1,10 +1,9 @@
 
-
 import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import type { User, UserRole, Provider } from './types';
-import { providers, services } from './data';
+import { providers } from './data';
 
 interface SignUpCredentials {
     name: string;
@@ -15,50 +14,38 @@ interface SignUpCredentials {
 
 export async function signUp({ name, email, password, role }: SignUpCredentials) {
     try {
-        // Special mock handling for the main provider demo account
-        if (role === 'provider' && email.toLowerCase() === 'provider@example.com') {
-            const providerUser = {
-                id: 'provider-user-id', // Statically defined ID
-                name: 'Glow & Go', // The name of the provider
-                email: email,
-                role: 'provider'
-            };
-            // In a real app, you wouldn't return here, but for the mock flow,
-            // we assume this user is already 'created' and linked.
-            return { user: providerUser };
-        }
-
-
+        // Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        const firebaseUser = userCredential.user;
 
-        // Update profile in Firebase Auth
-        await updateProfile(user, { displayName: name });
+        // Update profile display name in Firebase Auth
+        await updateProfile(firebaseUser, { displayName: name });
 
-        const userData = {
-            id: user.uid,
+        const userData: User = {
+            id: firebaseUser.uid,
             name: name,
             email: email,
             role: role,
         };
 
-        // Store additional user information in Firestore
-        await setDoc(doc(db, "users", user.uid), userData);
+        // Create a corresponding user document in Firestore
+        await setDoc(doc(db, "users", firebaseUser.uid), userData);
 
+        // If the user is a provider, create a new provider profile in our mock data
+        // This will later be moved to Firestore as well.
         if (role === 'provider') {
-            // Create a new blank provider profile for any other provider email
             const newProviderProfile: Provider = {
-                id: String(providers.length + 1),
-                userId: user.uid,
+                id: `provider-${providers.length + 1}`,
+                userId: firebaseUser.uid,
                 name: `${name}'s Shop`,
-                specialty: 'General Beauty Services',
+                specialty: 'New Provider',
                 avatarUrl: 'https://placehold.co/100x100.png',
                 dataAiHint: 'salon interior',
                 rating: 0,
                 reviewCount: 0,
                 isFeatured: false,
                 isFavourite: false,
-                bio: `Welcome to the shop for ${name}! Please update your bio.`,
+                bio: `Welcome to the shop for ${name}! Please update your bio and services on the dashboard.`,
                 portfolio: [],
                 services: [],
                 reviews: [],
@@ -69,10 +56,13 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
             providers.push(newProviderProfile);
         }
 
-
         return { user: userData };
     } catch (error: any) {
         console.error("Error signing up:", error);
-        return { error };
+        // Provide a more user-friendly error message
+        const errorMessage = error.code === 'auth/email-already-in-use' 
+            ? 'This email address is already in use.' 
+            : 'An error occurred during sign up. Please try again.';
+        return { error: { message: errorMessage } };
     }
 }
