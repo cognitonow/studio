@@ -238,10 +238,11 @@ export default function DiscoverPage() {
       <section className="relative h-[450px] rounded-2xl overflow-hidden flex items-center">
         <Image
             src="https://placehold.co/1200x450.png"
-            alt="Woman with beautiful makeup"
+            alt="Woman with beautiful makeup smiling"
             fill
             className="object-cover"
             data-ai-hint="woman face makeup"
+            priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-white/0" />
         <div className="relative grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
@@ -259,6 +260,7 @@ export default function DiscoverPage() {
 
       {/* Tabs Section */}
       <section>
+        <h2 className="sr-only">Discover Providers</h2>
         <Tabs defaultValue="explore">
           <TabsList className="mb-6">
             <TabsTrigger value="explore">Explore</TabsTrigger>
@@ -297,7 +299,7 @@ export default function DiscoverPage() {
 
                             {/* Central Image */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full overflow-hidden">
-                                <Image src="https://placehold.co/400x400.png" alt="Skincare" fill className="object-cover" data-ai-hint="woman face beauty" />
+                                <Image src="https://placehold.co/400x400.png" alt="A woman with glowing skin after a facial treatment" fill className="object-cover" data-ai-hint="woman face beauty" />
                             </div>
 
                             {/* Menu Items */}
@@ -334,7 +336,7 @@ export default function DiscoverPage() {
                       <div className="flex-grow flex flex-col justify-end">
                         <Card>
                           <CardHeader>
-                            <CardTitle className="flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</CardTitle>
+                            <h3 className="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 font-headline"><Filter className="w-5 h-5" /> Advanced Search</h3>
                           </CardHeader>
                           <CardContent className="space-y-4 pb-8">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -378,7 +380,7 @@ export default function DiscoverPage() {
                                         allServicesGrouped.map(group => (
                                           group.services.length > 0 && (
                                             <SelectGroup key={`group-${group.id}`}>
-                                              <SelectItem value={group.id} className="font-bold text-primary">{group.name}</SelectItem>
+                                              <h4 className="py-1.5 pl-8 pr-2 text-sm font-semibold">{group.name}</h4>
                                               {group.services.map(service => (
                                                 <SelectItem key={service.id} value={service.id} className="pl-8">{service.name}</SelectItem>
                                               ))}

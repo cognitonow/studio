@@ -2,14 +2,16 @@ import { Sprout, Instagram, Facebook, Twitter } from 'lucide-react';
 import Link from 'next/link';
 
 const VisaIcon = () => (
-    <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-labelledby="visa-title" width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title id="visa-title">Visa</title>
         <rect width="38" height="24" rx="4" fill="white"/>
         <path d="M12.193 6.932L10.21 16.892H8.314L10.292 6.932H12.193ZM18.787 6.932L20.82 14.15L20.91 14.15L22.951 6.932H24.58L21.724 16.892H19.993L17.131 6.932H18.787ZM28.618 10.394C28.618 9.389 29.215 8.792 30.136 8.792C30.292 8.792 30.706 8.825 30.994 8.942L31.252 7.154C30.85 7.028 30.346 6.965 29.749 6.965C27.97 6.965 26.797 8.018 26.797 9.539C26.797 10.742 27.427 11.45 28.168 11.837C28.909 12.239 29.296 12.527 29.296 12.962C29.296 13.592 28.684 13.847 27.988 13.847C27.067 13.847 26.68 13.592 26.472 13.499L26.215 15.221C26.584 15.347 27.344 15.44 28.081 15.44C30.031 15.44 31.138 14.354 31.138 12.782C31.138 11.399 30.121 10.658 28.618 10.394ZM7.925 16.892L6 6.932H7.957L8.878 12.17L9.043 12.17C9.364 10.433 10.157 9.572 11.045 9.572C11.168 9.572 11.272 9.587 11.371 9.61L10.759 12.821C10.424 12.728 10.096 12.682 9.808 12.682C9.115 12.682 8.713 13.069 8.524 13.847L7.925 16.892Z" fill="#1434CB"/>
     </svg>
 )
 
 const GPayIcon = () => (
-    <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-labelledby="gpay-title" width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title id="gpay-title">Google Pay</title>
         <rect width="38" height="24" rx="4" fill="white"/>
         <path d="M12.0199 10.6954V12.3384H14.8389C14.7109 13.2504 13.8399 14.5494 12.0199 14.5494C10.1589 14.5494 8.64389 12.9854 8.64389 11.0184C8.64389 9.05143 10.1589 7.48743 12.0199 7.48743C12.9319 7.48743 13.6219 7.85743 13.9489 8.16343L15.2269 6.92643C14.3559 6.13143 13.2929 5.64243 12.0199 5.64243C9.42989 5.64243 7.35589 7.61043 7.35589 10.0914V11.9454C7.35589 14.4264 9.42989 16.3944 12.0199 16.3944C14.6509 16.3944 16.4839 14.5614 16.4839 12.1134C16.4839 11.6664 16.4429 11.1774 16.3609 10.6954H12.0199Z" fill="#5F6368"/>
         <path d="M18.8053 10.8248H17.4373V16.2658H18.8053V10.8248Z" fill="#5F6368"/>
@@ -20,7 +22,8 @@ const GPayIcon = () => (
 )
 
 const PayPalIcon = () => (
-    <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-labelledby="paypal-title" width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title id="paypal-title">PayPal</title>
         <rect width="38" height="24" rx="4" fill="white"/>
         <path d="M12.046 12.1868C12.316 11.4528 12.871 10.8128 13.564 10.4588C14.269 10.0928 15.064 10.0148 15.823 10.2458C16.444 10.4348 16.945 10.8428 17.215 11.4008C17.485 11.9708 17.509 12.6008 17.284 13.1888C17.071 13.7288 16.645 14.1728 16.108 14.4188C15.619 14.6348 15.064 14.6708 14.545 14.5208C13.684 14.2808 13.063 13.6028 12.871 12.7688L12.046 12.1868ZM14.131 11.8928C13.885 12.2168 13.849 12.6248 14.029 12.9728C14.209 13.3088 14.563 13.5188 14.941 13.5188C15.586 13.5188 16.105 13.0088 16.105 12.3668C16.105 11.7248 15.586 11.2148 14.941 11.2148C14.647 11.2148 14.365 11.3108 14.155 11.5028L14.131 11.8928Z" fill="#253B80"/>
         <path d="M18.8954 12.1868C19.1654 11.4528 19.7204 10.8128 20.4134 10.4588C21.1184 10.0928 21.9134 10.0148 22.6724 10.2458C23.2934 10.4348 23.7944 10.8428 24.0644 11.4008C24.3344 11.9708 24.3584 12.6008 24.1334 13.1888C23.9204 13.7288 23.4944 14.1728 22.9574 14.4188C22.4684 14.6348 21.9134 14.6708 21.3944 14.5208C20.5334 14.2808 19.9124 13.6028 19.7204 12.7688L18.8954 12.1868ZM20.9804 11.8928C20.7344 12.2168 20.6984 12.6248 20.8784 12.9728C21.0584 13.3088 21.4124 13.5188 21.7904 13.5188C22.4354 13.5188 22.9544 13.0088 22.9544 12.3668C22.9544 11.7248 22.4354 11.2148 21.7904 11.2148C21.4964 11.2148 21.2144 11.3108 21.0044 11.5028L20.9804 11.8928Z" fill="#253B80"/>
@@ -33,7 +36,8 @@ const PayPalIcon = () => (
 )
 
 const ApplePayIcon = () => (
-    <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-labelledby="applepay-title" width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title id="applepay-title">Apple Pay</title>
         <rect width="38" height="24" rx="4" fill="white"/>
         <path d="M16.9405 10.36C17.0015 9.016 18.0695 8.164 19.1615 8.152C20.2655 8.152 21.2195 8.92 21.2805 10.084L19.4585 10.156C19.3975 9.532 18.9455 9.1 18.4295 9.124C17.9135 9.148 17.5115 9.616 17.5115 10.228C17.5115 10.828 17.8955 11.296 18.4295 11.296H21.2805V12.4H18.4535C17.8295 12.4 17.4395 12.892 17.4395 13.516C17.4395 14.128 17.8535 14.596 18.4295 14.608C18.9575 14.608 19.3895 14.188 19.4585 13.576L21.2805 13.636C21.2195 14.992 20.1755 15.82 19.1015 15.832C18.0275 15.832 16.9415 14.992 16.9415 13.66L16.9405 10.36Z" fill="#000000"/>
         <path d="M22.0463 15.7H23.5103V8.28398H22.0463V15.7Z" fill="#000000"/>
@@ -43,7 +47,8 @@ const ApplePayIcon = () => (
 )
 
 const MastercardIcon = () => (
-    <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg role="img" aria-labelledby="mastercard-title" width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <title id="mastercard-title">Mastercard</title>
         <rect width="38" height="24" rx="4" fill="white"/>
         <circle cx="14" cy="12" r="6" fill="#EB001B"/>
         <circle cx="24" cy="12" r="6" fill="#F79E1B"/>
@@ -64,21 +69,21 @@ export function Footer() {
                     </Link>
                     <p className="text-sm">We are committed to providing an exceptional beauty service booking experience with fast and friendly service.</p>
                     <div>
-                        <p className="text-sm font-semibold">Telp</p>
+                        <h3 className="text-sm font-semibold">Telp</h3>
                         <p className="text-sm">(225) 265-0118</p>
                     </div>
                     <div>
-                        <p className="text-sm font-semibold">Mail</p>
+                        <h3 className="text-sm font-semibold">Mail</h3>
                         <p className="text-sm">hello@beautybook.com</p>
                     </div>
                     <div>
-                        <p className="text-sm font-semibold">Address</p>
+                        <h3 className="text-sm font-semibold">Address</h3>
                         <p className="text-sm">123 Beauty Lane, Suite 100, Los Angeles, CA 90210</p>
                     </div>
                 </div>
 
                 <div>
-                    <h4 className="font-semibold mb-4">General</h4>
+                    <h3 className="font-semibold mb-4">General</h3>
                     <ul className="space-y-3 text-sm">
                         <li><Link href="#" className="hover:underline">Terms And Conditions</Link></li>
                         <li><Link href="#" className="hover:underline">Privacy Policy</Link></li>
@@ -88,7 +93,7 @@ export function Footer() {
                 </div>
 
                 <div>
-                    <h4 className="font-semibold mb-4">Company</h4>
+                    <h3 className="font-semibold mb-4">Company</h3>
                     <ul className="space-y-3 text-sm">
                         <li><Link href="#" className="hover:underline">About Us</Link></li>
                         <li><Link href="#" className="hover:underline">Blog</Link></li>
@@ -97,7 +102,7 @@ export function Footer() {
                 </div>
 
                 <div>
-                    <h4 className="font-semibold mb-4">Help</h4>
+                    <h3 className="font-semibold mb-4">Help</h3>
                     <ul className="space-y-3 text-sm">
                         <li><Link href="#" className="hover:underline">Contact</Link></li>
                         <li><Link href="#" className="hover:underline">FAQs</Link></li>
@@ -106,7 +111,7 @@ export function Footer() {
             </div>
             <div className="mt-12 pt-8 border-t border-footer-foreground/10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-sm text-center md:text-left text-footer-foreground/80">&copy; 2024 Beauty Book. All Rights Reserved</p>
+                    <p className="text-sm text-center md:text-left text-footer-foreground/80">&copy; {new Date().getFullYear()} Beauty Book. All Rights Reserved</p>
                     <div className="flex items-center gap-4 text-footer-foreground/80">
                         <Link href="#" aria-label="Instagram"><Instagram className="w-5 h-5 hover:text-primary transition-colors" /></Link>
                         <Link href="#" aria-label="Facebook"><Facebook className="w-5 h-5 hover:text-primary transition-colors" /></Link>

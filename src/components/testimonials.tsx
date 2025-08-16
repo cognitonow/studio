@@ -39,11 +39,11 @@ export function Testimonials() {
                     <p className="text-muted-foreground">{review.comment}</p>
                     <div className="mt-6 flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={review.avatarUrl} alt={review.author} data-ai-hint={review.dataAiHint} />
+                        <AvatarImage src={review.avatarUrl} alt={`${review.author}'s profile picture`} data-ai-hint={review.dataAiHint} />
                         <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold">{review.author}</p>
+                        <h3 className="font-semibold">{review.author}</h3>
                         <p className="text-sm text-muted-foreground">{review.title}</p>
                       </div>
                     </div>

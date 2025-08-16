@@ -31,7 +31,7 @@ export default function AccountPage() {
         <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle>Profile Settings</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">Profile Settings</h2>
               <CardDescription>Manage your public profile and personal information.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -62,7 +62,7 @@ export default function AccountPage() {
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Billing Information</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">Billing Information</h2>
               <CardDescription>Manage your payment methods.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -84,7 +84,7 @@ export default function AccountPage() {
         <TabsContent value="security">
           <Card>
             <CardHeader>
-              <CardTitle>Security</CardTitle>
+              <h2 className="text-2xl font-semibold leading-none tracking-tight">Security</h2>
               <CardDescription>Change your password.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
