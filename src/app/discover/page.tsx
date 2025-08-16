@@ -32,6 +32,7 @@ import { ProviderProfileView } from '@/components/provider-profile-view';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/hooks/use-user-store';
 import { AuthDialog } from '@/components/auth-dialog';
+import { AuthButton } from '@/components/auth-button';
 
 function ExploreStack() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -122,23 +123,8 @@ function ExploreStack() {
     });
   };
 
-  const handleOpenChat = () => {
-      const provider = providers[activeIndex];
-      if (provider) {
-          router.push(`/messages?providerId=${provider.id}`);
-      }
-  }
-
-  const ChatButtonWrapper = ({ children }: { children: React.ReactNode }) => {
-    if (user) {
-      return <div onClick={handleOpenChat}>{children}</div>;
-    }
-    return (
-      <AuthDialog>
-        {children}
-      </AuthDialog>
-    );
-  };
+  const currentProvider = providers[activeIndex];
+  const chatHref = currentProvider ? `/messages?providerId=${currentProvider.id}` : '#';
 
   return (
     <div className="flex flex-col items-center">
@@ -154,9 +140,12 @@ function ExploreStack() {
           <Button onClick={handlePrevious} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Previous">
             <Undo2 className="h-10 w-10 text-primary" />
           </Button>
-          <Button onClick={handleLike} variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Save to list">
+          <AuthButton
+            onClick={handleLike} 
+            variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Save to list"
+          >
             <Heart className="h-10 w-10 fill-primary text-primary" />
-          </Button>
+          </AuthButton>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="View profile" onClick={handleProfileView}>
@@ -173,11 +162,12 @@ function ExploreStack() {
                 <ProviderProfileView provider={providers[activeIndex]} />
             </DialogContent>
           </Dialog>
-           <ChatButtonWrapper>
-              <Button variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat">
+           <AuthButton
+                href={chatHref}
+                variant="outline" size="icon" className="rounded-full h-20 w-20 shadow-md transition-shadow hover:shadow-lg hover:shadow-primary/30" aria-label="Open chat"
+           >
                 <MessageCircle className="h-10 w-10 fill-primary text-primary" />
-              </Button>
-           </ChatButtonWrapper>
+            </AuthButton>
         </div>
       </div>
     </div>
