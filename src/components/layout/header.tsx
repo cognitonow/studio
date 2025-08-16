@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, Database } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,10 +24,12 @@ function getNavLinks(role: UserRole) {
         guest: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/services', label: 'Services', icon: Database },
                 { href: '/signup', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
+                { href: '/services', label: 'Services' },
                 { href: '/signup', label: 'Sign Up' },
                 { href: '/', label: 'Home' },
             ],
@@ -35,6 +37,7 @@ function getNavLinks(role: UserRole) {
         client: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/services', label: 'Services', icon: Database },
                 { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
                 { href: '/bookings', label: 'My Bookings', icon: Book },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
@@ -43,6 +46,7 @@ function getNavLinks(role: UserRole) {
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
+                { href: '/services', label: 'Services' },
                 { href: '/dashboard', label: 'Dashboard' },
                 { href: '/my-lists', label: 'My Lists' },
                 { href: '/bookings', label: 'My Bookings' },
@@ -54,12 +58,14 @@ function getNavLinks(role: UserRole) {
         provider: {
             desktop: [
                 { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { href: '/services', label: 'Services', icon: Database },
                 { href: '/messages', label: 'Messages', icon: MessageSquare },
                 { href: '/notifications', label: 'Notifications', icon: Bell },
                 { href: '/account', label: 'Account', icon: User },
             ],
             mobile: [
                 { href: '/dashboard', label: 'Dashboard' },
+                { href: '/services', label: 'Services' },
                 { href: '/messages', label: 'Messages' },
                 { href: '/notifications', label: 'Notifications' },
                 { href: '/account', 'label': 'Account' },
