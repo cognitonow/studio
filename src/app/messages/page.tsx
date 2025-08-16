@@ -1,22 +1,26 @@
+'use client';
 
-'use client'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Search, Send, User } from "lucide-react";
+import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data";
+import { useState, useEffect, useRef, Suspense } from "react"; // Import Suspense
+import type { Conversation, Message } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { UserMessage, ProviderMessage, AiMessage } from "@/components/message-bubbles";
+import { useUserRole } from "@/hooks/use-user-role";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, User } from "lucide-react"
-import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data"
-import { useState, useEffect, useRef } from "react"
-import type { Conversation, Message } from "@/lib/types"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
-import { useSearchParams, useRouter } from "next/navigation"
-import { UserMessage, ProviderMessage, AiMessage } from "@/components/message-bubbles"
-import { useUserRole } from "@/hooks/use-user-role"
+// Simple loading component
+function Loading() {
+  return <div>Loading...</div>;
+}
 
-export default function MessagesPage() {
+function MessagesContent() {
   const { role: userRole } = useUserRole();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
@@ -25,7 +29,6 @@ export default function MessagesPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     setIsMounted(true);
@@ -37,11 +40,11 @@ export default function MessagesPage() {
   }
 
   useEffect(() => {
-    if (!isMounted) return;
+    if (!isMounted || userRole === 'guest') return; // Add check for guest role
 
     const convos = fetchConversations();
     setConversations(convos);
-    
+
     let initialConvo: Conversation | undefined = undefined;
 
     if (userRole === 'client') {
@@ -67,31 +70,32 @@ export default function MessagesPage() {
             }
         }
     }
-    
+
     if (initialConvo) {
       router.replace('/messages'); // Clean up URL params after handling
     } else if (convos.length > 0) {
       initialConvo = convos[0];
     }
-    
+
     setActiveConversation(initialConvo);
 
   }, [userRole, searchParams, router, isMounted]);
-  
+
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
-    if (convo.unread > 0) {
-      markAllMessagesAsRead(convo.id, userRole);
+    if (userRole !== 'guest' && convo.unread > 0) { // Add check for guest role
+      markAllMessagesAsRead(convo.id, userRole as 'client' | 'provider');
       setConversations(fetchConversations());
     }
   }
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim() || !activeConversation) return;
+    if (!messageText.trim() || !activeConversation || userRole === 'guest') return; // Add check for guest role
 
-    const sender = userRole;
-    addMessage(activeConversation.id, sender, messageText, userRole);
+    const sender = userRole; // userRole will be 'client' or 'provider' here
+    addMessage(activeConversation.id, sender as 'user' | 'provider', messageText, userRole as 'client' | 'provider'); // Cast sender and role for the function
+
 
     setMessageText("");
     setConversations(fetchConversations());
@@ -105,14 +109,11 @@ export default function MessagesPage() {
       });
     }
   }, [activeConversation]);
-  
-  const activeMessages = activeConversation ? 
-    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id)) 
+
+  const activeMessages = activeConversation && userRole !== 'guest' ? // Add check for guest role
+    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id, userRole as 'client'))
     : [];
 
-  if (!isMounted) {
-    return <div>Loading...</div>; // Or a loading skeleton
-  }
 
   if (conversations.length === 0) {
     return (
@@ -133,7 +134,7 @@ export default function MessagesPage() {
   return (
     <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)]">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 h-full">
-        
+
         {/* Conversations List */}
         <Card className="md:col-span-1 lg:col-span-1 h-full flex flex-col">
           <CardHeader>
@@ -142,6 +143,7 @@ export default function MessagesPage() {
             </div>
             <div className="relative pt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                {/* Corrected Input component */}
                 <Input placeholder="Search messages..." className="pl-10" />
             </div>
           </CardHeader>
@@ -222,5 +224,13 @@ export default function MessagesPage() {
 
       </div>
     </div>
-  )
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <MessagesContent />
+    </Suspense>
+  );
 }
