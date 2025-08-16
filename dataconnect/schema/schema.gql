@@ -1,49 +1,64 @@
 type User @table {
   displayName: String!
   email: String!
-  userType: String!
   createdAt: Timestamp!
   photoUrl: String
   bio: String
-  phoneNumber: String
-}
-
-type ServiceCategory @table {
-  name: String!
-  description: String!
-  iconUrl: String
+  isProvider: Boolean
 }
 
 type Service @table {
   name: String!
   description: String!
+  category: String!
   price: Float!
-  provider: User!
-  category: ServiceCategory!
   createdAt: Timestamp!
-  durationEstimate: Int
-  isHourly: Boolean
-  availableDays: [String]
+  unit: String
+  minPrice: Float
+  maxPrice: Float
+  provider: User
+}
+
+type ServiceRequest @table {
+  title: String!
+  description: String!
+  category: String!
+  status: String!
+  createdAt: Timestamp!
+  budget: Float
+  location: String
+  dueDate: Date
+  requester: User
+}
+
+type Quote @table {
+  price: Float!
+  message: String!
+  createdAt: Timestamp!
+  status: String!
+  estimatedCompletionTime: String
+  serviceRequest: ServiceRequest
+  provider: User
 }
 
 type Booking @table {
-  seeker: User!
-  provider: User!
-  service: Service!
   bookingDate: Timestamp!
   status: String!
+  totalPrice: Float!
   createdAt: Timestamp!
-  notesFromSeeker: String
-  notesFromProvider: String
+  location: String
+  notes: String
+  customer: User
+  provider: User
+  service: Service
 }
 
 type Review @table {
-  seeker: User!
-  provider: User!
-  service: Service!
-  booking: Booking!
   rating: Int!
+  reviewText: String!
   createdAt: Timestamp!
-  comment: String
-  responseText: String
+  updatedAt: Timestamp
+  reviewer: User
+  provider: User
+  booking: Booking
 }
