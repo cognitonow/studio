@@ -15,15 +15,24 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+console.log("[firebase.ts] Firebase Config Object:", firebaseConfig);
+
+
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
 // Initialize Firebase
 if (getApps().length === 0) {
-  app = initializeApp(firebaseConfig);
+  try {
+    app = initializeApp(firebaseConfig);
+    console.log("[firebase.ts] Firebase App initialized successfully.");
+  } catch (error) {
+    console.error("[firebase.ts] Error initializing Firebase App:", error);
+  }
 } else {
   app = getApp();
+  console.log("[firebase.ts] Existing Firebase App retrieved.");
 }
 
 auth = getAuth(app);
