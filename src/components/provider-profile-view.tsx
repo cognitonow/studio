@@ -146,12 +146,10 @@ export function ProviderProfileView({ provider }: ProviderProfileViewProps) {
                         ))}
                     </Accordion>
                     <div className="flex flex-col gap-2 mt-6">
-                        <Button asChild>
-                            <Link href={`/provider/${provider.id}`}>
-                                <User className="w-4 h-4 mr-2"/>
-                                View Full Profile
-                            </Link>
-                        </Button>
+                        <AuthButton href={`/provider/${provider.id}`}>
+                            <User className="w-4 h-4 mr-2"/>
+                            View Full Profile
+                        </AuthButton>
                         <AuthButton variant="outline">
                           <Heart className="w-4 h-4 mr-2"/> Save to Favourites
                         </AuthButton>
