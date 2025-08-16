@@ -1,0 +1,36 @@
+env:
+-   variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyAIHQarMmrw8FNAgDMQ1AYSjg7dkgDgBls"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "beauty-book-pro.firebaseapp.com"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "beauty-book-pro"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "beauty-book-pro.firebasestorage.app"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "464314581076"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:464314581076:web:61d6df6d7dfbe3fd0aedc1"
+    availability:
+      -   BUILD
+      -   RUNTIME
+-   variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: "G-FY32BTYM2W"
+    availability:
+      -   BUILD
+      -   RUNTIME
