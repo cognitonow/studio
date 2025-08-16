@@ -60,7 +60,9 @@ export default function ProviderDetailPage() {
     }
     return (
       <AuthDialog>
-        <Button>{children}</Button>
+        <Button>
+          {children}
+        </Button>
       </AuthDialog>
     );
   };
