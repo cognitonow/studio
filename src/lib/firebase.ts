@@ -19,6 +19,7 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
+// Initialize Firebase
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
