@@ -60,9 +60,7 @@ export default function ProviderDetailPage() {
     }
     return (
       <AuthDialog>
-        <Button>
-          {children}
-        </Button>
+        <Button>{children}</Button>
       </AuthDialog>
     );
   };
@@ -80,11 +78,11 @@ export default function ProviderDetailPage() {
   
   const AuthFavouriteButton = ({ children }: { children: React.ReactNode }) => {
     if (user) {
-        return <Button variant="secondary">{children}</Button>;
+        return <Button variant="outline">{children}</Button>;
     }
      return (
       <AuthDialog>
-        <Button variant="secondary">{children}</Button>
+        <Button variant="outline">{children}</Button>
       </AuthDialog>
     );
   }
