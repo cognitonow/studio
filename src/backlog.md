@@ -29,6 +29,37 @@ This document contains a list of features, improvements, and ideas for future de
 - [x] **Improve Performance:** Verified that all images are served using the `next/image` component to optimize loading times.
 - [x] **Implement SEO Fundamentals:** Added meta descriptions and keywords to the main layout to improve search engine ranking.
 
+## Architecture & Refactoring
+
+### Full Backend & Database Migration Plan
+
+This section outlines the analysis and steps required to migrate the application from the current mock data (`src/lib/data.ts`) to a production-ready backend using Firebase Data Connect and a PostgreSQL database.
+
+#### Phase 1: Defining the Database Schema (Low-to-Medium Effort)
+
+This phase involves creating the structure for your PostgreSQL database. You will define your tables and their relationships in the `dataconnect/schema/` directory.
+
+- **Create Table Schemas**: For each core data type in `src/lib/types.ts` (`User`, `Provider`, `Service`, `Booking`, etc.), create a corresponding `.gql` file.
+- **Define Columns & Types**: Map TypeScript types to SQL types (e.g., `string` -> `String`, `number` -> `Int`).
+- **Establish Relationships**: Define foreign key relationships between tables (e.g., a `Booking` links to a `Provider` and a `User`).
+
+#### Phase 2: Rewriting Data Access Functions (High Effort)
+
+This is the most time-consuming phase, involving a rewrite of `src/lib/data.ts` to replace mock data functions with real database calls.
+
+- **Remove Mock Data**: All hardcoded arrays (`providers`, `bookings`, `reviews`, etc.) will be deleted.
+- **Implement Queries (Reading Data)**:
+  - For every function that *retrieves* data (e.g., `getProviders`, `getBookingById`), define a **query** in the relevant `.gql` file.
+  - Update the function in `data.ts` to call this query using the Data Connect SDK.
+  - **Example**: `getProviderById(id)` will change from `providers.find(p => p.id === id)` to a Data Connect query like `Provider.get({ id: id })`.
+- **Implement Mutations (Writing Data)**:
+  - For every function that *changes* data (e.g., `addBooking`, `updateBookingStatus`), define a **mutation** in the relevant `.gql` file.
+  - Update the function in `data.ts` to call this mutation.
+  - **Example**: `addBooking(bookingData)` will change from `bookings.unshift(newBooking)` to calling an `insertBooking` mutation with the booking data.
+- **Refactor AI Flows**: The AI-generated messages will need to be adapted to work with the data returned from your real database, but the core logic of calling the flows will remain the same.
+
+This migration centralizes backend changes to the data layer, minimizing impact on UI components and providing a clear path to a production-ready application.
+
 
 ## Future Backend Features (Cloud Functions)
 
