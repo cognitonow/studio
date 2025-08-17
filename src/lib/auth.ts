@@ -8,6 +8,7 @@ import { providers } from './data';
 // Correctly import from the base 'firebase/data-connect' and the generated connector
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
 import { insertUser, connectorConfig } from '@firebasegen/default-connector';
+import { mutations } from '@firebasegen/default-connector'; // Import mutations from the generated SDK
 
 interface SignUpCredentials {
     name: string;
@@ -35,7 +36,8 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
             connectDataConnectEmulator(dataConnect, 'localhost', 9399);
         }
 
-        await insertUser(dataConnect, {
+        // Access insertUser mutation via the imported mutations object
+        await mutations.insertUser(dataConnect, {
             users: {
                 id: firebaseUser.uid,
                 name: name,
