@@ -1,64 +1,51 @@
 type User @table {
+  authId: String!
   displayName: String!
-  email: String!
   createdAt: Timestamp!
+  email: String
   photoUrl: String
+  phone: String
+  address: String
+}
+
+type Provider @table {
+  user: User!
+  businessName: String!
+  contactEmail: String!
+  createdAt: Timestamp!
+  website: String
   bio: String
-  isProvider: Boolean
+  averageRating: Float
 }
 
 type Service @table {
+  provider: Provider!
   name: String!
   description: String!
-  category: String!
   price: Float!
   createdAt: Timestamp!
-  unit: String
-  minPrice: Float
-  maxPrice: Float
-  provider: User
-}
-
-type ServiceRequest @table {
-  title: String!
-  description: String!
-  category: String!
-  status: String!
-  createdAt: Timestamp!
-  budget: Float
-  location: String
-  dueDate: Date
-  requester: User
-}
-
-type Quote @table {
-  price: Float!
-  message: String!
-  createdAt: Timestamp!
-  status: String!
-  estimatedCompletionTime: String
-  serviceRequest: ServiceRequest
-  provider: User
+  category: String
+  durationMinutes: Int
 }
 
 type Booking @table {
+  user: User!
+  service: Service!
+  provider: Provider!
   bookingDate: Timestamp!
-  status: String!
-  totalPrice: Float!
+  status: String! # ENUM: 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'
   createdAt: Timestamp!
-  location: String
   notes: String
-  customer: User
-  provider: User
-  service: Service
+  scheduledStartTime: Timestamp
+  scheduledEndTime: Timestamp
 }
 
 type Review @table {
+  user: User!
+  service: Service!
+  provider: Provider!
+  booking: Booking!
   rating: Int!
-  reviewText: String!
   createdAt: Timestamp!
-  updatedAt: Timestamp
-  reviewer: User
-  provider: User
-  booking: Booking
+  comment: String
 }

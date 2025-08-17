@@ -3,9 +3,8 @@ generate:
   javascriptSdk:
     outputDir: ../../dataconnect-generated/js/default-connector
     package: "@firebasegen/default-connector"
-    packageJsonDir: ../../
+    packageJsonDir: ../..
     react: true
-
 queries:
   listServices: |
     query {
@@ -13,5 +12,8 @@ queries:
         id
         name
         price
+        category
+        createdAt
+        description
       }
     }

@@ -1,11 +1,11 @@
 specVersion: "v1"
-serviceId: "beauty-book-pro"
+serviceId: "studio"
 location: "europe-west4"
 schema:
   source: "./schema"
   datasource:
     postgresql:
-      database: "fdcdb"
+      database: "postgres"
       cloudSql:
         instanceId: "beauty-book-pro-fdc"
       # schemaValidation: "COMPATIBLE"
