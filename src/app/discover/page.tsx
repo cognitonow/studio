@@ -27,7 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExploreProviderCard } from '@/components/explore-provider-card';
 import * as React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import type { Provider } from '@/lib/types';
+import type { Provider, ServiceCategory, Service } from '@/lib/types';
 import { ProviderProfileView } from '@/components/provider-profile-view';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/hooks/use-user-store';

@@ -9,6 +9,16 @@ import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation'
 import { draftNewBookingRequest } from '@/ai/flows/draft-new-booking-request';
 import { draftBookingUpdate } from '@/ai/flows/draft-booking-update';
 import { draftNewReviewMessage } from '@/ai/flows/draft-new-review';
+import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
+import { connectorConfig } from '@firebasegen/default-connector';
+
+const dataConnect = getDataConnect(connectorConfig);
+
+if (process.env.NODE_ENV === 'development') {
+    connectDataConnectEmulator(dataConnect, 'localhost', 9399);
+}
+
+// MOCK DATA - This will be replaced with real database calls.
 
 export const serviceCategories: ServiceCategory[] = [
     { id: 'hair', name: 'Hair' },
@@ -21,6 +31,7 @@ export const serviceCategories: ServiceCategory[] = [
     { id: 'medi-spa', name: 'Aesthetic / Medi-Spa' },
     { id: 'custom', name: 'Custom' },
 ];
+
 
 export const dublinDistricts: DublinDistrict[] = [
     { id: 'd1', name: 'Dublin 1' },
@@ -320,6 +331,9 @@ let providerNotifications: Notification[] = [
     }
 ];
 
+
+export const getServiceCategories = () => serviceCategories;
+export const getAllServices = () => services;
 export const getBookings = () => {
     const today = startOfDay(new Date());
     const upcoming = bookings

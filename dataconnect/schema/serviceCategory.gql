@@ -1,5 +1,0 @@
-
-type ServiceCategory @table {
-  id: String! @id
-  name: String!
-}
