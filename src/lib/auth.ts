@@ -7,6 +7,7 @@ import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
 import { insertUser, getDataConnect } from '@firebasegen/default-connector';
 import { connectorConfig } from '@firebasegen/default-connector';
+import { connectDataConnectEmulator } from 'firebase/data-connect';
 
 interface SignUpCredentials {
     name: string;
@@ -28,6 +29,12 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
 
         // Step 2: Save user data to your SQL database via Data Connect
         const dataConnect = getDataConnect(connectorConfig);
+
+        // In a development environment, connect to the emulator
+        if (process.env.NODE_ENV === 'development') {
+            connectDataConnectEmulator(dataConnect, 'localhost', 9399);
+        }
+
         await insertUser(dataConnect, {
             users: {
                 id: firebaseUser.uid,
