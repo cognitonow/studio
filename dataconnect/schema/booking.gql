@@ -1,0 +1,11 @@
+type Booking @table(name: "bookings") {
+  id: String! @pk
+  providerId: String!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
