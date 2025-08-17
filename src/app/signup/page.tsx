@@ -35,12 +35,14 @@ export default function SignupPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log('[SignupPage] Starting sign-up process for email:', email, 'with role:', role);
 
     const { user, error } = await signUp({ name, email, password, role });
 
     setIsLoading(false);
 
     if (error || !user) {
+      console.error("[SignupPage] Sign up failed:", error?.message);
       toast({
         title: "Sign Up Failed",
         description: error?.message || "An unknown error occurred.",
@@ -49,6 +51,7 @@ export default function SignupPage() {
       return;
     }
 
+    console.log('[SignupPage] Sign up successful for user:', user.name);
     toast({
       title: "Success!",
       description: "Your account has been created.",

@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
@@ -19,8 +20,14 @@ let auth: Auth;
 let db: Firestore;
 
 if (getApps().length === 0) {
+  console.log("[firebase.ts] Initializing new Firebase app...");
+  console.log("[firebase.ts] Using config:", {
+      ...firebaseConfig,
+      apiKey: firebaseConfig.apiKey ? '********' : 'NOT FOUND' // Don't log the actual key
+  });
   app = initializeApp(firebaseConfig);
 } else {
+  console.log("[firebase.ts] Getting existing Firebase app.");
   app = getApp();
 }
 
