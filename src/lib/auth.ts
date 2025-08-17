@@ -2,36 +2,35 @@
 'use server';
 
 import { app } from './firebase';
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
-import { providers } from './data';
+import { providers, getProviderByUserId } from './data';
 
-interface SignUpCredentials {
-    name: string;
+interface AuthCredentials {
+    name?: string;
     email: string;
     password: string;
-    role: UserRole;
+    role?: UserRole;
 }
 
-export async function signUp({ name, email, password, role }: SignUpCredentials) {
+export async function signUp({ name, email, password, role = 'client' }: AuthCredentials) {
     console.log('[auth.ts] signUp function started with:', { name, email, role });
     try {
-        console.log('[auth.ts] Getting Firebase Auth instance.');
         const auth = getAuth(app);
-        console.log('[auth.ts] Firebase Auth instance obtained.');
-
         console.log('[auth.ts] Attempting to create user with Firebase Auth...');
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
         console.log('[auth.ts] Firebase Auth user created successfully:', firebaseUser.uid);
 
-        console.log('[auth.ts] Attempting to update Firebase Auth profile...');
-        await updateProfile(firebaseUser, { displayName: name });
-        console.log('[auth.ts] Firebase Auth profile updated successfully.');
+        if (name) {
+            console.log('[auth.ts] Attempting to update Firebase Auth profile...');
+            await updateProfile(firebaseUser, { displayName: name });
+            console.log('[auth.ts] Firebase Auth profile updated successfully.');
+        }
 
         const userData: User = {
             id: firebaseUser.uid,
-            name: name,
+            name: name || firebaseUser.displayName || 'New User',
             email: email,
             role: role,
         };
@@ -40,7 +39,7 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
             const newProviderProfile: Provider = {
                 id: `provider-${providers.length + 1}`,
-                userId: firebaseUser.uid, // This is the critical fix
+                userId: firebaseUser.uid,
                 name: `${name}'s Shop`,
                 specialty: 'New Provider',
                 avatarUrl: 'https://placehold.co/100x100.png',
@@ -65,6 +64,36 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
         return { user: userData };
     } catch (error: any) {
         console.error('[auth.ts] An error occurred during the sign up process:', error);
+        const errorMessage = error.code
+            ? `Firebase error: ${error.message} (Code: ${error.code})`
+            : `An unknown error occurred: ${error.message}`;
+        return { error: { message: errorMessage } };
+    }
+}
+
+
+export async function signIn({ email, password }: AuthCredentials) {
+    console.log('[auth.ts] signIn function started with:', { email });
+    try {
+        const auth = getAuth(app);
+        console.log('[auth.ts] Attempting to sign in user with Firebase Auth...');
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const firebaseUser = userCredential.user;
+        console.log('[auth.ts] Firebase Auth user signed in successfully:', firebaseUser.uid);
+
+        const providerProfile = getProviderByUserId(firebaseUser.uid);
+
+        const userData: User = {
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || 'User',
+            email: email,
+            role: providerProfile ? 'provider' : 'client',
+        };
+        
+        console.log('[auth.ts] Sign in process complete. Returning user data:', userData);
+        return { user: userData };
+    } catch (error: any) {
+        console.error('[auth.ts] An error occurred during the sign in process:', error);
         const errorMessage = error.code
             ? `Firebase error: ${error.message} (Code: ${error.code})`
             : `An unknown error occurred: ${error.message}`;

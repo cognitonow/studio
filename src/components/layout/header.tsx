@@ -25,12 +25,12 @@ function getNavLinks(role: UserRole) {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
                 { href: '/services', label: 'Services', icon: Database },
-                { href: '/signup', label: 'Sign Up', icon: UserPlus }
+                { href: '/auth', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
                 { href: '/services', label: 'Services' },
-                { href: '/signup', label: 'Sign Up' },
+                { href: '/auth', label: 'Log In / Sign Up' },
                 { href: '/', label: 'Home' },
             ],
         },
