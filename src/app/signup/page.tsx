@@ -35,13 +35,14 @@ export default function SignupPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log('Attempting sign up with:', { name, email, password, role });
+    console.log('[SignupPage] Form submitted. Calling signUp with:', { name, email, role });
 
     const { user, error } = await signUp({ name, email, password, role });
 
     setIsLoading(false);
 
     if (error || !user) {
+      console.error('[SignupPage] Sign up failed:', error);
       toast({
         title: "Sign Up Failed",
         description: error?.message || "An unknown error occurred.",
@@ -50,12 +51,12 @@ export default function SignupPage() {
       return;
     }
 
+    console.log('[SignupPage] Sign up successful for user:', user);
     toast({
       title: "Success!",
       description: "Your account has been created.",
     });
     
-    // Use the login function from the store
     login(user as User);
     
     router.push('/dashboard');

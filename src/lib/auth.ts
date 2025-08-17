@@ -2,10 +2,9 @@
 'use server';
 
 import { app } from './firebase';
-import { getAuth, createUserWithEmailAndPassword, updateProfile, type User as FirebaseUser } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
-// Correctly import from the base 'firebase/data-connect' and the generated connector
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
 import { insertUser, connectorConfig } from '@firebasegen/default-connector';
 
@@ -17,44 +16,42 @@ interface SignUpCredentials {
 }
 
 export async function signUp({ name, email, password, role }: SignUpCredentials) {
-    console.log('Attempting to sign up with credentials:', { name, email, role });
+    console.log('[auth.ts] signUp function started with:', { name, email, role });
     try {
+        console.log('[auth.ts] Getting Firebase Auth instance.');
         const auth = getAuth(app);
+        console.log('[auth.ts] Firebase Auth instance obtained.');
 
-        // Step 1: Create user in Firebase Authentication
+        console.log('[auth.ts] Attempting to create user with Firebase Auth...');
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
+        console.log('[auth.ts] Firebase Auth user created successfully:', firebaseUser.uid);
 
-        console.log('Firebase Auth user created:', firebaseUser);
-
-        // Update profile display name in Firebase Auth
+        console.log('[auth.ts] Attempting to update Firebase Auth profile...');
         await updateProfile(firebaseUser, { displayName: name });
+        console.log('[auth.ts] Firebase Auth profile updated successfully.');
 
-        console.log('Firebase Auth profile updated.');
-
-        // Step 2: Save user data to your SQL database via Data Connect
+        console.log('[auth.ts] Initializing Data Connect...');
         const dataConnect = getDataConnect(connectorConfig);
+        console.log('[auth.ts] Data Connect initialized.');
 
-        // In a development environment, connect to the emulator
         if (process.env.NODE_ENV !== 'production') {
+            console.log('[auth.ts] Connecting to Data Connect emulator.');
             connectDataConnectEmulator(dataConnect, 'localhost', 9399);
         }
 
-        console.log('Data Connect client initialized:', dataConnect);
-
         const userDataForInsert = {
             users: {
-                id: firebaseUser.uid, // Using Firebase Auth UID as primary key
+                id: firebaseUser.uid,
                 name: name,
                 email: email,
                 role: role,
             }
         };
-        console.log('Attempting to insert user data into SQL via Data Connect:', userDataForInsert);
-        // Correct usage: Call the mutation directly, passing the dataConnect instance.
-        await insertUser(dataConnect, userDataForInsert);
+        console.log('[auth.ts] Preparing to insert user into SQL via Data Connect:', userDataForInsert);
         
-        console.log('User data successfully inserted into SQL.');
+        await insertUser(dataConnect, userDataForInsert);
+        console.log('[auth.ts] User data inserted into SQL successfully.');
 
         const userData: User = {
             id: firebaseUser.uid,
@@ -63,8 +60,8 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
             role: role,
         };
 
-        // If the user is a provider, create a new provider profile in our mock data
         if (role === 'provider') {
+            console.log('[auth.ts] User is a provider. Creating mock provider profile.');
             const newProviderProfile: Provider = {
                 id: `provider-${providers.length + 1}`,
                 userId: firebaseUser.uid,
@@ -85,18 +82,16 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
                 playlist: 'top-rated-nails',
             };
             providers.push(newProviderProfile);
+            console.log('[auth.ts] Mock provider profile created.');
         }
 
-        console.log('Sign up successful, returning user data:', userData);
+        console.log('[auth.ts] Sign up process complete. Returning user data:', userData);
         return { user: userData };
     } catch (error: any) {
-
-        console.error('An error occurred during sign up:', error);
-
-        // Provide a more user-friendly error message
-        const errorMessage = error.code === 'auth/email-already-in-use'
-            ? 'This email address is already in use.' 
-            : `Firebase error: ${error.message} (Code: ${error.code})`;
+        console.error('[auth.ts] An error occurred during the sign up process:', error);
+        const errorMessage = error.code
+            ? `Firebase error: ${error.message} (Code: ${error.code})`
+            : `An unknown error occurred: ${error.message}`;
         return { error: { message: errorMessage } };
     }
 }
