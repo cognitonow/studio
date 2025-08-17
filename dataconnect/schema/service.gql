@@ -1,12 +1,12 @@
-type Service @table(name: "services") {
-  id: String! @pk
+
+type Service @table(key: "id") {
+  id: String!
   categoryId: String!
   name: String!
   description: String!
   price: Float!
   duration: Int!
+  providers: [Provider] @manyToMany(joinTable: "ProviderServices")
 }
 
-type Query {
-  listServices: [Service]!
-}
+# Queries and Mutations will be added in Phase 2

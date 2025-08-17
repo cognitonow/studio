@@ -1,11 +1,14 @@
-type Booking @table(name: "bookings") {
-  id: String! @pk
+
+type Booking @table(key: "id") {
+  id: String!
   providerId: String!
-  providerName: String!
-  serviceIds: [String]!
+  provider: Provider! @relation(field: "providerId")
+  clientId: String!
+  client: User! @relation(field: "clientId")
   date: Timestamp!
   status: String!
-  clientName: String
   isPaid: Boolean!
   reviewId: String
 }
+
+# Queries and Mutations will be added in Phase 2
