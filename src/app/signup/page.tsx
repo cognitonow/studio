@@ -35,6 +35,7 @@ export default function SignupPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log('Attempting sign up with:', { name, email, password, role });
 
     const { user, error } = await signUp({ name, email, password, role });
 
