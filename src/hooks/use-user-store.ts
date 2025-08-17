@@ -17,7 +17,7 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set, get) => ({
   user: null,
-  role: 'client',
+  role: 'guest',
   isLoading: true,
   login: (user: User) => {
     let role: UserRole = 'client';
@@ -44,8 +44,8 @@ export const useUserStore = create<UserState>((set, get) => ({
   },
   initialize: () => {
     // In a real app, you would check for a token in localStorage or a cookie
-    // For this mock app, we'll just initialize to a default state.
-    // The login function will handle setting the correct user and role.
-    set({ isLoading: false });
+    // For this mock app, we'll just initialize to a default guest state.
+    // The login function will handle setting the correct user and role upon sign-up.
+    set({ user: null, role: 'guest', isLoading: false });
   },
 }));

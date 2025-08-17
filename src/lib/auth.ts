@@ -1,4 +1,3 @@
-
 import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -33,11 +32,10 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
         };
 
         // Create a corresponding user document in Firestore
-        await setDoc(doc(db, "users", firebaseUser.uid), userData);
-        console.log('[auth.ts] User document created in Firestore.');
+        // This is where you would store non-auth user data.
+        // For this demo, we are not using Firestore for user data.
 
         // If the user is a provider, create a new provider profile in our mock data
-        // This will later be moved to Firestore as well.
         if (role === 'provider') {
             const newProviderProfile: Provider = {
                 id: `provider-${providers.length + 1}`,

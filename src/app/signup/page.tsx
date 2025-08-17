@@ -36,14 +36,11 @@ export default function SignupPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log('[signup/page.tsx] handleSignUp initiated. State:', { name, email, password, role });
-
     const { user, error } = await signUp({ name, email, password, role });
 
     setIsLoading(false);
 
     if (error || !user) {
-      console.error('[signup/page.tsx] Sign up failed:', error?.message);
       toast({
         title: "Sign Up Failed",
         description: error?.message || "An unknown error occurred.",
@@ -52,7 +49,6 @@ export default function SignupPage() {
       return;
     }
 
-    console.log('[signup/page.tsx] Sign up successful. User:', user);
     toast({
       title: "Success!",
       description: "Your account has been created.",
