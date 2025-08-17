@@ -44,4 +44,4 @@ if (getApps().length === 0) {
 }
 
 // Export the initialized auth and db instances
-export { app, auth, db };
+export { app, auth, db, getFirestore };

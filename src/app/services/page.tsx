@@ -3,11 +3,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useListServicesQuery } from "../../../dataconnect-generated/js/default-connector/client";
+import { useListServicesQuery } from "@firebasegen/default-connector/react";
 import { ServerCrash } from "lucide-react";
+import { app } from "@/lib/firebase";
 
 export default function ServicesPage() {
-  const { data, loading, error } = useListServicesQuery({});
+  const { data, loading, error } = useListServicesQuery(app);
 
   return (
     <div className="container mx-auto py-12 px-4">
