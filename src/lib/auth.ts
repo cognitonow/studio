@@ -6,8 +6,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, up
 import type { User, UserRole, Provider } from './types';
 import { providers, getProviderByUserId } from './data';
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-// The import causing the error has been removed.
-// import { insertUser, connectorConfig } from '@firebasegen/default-connector';
+import { connectorConfig } from '@firebasegen/default-connector';
 
 interface AuthCredentials {
     name?: string;
@@ -16,10 +15,7 @@ interface AuthCredentials {
     role?: UserRole;
 }
 
-const dataConnect = getDataConnect({
-    service: 'beauty-book-14zko',
-    location: 'europe-west2'
-});
+const dataConnect = getDataConnect(connectorConfig);
 
 if (process.env.NODE_ENV === 'development') {
     connectDataConnectEmulator(dataConnect, 'localhost', 9399);
