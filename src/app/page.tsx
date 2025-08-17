@@ -6,30 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Testimonials } from '@/components/testimonials';
-import { app } from '@/lib/firebase';
-import { useState, useEffect } from 'react';
-// Import from the generated Data Connect React SDK package
-import { useListServicesQuery } from '@firebasegen/default-connector/react';
-import type { FirebaseApp } from 'firebase/app';
-
-interface Service {
-    id: string;
-    name: string;
-    price: number;
-}
 
 export default function LandingPage() {
-  const [firebaseApp, setFirebaseApp] = useState<FirebaseApp | null>(null);
-  useEffect(() => {
-    setFirebaseApp(app);
-  }, []);
-
-  const { data, isLoading, error } = useListServicesQuery(
-    firebaseApp,
-    {} // Variables object, even if empty
-  );
-  
-  const services: Service[] = data?.services?.filter((s): s is Service => s !== null) ?? [];
 
   return (
     <>
@@ -50,20 +28,6 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-          </div>
-
-          {/* Display fetched services */}
-          <div className="md:col-span-2 text-center">
-            <h2 className="text-2xl font-bold mb-4">Available Services</h2>
-            {isLoading && <p>Loading services...</p>}
-            {error && <p className="text-red-500">Error fetching services: {error.message}</p>}
-            {services.length > 0 && (
-              <ul>
-                {services.map((service) => (
-                  <li key={service.id}>{service.name} - ${service.price?.toFixed(2)}</li>
-                ))}
-              </ul>
-            )}
           </div>
           <div>
             <Image
