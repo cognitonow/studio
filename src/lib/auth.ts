@@ -5,7 +5,6 @@ import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
-import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
 
 interface SignUpCredentials {
     name: string;
@@ -41,7 +40,7 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
             const newProviderProfile: Provider = {
                 id: `provider-${providers.length + 1}`,
-                userId: firebaseUser.uid,
+                userId: firebaseUser.uid, // This is the critical fix
                 name: `${name}'s Shop`,
                 specialty: 'New Provider',
                 avatarUrl: 'https://placehold.co/100x100.png',
@@ -59,7 +58,7 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
                 playlist: 'top-rated-nails',
             };
             providers.push(newProviderProfile);
-            console.log('[auth.ts] Mock provider profile created.');
+            console.log('[auth.ts] Mock provider profile created for userId:', firebaseUser.uid);
         }
 
         console.log('[auth.ts] Sign up process complete. Returning user data:', userData);
