@@ -12,20 +12,16 @@ interface SignUpCredentials {
 }
 
 export async function signUp({ name, email, password, role }: SignUpCredentials) {
-    console.log('[auth.ts] signUp called with:', { name, email, role });
     try {
         // Get a fresh instance of the Auth service for this specific call
         const auth = getAuth(app);
-        console.log('[auth.ts] Auth service obtained. Attempting to create user...');
         
         // Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
-        console.log('[auth.ts] Firebase user created successfully:', firebaseUser.uid);
 
         // Update profile display name in Firebase Auth
         await updateProfile(firebaseUser, { displayName: name });
-        console.log('[auth.ts] Firebase profile updated with displayName:', name);
 
         const userData: User = {
             id: firebaseUser.uid,
@@ -56,12 +52,10 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
                 playlist: 'top-rated-nails',
             };
             providers.push(newProviderProfile);
-            console.log('[auth.ts] New provider profile created in mock data.');
         }
 
         return { user: userData };
     } catch (error: any) {
-        console.error("[auth.ts] Detailed error during sign up:", error);
         
         // Provide a more user-friendly error message
         const errorMessage = error.code === 'auth/email-already-in-use' 
