@@ -15,35 +15,11 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-console.log("[firebase.ts] Firebase Config Object:", firebaseConfig);
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-
-if (getApps().length === 0) {
-  // Initialize Firebase only if all required config values are present
-  if (firebaseConfig.apiKey) {
-    console.log("[firebase.ts] Initializing Firebase...");
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    console.log("[firebase.ts] Firebase initialized.");
-  } else {
-    console.error("[firebase.ts] Firebase config is missing. App cannot be initialized.");
-    // Create dummy instances to prevent crashing the app, but they won't work.
-    // In a real production app, you might want to handle this more gracefully.
-    app = {} as FirebaseApp;
-    auth = {} as Auth;
-    db = {} as Firestore;
-  }
-} else {
-  // If a Firebase app is already initialized, use that one
-  console.log("[firebase.ts] Using existing Firebase app.");
-  app = getApp();
-  auth = getAuth(app);
-  db = getFirestore(app);
-}
+// Initialize Firebase
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
 
 // Export the initialized auth and db instances
-export { app, auth, db, getFirestore };
+export { app, auth, db };
