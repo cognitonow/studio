@@ -6,7 +6,6 @@ import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase
 import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-import { insertUser, connectorConfig } from '@firebasegen/default-connector';
 
 interface SignUpCredentials {
     name: string;
@@ -30,28 +29,6 @@ export async function signUp({ name, email, password, role }: SignUpCredentials)
         console.log('[auth.ts] Attempting to update Firebase Auth profile...');
         await updateProfile(firebaseUser, { displayName: name });
         console.log('[auth.ts] Firebase Auth profile updated successfully.');
-
-        console.log('[auth.ts] Initializing Data Connect...');
-        const dataConnect = getDataConnect(connectorConfig);
-        console.log('[auth.ts] Data Connect initialized.');
-
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('[auth.ts] Connecting to Data Connect emulator.');
-            connectDataConnectEmulator(dataConnect, 'localhost', 9399);
-        }
-
-        const userDataForInsert = {
-            users: {
-                id: firebaseUser.uid,
-                name: name,
-                email: email,
-                role: role,
-            }
-        };
-        console.log('[auth.ts] Preparing to insert user into SQL via Data Connect:', userDataForInsert);
-        
-        await insertUser(dataConnect, userDataForInsert);
-        console.log('[auth.ts] User data inserted into SQL successfully.');
 
         const userData: User = {
             id: firebaseUser.uid,
