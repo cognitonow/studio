@@ -1,25 +1,7 @@
 
-type User @table(key: "id") {
-  id: String!
+type User @table {
+  id: String! @id
   name: String!
   email: String! @unique
   role: String!
-  bookings: [Booking] @relation(field: "clientId")
-  reviews: [Review] @relation(field: "authorId")
-}
-
-mutation insertUser(
-  id: String!,
-  name: String!,
-  email: String!,
-  role: String!
-) {
-  users.insert(
-    id: $id,
-    name: $name,
-    email: $email,
-    role: $role
-  ) {
-    id
-  }
 }
