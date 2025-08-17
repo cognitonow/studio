@@ -1,27 +1,41 @@
 
+'use server';
+
 import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
+import { insertUser, getDataConnect } from '@firebasegen/default-connector';
+import { connectorConfig } from '@firebasegen/default-connector';
 
 interface SignUpCredentials {
     name: string;
     email: string;
-    password;
+    password: string;
     role: UserRole;
 }
 
 export async function signUp({ name, email, password, role }: SignUpCredentials) {
     try {
-        // Get a fresh instance of the Auth service for this specific call
         const auth = getAuth(app);
         
-        // Create user in Firebase Authentication
+        // Step 1: Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const firebaseUser = userCredential.user;
 
         // Update profile display name in Firebase Auth
         await updateProfile(firebaseUser, { displayName: name });
+
+        // Step 2: Save user data to your SQL database via Data Connect
+        const dataConnect = getDataConnect(connectorConfig);
+        await insertUser(dataConnect, {
+            users: {
+                id: firebaseUser.uid,
+                name: name,
+                email: email,
+                role: role,
+            }
+        });
 
         const userData: User = {
             id: firebaseUser.uid,

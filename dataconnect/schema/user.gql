@@ -1,0 +1,27 @@
+
+-- Data Connect schema for the User table.
+-- Defines the table structure and a mutation to insert a new user.
+
+"""
+Represents a user in the system.
+"""
+type User @table(name: "users") {
+  id: String! @pk
+  name: String
+  email: String
+  role: String
+}
+
+input UserInput {
+    id: String!
+    name: String
+    email: String
+    role: String
+}
+
+type Mutation {
+  """
+  Inserts a new user into the database.
+  """
+  insertUser(users: UserInput!): User! @insert(table: "users")
+}
