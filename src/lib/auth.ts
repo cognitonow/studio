@@ -5,9 +5,9 @@ import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers } from './data';
-import { insertUser, getDataConnect } from '@firebasegen/default-connector';
-import { connectorConfig } from '@firebasegen/default-connector';
-import { connectDataConnectEmulator } from 'firebase/data-connect';
+// Correctly import from the base 'firebase/data-connect' and the generated connector
+import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
+import { insertUser, connectorConfig } from '@firebasegen/default-connector';
 
 interface SignUpCredentials {
     name: string;
