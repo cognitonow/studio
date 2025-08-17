@@ -44,4 +44,4 @@ if (getApps().length === 0) {
 }
 
 // Export the initialized auth and db instances
-export { auth, db };
+export { app, auth, db };

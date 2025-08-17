@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Testimonials } from '@/components/testimonials';
+import { app } from '@/lib/firebase'; // Assuming 'app' is exported
+// Import from the generated Data Connect React SDK package
+import { useListServicesQuery, type Service } from '@firebasegen/default-connector-react/react'; // Assuming hooks and types are exported from '/react' and the type name is 'Service'
 
 export default function LandingPage() {
+  const { data, loading, error } = useListServicesQuery(app);
   return (
     <>
       <section className="container mx-auto flex min-h-[calc(100vh-10rem)] items-center">
@@ -25,6 +29,20 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+          </div>
+
+          {/* Display fetched services */}
+          <div className="md:col-span-2 text-center">
+            <h2 className="text-2xl font-bold mb-4">Available Services</h2>
+            {loading && <p>Loading services...</p>}
+            {error && <p className="text-red-500">Error fetching services: {error.message}</p>}
+            {data && data.services && data.services.length > 0 && (
+              <ul>
+                {data.services.map((service: Service) => ( // Use the correct type for a single service item
+                  <li key={service.id}>{service.name} - ${service.price?.toFixed(2)}</li>
+                ))}
+              </ul>
+            )}
           </div>
           <div>
             <Image

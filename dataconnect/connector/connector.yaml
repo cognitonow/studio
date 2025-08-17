@@ -5,15 +5,3 @@ generate:
     package: "@firebasegen/default-connector"
     packageJsonDir: ../..
     react: true
-queries:
-  listServices: |
-    query {
-      services {
-        id
-        name
-        price
-        category
-        createdAt
-        description
-      }
-    }
