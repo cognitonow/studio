@@ -1,3 +1,4 @@
+
 {
   "emulators": {
     "dataconnect": {
@@ -8,7 +9,7 @@
     "source": "dataconnect"
   },
   "firestore": {
-    "database": "bbdatabase",
+    "database": "beauty-book-14zko",
     "location": "europe-west2",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"

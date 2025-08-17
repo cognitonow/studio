@@ -1,5 +1,6 @@
+
 specVersion: "v1"
-serviceId: "studio"
+serviceId: "beauty-book-14zko"
 location: "europe-west2"
 schema:
   source: "./schema"
