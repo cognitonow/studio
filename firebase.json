@@ -8,7 +8,7 @@
     "source": "dataconnect"
   },
   "firestore": {
-    "database": "(default)",
+    "database": "bbdatabase",
     "location": "europe-west2",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"

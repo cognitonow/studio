@@ -6,8 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { Testimonials } from '@/components/testimonials';
 import { app } from '@/lib/firebase'; // Assuming 'app' is exported
 // Import from the generated Data Connect React SDK package
-import { useListServicesQuery, type Service } from '@firebasegen/default-connector-react/react'; // Assuming hooks and types are exported from '/react' and the type name is 'Service'
-
+import { useListServicesQuery, type ListServicesQuery as Service } from '@firebasegen/default-connector-react';
 export default function LandingPage() {
   const { data, loading, error } = useListServicesQuery(app);
   return (
