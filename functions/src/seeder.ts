@@ -10,12 +10,14 @@ import {Pool} from "pg";
 
 admin.initializeApp();
 
-// Define a secret for the database password using the v2 API
+// This line is important for accessing the secret in a deployed environment.
 const dbPassword = defineSecret("DB_PASSWORD");
 
 // Seeder function should only be run in the emulator or a dev environment.
 // It is not intended for production use.
 export const seedDatabase = onRequest(
+  // The environment variables and secrets are passed to the function here.
+  {secrets: [dbPassword]},
   async (request: Request, response: Response) => {
     // Basic security check: only allow GET requests
     if (request.method !== "GET") {
@@ -28,13 +30,17 @@ export const seedDatabase = onRequest(
     logger.info("Database seeding process started.");
 
     try {
+      // Use the environment variable for the host, falling back to a default
+      // for local testing if it's not set.
+      const dbHost = process.env.DB_HOST || "127.0.0.1";
+      logger.info(`Connecting to database host: ${dbHost}`);
+
       const pool = new Pool({
         user: "postgres",
         password: dbPassword.value(),
-        // The host is the full Cloud SQL connection name.
-        host: process.env.DB_HOST,
+        host: dbHost,
         database: "postgres",
-        // Use SSL for secure connections to Cloud SQL
+        // SSL configuration is critical for connecting to Cloud SQL
         ssl: {
           rejectUnauthorized: false,
         },
@@ -51,7 +57,7 @@ export const seedDatabase = onRequest(
       try {
         await client.query("BEGIN"); // Start transaction
         for (const statement of statements) {
-          logger.info("Executing statement:", statement);
+          logger.info(`Executing statement: ${statement.substring(0, 100)}...`);
           await client.query(statement);
         }
         await client.query("COMMIT"); // Commit transaction
