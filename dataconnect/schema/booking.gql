@@ -1,0 +1,22 @@
+type Booking @table(key: "id") {
+  id: String!
+  provider: ServiceProvider!
+  services: [Service!]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  review: Review
+}
+
+type Mutation {
+  insertBooking(
+    id: String!
+    providerId: String!
+    serviceIds: [String!]!
+    date: Timestamp!
+    status: String!
+    clientName: String
+    isPaid: Boolean!
+  ): Booking
+}

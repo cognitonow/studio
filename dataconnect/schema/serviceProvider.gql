@@ -1,0 +1,18 @@
+type ServiceProvider @table(key: "id") {
+  id: String!
+  user: User!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  rating: Float!
+  reviewCount: Int!
+  bio: String!
+  location: String!
+  services: [Service!]!
+  reviews: [Review!]!
+  bookings: [Booking!]!
+}
+
+type Query {
+  listServiceProviders: [ServiceProvider!]!
+}

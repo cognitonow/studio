@@ -1,0 +1,16 @@
+type User @table(key: "id") {
+  id: String!
+  name: String
+  email: String!
+  role: String! # 'client' or 'provider'
+  providerProfile: ServiceProvider
+}
+
+extend type Mutation {
+  insertUser(
+    id: String!
+    name: String!
+    email: String!
+    role: String!
+  ): User
+}

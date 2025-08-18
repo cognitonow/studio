@@ -1,0 +1,12 @@
+type Service @table(key: "id") {
+  id: String!
+  category: ServiceCategory!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int! # in minutes
+}
+
+type Query {
+  listServices: [Service!]!
+}

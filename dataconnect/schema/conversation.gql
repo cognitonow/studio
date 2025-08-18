@@ -1,8 +1,26 @@
-
-type Conversation @table {
-  id: String! @id
-  providerId: String!
-  clientId: String!
+type Conversation @table(key: "id") {
+  id: String!
+  provider: ServiceProvider!
+  clientName: String!
   lastMessage: String
-  lastMessageAt: Timestamp
+  lastMessageTimestamp: Timestamp
+  unreadCount: Int
+  messages: [Message!]!
+}
+
+type Message @table(key: "id") {
+  id: String!
+  conversation: Conversation!
+  sender: String! # 'user' or 'provider'
+  text: String!
+  timestamp: Timestamp!
+  isAi: Boolean
+}
+
+type Mutation {
+  insertMessage(
+    conversationId: String!
+    sender: String!
+    text: String!
+  ): Message
 }

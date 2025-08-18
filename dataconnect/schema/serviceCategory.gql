@@ -1,0 +1,5 @@
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service!]!
+}
