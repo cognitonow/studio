@@ -1,11 +1,17 @@
 
-type User @table(key: "id") {
-  id: String!
-  name: String
-  email: String
-  role: String
+type User @table(name: "users") {
+  id: String! @pk
+  name: String!
+  email: String! @unique
+  role: String!
+  createdAt: Timestamp!
 }
 
-mutation insertUser(id: String!, name: String, email: String, role: String) @firebaseDataConnect(
-  mutation: "users.insert"
-)
+extend type Mutation {
+  insertUser(
+    id: String!
+    name: String!
+    email: String!
+    role: String!
+  ): User! @permission(admin: true)
+}

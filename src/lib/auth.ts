@@ -1,12 +1,13 @@
 
 'use server';
 
+import './firebase';
 import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers, getProviderByUserId } from './data';
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-import { connectorConfig } from '@firebasegen/default-connector';
+import { connectorConfig, insertUser } from '@firebasegen/default-connector';
 
 interface AuthCredentials {
     name?: string;
@@ -43,8 +44,15 @@ export async function signUp({ name, email, password, role = 'client' }: AuthCre
             role: role,
         };
         
-        // The call to insertUser has been removed to prevent the crash.
-        // We will revisit saving the user to the DB in a later step.
+        console.log('[auth.ts] Attempting to insert user into Data Connect...');
+        await insertUser(dataConnect, {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role
+        });
+        console.log('[auth.ts] User inserted into Data Connect successfully.');
+
 
         if (role === 'provider') {
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
