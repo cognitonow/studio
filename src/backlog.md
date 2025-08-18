@@ -2,29 +2,59 @@
 
 This document contains a list of features, improvements, and ideas for future development.
 
-## Firebase & Cloud Backend Setup
+## Your Backend Setup Checklist
 
-This section outlines the essential, one-time setup steps required in the Google Cloud and Firebase consoles to enable the live backend for this application.
+This section outlines the final, essential setup steps required in the Google Cloud and Firebase consoles to enable the live backend for your application. You have already completed the first step by creating your new database.
 
-1.  **Upgrade to Blaze Plan:** Your Firebase project must be on the **Blaze (Pay-as-you-go)** plan to use services like Cloud SQL and Secret Manager.
-2.  **Enable Google Cloud APIs:** In your project's Google Cloud Console, ensure the following APIs are enabled:
-    *   Cloud SQL Admin API
-    *   Vertex AI API
-    *   Secret Manager API
-    *   Firebase Data Connect API
-3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `beautybook-db`. Note the **Connection Name** on the instance details page.
-4.  **Set Database Password**: On the Cloud SQL instance page, go to the "Users" tab and set a password for the default `postgres` user.
-5.  **Store GenAI & DB Secrets:**
-    *   Get a GenAI API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
-    *   In the Google Cloud Console, go to **Secret Manager** and create two secrets:
-        *   `GOOGLE_GENAI_API_KEY`: with the key from AI Studio as its value.
-        *   `DB_PASSWORD`: with the password you set for the `postgres` user as its value.
-    *   Ensure the Cloud Functions service account (`your-project-id@appspot.gserviceaccount.com`) has the "Secret Manager Secret Accessor" role in IAM.
-6.  **Set Environment Variables**: Add the Cloud SQL **Connection Name** to your `.env` file for local testing and to your backend settings for deployment.
-    *   In `.env`, add: `DB_HOST=your-project:your-region:beautybook-db`
-    *   In `apphosting.api__settings.yaml`, add the `DB_HOST` variable with the same value.
-7.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions, including the new seeder function.
-8.  **Seed Your Database:** After deployment, find the URL for the `seedDatabase` function in the Firebase console Functions tab. Open that URL in your browser. It will execute the `dataconnect/seed.sql` script to populate your database tables.
+### ✅ Step 1: Create Cloud SQL Instance (Completed)
+- You have successfully created your new PostgreSQL instance with the ID **`beautybook-db`** in the **`europe-west1`** region.
+
+---
+
+### Step 2: Set Database Password & Store as a Secret
+You need to set a password for your database user and securely store it where your Cloud Functions can access it.
+
+1.  **Go to Cloud SQL:** In the Google Cloud Console, navigate to **Databases > SQL** and click on your `beautybook-db` instance.
+2.  **Set Password:** Go to the **Users** tab, click the three-dot menu (⋮) next to the `postgres` user, and select **Change password**. Set a strong password and save it temporarily.
+3.  **Go to Secret Manager:** In the Google Cloud Console, navigate to **Security > Secret Manager**.
+4.  **Create Secret:**
+    *   Click **CREATE SECRET**.
+    *   For the **Name**, enter `DB_PASSWORD`.
+    *   In the **Secret value** field, paste the password you just created.
+    *   Leave the other settings as default and click **CREATE SECRET**.
+
+---
+
+### Step 3: Store Your GenAI API Key
+Your application uses AI features. This step stores the necessary API key securely.
+
+1.  **Get API Key:** If you haven't already, get a GenAI API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  **Create Secret:** Go back to **Secret Manager** in the Google Cloud Console.
+3.  **Create Secret:**
+    *   Click **CREATE SECRET**.
+    *   For the **Name**, enter `GOOGLE_GENAI_API_KEY`.
+    *   In the **Secret value** field, paste your key from the Google AI Studio.
+    *   Click **CREATE SECRET**.
+
+---
+
+### Step 4: Grant Permissions to Functions
+Your Cloud Functions need permission to access the secrets you just created.
+
+1.  **Go to IAM:** In the Google Cloud Console, navigate to **IAM & Admin > IAM**.
+2.  **Find Service Account:** Find the principal (the user/account) that ends with `@appspot.gserviceaccount.com`. This is the default service account for your Cloud Functions.
+3.  **Grant Role:** Click the pencil icon (Edit principal) for that account, click **ADD ANOTHER ROLE**, and add the role **`Secret Manager Secret Accessor`**.
+4.  **Save** the changes.
+
+---
+
+### Step 5: Deploy Your Backend
+Now that your database is ready and your secrets are in place, deploy your application.
+
+1.  **Open a terminal** in your project's root directory.
+2.  Run the command: `firebase deploy`
+
+This will deploy your database schema, your functions with the correct permissions, and your web application. Your live backend is now fully configured and operational.
 
 ---
 
@@ -129,7 +159,7 @@ This section outlines common and powerful Cloud Functions that could be used to 
 
 ### 💳 Orders & Payments
 - **createStripeCheckoutSession**: A callable function that securely communicates with a payment processor like Stripe to create a payment session.
-- **stripeWebhook**: An HTTP trigger that listens for events from Stripe (e.g., successful payment) to:
+- **stripeWebhook**: An HTTP trigger that. listens for events from Stripe (e.g., successful payment) to:
   - Update the order status in Firestore.
   - Decrement the product's stock quantity.
   - Send confirmation emails to the buyer and seller.
