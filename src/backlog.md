@@ -2,6 +2,32 @@
 
 This document contains a list of features, improvements, and ideas for future development.
 
+## High Priority: Phase 2 - Full Backend Migration
+
+This section outlines the critical path to migrate the application from the current mock data (`src/lib/data.ts`) to a production-ready backend using Firebase Data Connect and a PostgreSQL database.
+
+1.  **Migrate Read Operations (Queries):** Convert all functions that fetch data to use Data Connect `queries`. This is the foundation of the migration.
+    *   `getProviders`, `getProviderById`, `getFeaturedProviders`, `getFavouriteProviders`, `getExploreQueueProviders`.
+    *   `getAllServices`, `getServicesByIds`, `getServiceCategories`.
+    *   `getBookings`, `getBookingById`, `getBookingHistoryForProvider`, `getActiveBookings`, `getClientHistoryByName`.
+    *   `getReviews`.
+    *   `getConversations`, `getMessagesForConversation`, `getProviderConversations`, `getProviderMessagesForConversation`.
+    *   `getNotifications`, `getUnreadMessageCount`.
+
+2.  **Migrate Write Operations (Mutations):** Convert all functions that create or update data to use Data Connect `mutations`. This is the most critical part, as it involves changing the state of your application.
+    *   `addBooking`: Replace pushing to the `bookings` array with an `insertBooking` mutation.
+    *   `updateBooking` & `updateBookingStatus`: Replace finding and modifying array elements with an `updateBooking` mutation.
+    *   `addReview`: Replace pushing to the `reviews` array with an `insertReview` mutation and update the related provider's rating.
+    *   `addMessage`: Replace pushing to the `messages` array with an `insertMessage` mutation.
+    *   `saveProviderServices`: Replace modifying a provider's services list with an `updateProviderServices` mutation.
+    *   `markNotificationAsRead`, `markAllNotificationsAsRead`, `markAllMessagesAsRead`.
+    *   `startConversationWithProvider`.
+
+3.  **Refactor Asynchronous UI Components:** Update all pages and components that consume the newly migrated data functions to properly handle asynchronous operations (e.g., using `async/await`, managing loading states, and handling potential errors). This will impact nearly every page in the application.
+
+4.  **Full System Test:** Once the migration is complete, conduct a thorough test of all user flows (booking, messaging, reviewing, etc.) to ensure the application behaves as expected with the live database.
+
+
 ## Features
 
 - [x] Sign up flow
