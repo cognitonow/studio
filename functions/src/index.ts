@@ -8,8 +8,7 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
-import {onRequest} from "firebase-functions/https";
-import * as logger from "firebase-functions/logger";
+import * as seeder from "./seeder";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -26,7 +25,5 @@ import * as logger from "firebase-functions/logger";
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Export the seeder function so it can be deployed.
+export const seedDatabase = seeder.seedDatabase;

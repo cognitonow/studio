@@ -12,26 +12,21 @@ This section outlines the essential, one-time setup steps required in the Google
     *   Vertex AI API
     *   Secret Manager API
     *   Firebase Data Connect API
-3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `studio-fdc`.
-4.  **Store GenAI API Key:**
-    *   Get an API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
-    *   In the Google Cloud Console, go to **Secret Manager** and create a new secret named `GOOGLE_GENAI_API_KEY` with the key as its value.
-5.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions.
-6.  **(Optional) Seed Your Database:** To test the live connection, you need data in your database. Follow these steps:
-    1.  **Authenticate `gcloud` CLI:** If you haven't already, run `gcloud auth login` and follow the prompts.
-    2.  **Install Cloud SQL Proxy:** The connection command requires a helper tool. Install it by running:
-        ```bash
-        gcloud components install cloud_sql_proxy
-        ```
-    3.  **Connect to Your Instance:** Use the `beta` version of the connect command, which works with the Cloud Workstation environment:
-        ```bash
-        gcloud beta sql connect studio-fdc --user=postgres --database=postgres
-        ```
-    4.  **Run the Seed Script:** Once connected (your terminal will show a `postgres=>` prompt), run the script to populate your database:
-        ```psql
-        \i dataconnect/seed.sql
-        ```
-    *   This will populate your `Service` and `ServiceCategory` tables. You can then visit the `/services` page in your app to see the live data.
+3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `studio-fdc`. Note the **Connection Name** on the instance details page.
+4.  **Set Database Password**: On the Cloud SQL instance page, go to the "Users" tab and set a password for the default `postgres` user.
+5.  **Store GenAI & DB Secrets:**
+    *   Get a GenAI API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
+    *   In the Google Cloud Console, go to **Secret Manager** and create two secrets:
+        *   `GOOGLE_GENAI_API_KEY`: with the key from AI Studio as its value.
+        *   `DB_PASSWORD`: with the password you set for the `postgres` user as its value.
+    *   Ensure the Cloud Functions service account (`your-project-id@appspot.gserviceaccount.com`) has the "Secret Manager Secret Accessor" role in IAM.
+6.  **Set Environment Variables**: Add the Cloud SQL **Connection Name** to your `.env` file for local testing and to your backend settings for deployment.
+    *   In `.env`, add: `DB_HOST=your-project:your-region:studio-fdc`
+    *   In `apphosting.api__settings.yaml`, add the `DB_HOST` variable with the same value.
+7.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions, including the new seeder function.
+8.  **Seed Your Database:** After deployment, find the URL for the `seedDatabase` function in the Firebase console Functions tab. Open that URL in your browser. It will execute the `dataconnect/seed.sql` script to populate your database tables.
+
+---
 
 ## High Priority: Phase 2 - Full Backend Migration
 
