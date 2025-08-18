@@ -7,8 +7,9 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {setGlobalOptions} from "firebase-functions";
+import {setGlobalOptions} from "firebase-functions/v2";
 import * as seeder from "./seeder";
+import * as genkit from "./genkit-sample";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -27,3 +28,4 @@ setGlobalOptions({maxInstances: 10});
 
 // Export the seeder function so it can be deployed.
 export const seedDatabase = seeder.seedDatabase;
+export const menuSuggestion = genkit.menuSuggestion;
