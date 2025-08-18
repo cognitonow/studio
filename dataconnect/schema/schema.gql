@@ -1,57 +1,54 @@
-# Describes the data model for the application.
-# See https://firebase.google.com/docs/data-connect/reference/graphql/schema-language
-
 type Query {
-  listUsers: [User] @tables(User)
-  user(id: ID!): User
-  listServices: [Service] @tables(Service)
-  listServiceProviders: [ServiceProvider] @tables(ServiceProvider)
+  listUsers(): [User]!
+  listServiceProviders(): [ServiceProvider]!
+  listServices(): [Service]!
+  listBookings(): [Booking]!
 }
 
 type Mutation {
-  insertUser(id: ID!, name: String!, email: String!, role: String!): User
+    insertUser(id: String!, name: String!, email: String!, role: String!): User!
 }
 
-type User @table(key: "id") {
-  id: ID!
-  name: String!
-  email: String!
-  role: String!
-  provider: [ServiceProvider] @relation(on: "userId")
+type User {
+  id: String!
+  name: String
+  email: String
+  role: String
+  provider: [ServiceProvider] @relation(name: "UserProvider")
 }
 
-type ServiceProvider @table(key: "id") {
-  id: ID!
-  userId: ID!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
+type ServiceProvider {
+  id: String!
+  userId: String!
+  name: String
+  specialty: String
+  avatarUrl: String
   dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
+  rating: Float
+  reviewCount: Int
   isFeatured: Boolean
   isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User @relation(on: "userId")
-  services: [Service] @relation
-  reviews: [Review] @relation
+  bio: String
+  location: String
+  playlist: String
+  user: User! @relation(name: "UserProvider")
+  services: [Service] @relation(name: "ServiceProviderService")
+  reviews: [Review] @relation(name: "ServiceProviderReview")
 }
 
-type Service @table(key: "id") {
-  id: ID!
-  categoryId: ID!
-  name: String!
-  description: String!
-  price: Int!
-  duration: Int!
-  provider: [ServiceProvider] @relation
+type Service {
+    id: String!
+    categoryId: String!
+    name: String!
+    description: String
+    price: Int!
+    duration: Int!
+    provider: [ServiceProvider] @relation(name: "ServiceProviderService")
 }
 
-type Booking @table(key: "id") {
-  id: ID!
-  providerId: ID!
+type Booking {
+  id: String!
+  providerId: String!
   providerName: String!
   serviceIds: [String]!
   date: Timestamp!
@@ -61,19 +58,20 @@ type Booking @table(key: "id") {
   reviewId: String
 }
 
-type Review @table(key: "id") {
-  id: ID!
-  bookingId: ID!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
+type Review {
+    id: String!
+    bookingId: String!
+    author: String!
+    avatarUrl: String
+    dataAiHint: String
+    rating: Int!
+    comment: String!
+    title: String
+    provider: ServiceProvider! @relation(name: "ServiceProviderReview")
 }
 
-type ServiceCategory @table(key: "id") {
-  id: ID!
+type ServiceCategory {
+  id: String!
   name: String!
-  services: [Service] @relation(on: "categoryId")
+  services: [Service]! @relation(name: "ServiceCategoryService")
 }
