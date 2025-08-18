@@ -19,6 +19,8 @@ export const seedDatabase = onRequest(
   {
     // Make the password available to the function
     secrets: [dbPassword],
+    // Increase the timeout as seeding might take a while
+    timeoutSeconds: 30,
   },
   async (request: Request, response: Response) => {
     // Basic security check: only allow GET requests
@@ -44,7 +46,8 @@ export const seedDatabase = onRequest(
         },
       });
 
-      const seedSqlPath = path.join(__dirname, "../..", "dataconnect/seed.sql");
+      // The SQL file is now located within the function's source directory
+      const seedSqlPath = path.join(__dirname, "seed.sql");
       const seedSql = fs.readFileSync(seedSqlPath, "utf8");
 
       // Split the file into individual statements
