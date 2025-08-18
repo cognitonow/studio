@@ -1,24 +1,13 @@
-type Query {
-  listUsers(): [User]!
-  listServiceProviders(): [ServiceProvider]!
-  listServices(): [Service]!
-  listBookings(): [Booking]!
-}
-
-type Mutation {
-    insertUser(id: String!, name: String!, email: String!, role: String!): User!
-}
-
 type User {
-  id: String!
+  id: String! @unique
   name: String
-  email: String
+  email: String! @unique
   role: String
-  provider: [ServiceProvider] @relation(name: "UserProvider")
+  provider: ServiceProvider @relation(name:"UserProvider")
 }
 
 type ServiceProvider {
-  id: String!
+  id: String! @unique
   userId: String!
   name: String
   specialty: String
@@ -31,47 +20,41 @@ type ServiceProvider {
   bio: String
   location: String
   playlist: String
-  user: User! @relation(name: "UserProvider")
-  services: [Service] @relation(name: "ServiceProviderService")
-  reviews: [Review] @relation(name: "ServiceProviderReview")
+  user: User! @relation(name:"UserProvider")
+  services: [Service] @relation(name:"ProviderServices")
+  reviews: [Review] @relation(name:"ProviderReviews")
 }
 
 type Service {
-    id: String!
-    categoryId: String!
-    name: String!
-    description: String
-    price: Int!
-    duration: Int!
-    provider: [ServiceProvider] @relation(name: "ServiceProviderService")
+  id: String! @unique
+  categoryId: String!
+  name: String
+  description: String
+  price: Int
+  duration: Int
+  provider: ServiceProvider @relation(name:"ProviderServices")
 }
 
 type Booking {
-  id: String!
+  id: String! @unique
   providerId: String!
-  providerName: String!
-  serviceIds: [String]!
-  date: Timestamp!
-  status: String!
+  providerName: String
+  serviceIds: [String]
+  date: Timestamp
+  status: String
   clientName: String
-  isPaid: Boolean!
+  isPaid: Boolean
   reviewId: String
 }
 
 type Review {
-    id: String!
-    bookingId: String!
-    author: String!
-    avatarUrl: String
-    dataAiHint: String
-    rating: Int!
-    comment: String!
-    title: String
-    provider: ServiceProvider! @relation(name: "ServiceProviderReview")
-}
-
-type ServiceCategory {
-  id: String!
-  name: String!
-  services: [Service]! @relation(name: "ServiceCategoryService")
+  id: String! @unique
+  bookingId: String!
+  author: String
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int
+  comment: String
+  title: String
+  provider: ServiceProvider! @relation(name:"ProviderReviews")
 }
