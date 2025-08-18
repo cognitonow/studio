@@ -1,104 +1,79 @@
-# Describes the data available to the connector and how to query it.
-# Learn more at https://firebase.google.com/docs/data-connect/write-schema
-
-# Every data type must have a key, which is specified by the @key directive.
-# The key is a list of one or more fields that uniquely identify a row in the
-# underlying database table.
-
-# It is a best practice to organize your schema into multiple files.
-# For more information, see https://firebase.google.com/docs/data-connect/organize-schema
+# Describes the data model for the application.
+# See https://firebase.google.com/docs/data-connect/reference/graphql/schema-language
 
 type Query {
-  listUsers: [User!] @connector(id: "default", name: "listUsers")
-  listServiceProviders: ServiceProviderResponse @connector(id: "default", name: "listServiceProviders")
-  listServices: ServiceResponse @connector(id: "default", name: "listServices")
-  listBookings: [Booking!] @connector(id: "default", name: "listBookings")
+  listUsers: [User] @tables(User)
+  user(id: ID!): User
+  listServices: [Service] @tables(Service)
+  listServiceProviders: [ServiceProvider] @tables(ServiceProvider)
 }
 
 type Mutation {
-    insertUser(
-      id: String!,
-      name: String!,
-      email: String!,
-      role: String!
-    ): User @connector(id: "default", name: "insertUser")
+  insertUser(id: ID!, name: String!, email: String!, role: String!): User
 }
 
-type User @table(name: "Users") {
-  id: String! @column(name: "id") @key
-  name: String @column(name: "name")
-  email: String! @column(name: "email")
-  role: String! @column(name: "role")
-  provider: [ServiceProvider] @many(foreignKey: "userId")
+type User @table(key: "id") {
+  id: ID!
+  name: String!
+  email: String!
+  role: String!
+  provider: [ServiceProvider] @relation(on: "userId")
 }
 
-type ServiceProviderResponse {
-  serviceprovider: [ServiceProvider!]
+type ServiceProvider @table(key: "id") {
+  id: ID!
+  userId: ID!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User @relation(on: "userId")
+  services: [Service] @relation
+  reviews: [Review] @relation
 }
 
-type ServiceProvider @table(name: "ServiceProviders") {
-  id: String! @column(name: "id") @key
-  userId: String! @column(name: "user_id")
-  name: String! @column(name: "name")
-  specialty: String! @column(name: "specialty")
-  avatarUrl: String! @column(name: "avatar_url")
-  dataAiHint: String @column(name: "data_ai_hint")
-  rating: Float! @column(name: "rating")
-  reviewCount: Int! @column(name: "review_count")
-  isFeatured: Boolean @column(name: "is_featured")
-  isFavourite: Boolean @column(name: "is_favourite")
-  bio: String! @column(name: "bio")
-  location: String! @column(name: "location")
-  playlist: String! @column(name: "playlist")
-  user: User @one(foreignKey: "userId")
-  services: [Service] @many(through: "ProviderServices", foreignKey: "providerId", otherForeignKey: "serviceId")
-  reviews: [Review] @many(foreignKey: "providerId")
+type Service @table(key: "id") {
+  id: ID!
+  categoryId: ID!
+  name: String!
+  description: String!
+  price: Int!
+  duration: Int!
+  provider: [ServiceProvider] @relation
 }
 
-type ServiceResponse {
-  services: [Service!]
+type Booking @table(key: "id") {
+  id: ID!
+  providerId: ID!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
 }
 
-type Service @table(name: "Services") {
-  id: String! @column(name: "id") @key
-  categoryId: String! @column(name: "category_id")
-  name: String! @column(name: "name")
-  description: String! @column(name: "description")
-  price: Float! @column(name: "price")
-  duration: Int! @column(name: "duration")
-  provider: [ServiceProvider] @many(through: "ProviderServices", foreignKey: "serviceId", otherForeignKey: "providerId")
+type Review @table(key: "id") {
+  id: ID!
+  bookingId: ID!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
 }
 
-type Booking @table(name: "Bookings") {
-  id: String! @column(name: "id") @key
-  providerId: String! @column(name: "provider_id")
-  providerName: String! @column(name: "provider_name")
-  serviceIds: [String!] @column(name: "service_ids")
-  date: Timestamp! @column(name: "date")
-  status: String! @column(name: "status")
-  clientName: String @column(name: "client_name")
-  isPaid: Boolean! @column(name: "is_paid")
-  reviewId: String @column(name: "review_id")
-}
-
-type Review @table(name: "Reviews") {
-  id: String! @column(name: "id") @key
-  bookingId: String! @column(name: "booking_id")
-  providerId: String! @column(name: "provider_id") # Added for relationship
-  author: String! @column(name: "author")
-  avatarUrl: String @column(name: "avatar_url")
-  dataAiHint: String @column(name: "data_ai_hint")
-  rating: Int! @column(name: "rating")
-  comment: String! @column(name: "comment")
-  title: String @column(name: "title")
-}
-
-type ServiceCategory @table(name: "ServiceCategories") {
-    id: String! @column(name: "id") @key
-    name: String! @column(name: "name")
-}
-
-type ProviderServices @table(name: "ProviderServices") {
-    providerId: String! @column(name: "provider_id") @key
-    serviceId: String! @column(name: "service_id") @key
+type ServiceCategory @table(key: "id") {
+  id: ID!
+  name: String!
+  services: [Service] @relation(on: "categoryId")
 }
