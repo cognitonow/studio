@@ -25,7 +25,7 @@ const ai = genkit({
     // Load the Vertex AI plugin. You can optionally specify your project ID
     // by passing in a config object; if you don't, the Vertex AI plugin uses
     // the value from the GCLOUD_PROJECT environment variable.
-    vertexAI({location: "europe-west2"}),
+    vertexAI({location: "europe-west1"}),
   ],
 });
 
@@ -71,5 +71,5 @@ export const menuSuggestion = onCallGenkit({
 
   // Grant access to the API key to this function:
   secrets: [apiKey],
-  region: "europe-west2",
+  region: "europe-west1",
 }, menuSuggestionFlow);

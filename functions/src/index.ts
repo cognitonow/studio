@@ -1,3 +1,4 @@
+
 /**
  * Import function triggers from their respective submodules:
  *
@@ -24,7 +25,7 @@ import * as genkit from "./genkit-sample";
 // functions should each use functions.runWith({ maxInstances: 10 }) instead.
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
-setGlobalOptions({region: "europe-west2", maxInstances: 10});
+setGlobalOptions({region: "europe-west1", maxInstances: 10});
 
 // Export the seeder function so it can be deployed.
 export const seedDatabase = seeder.seedDatabase;

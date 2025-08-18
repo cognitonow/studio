@@ -17,7 +17,7 @@ const dbPassword = defineSecret("DB_PASSWORD");
 // It is not intended for production use.
 export const seedDatabase = onRequest(
   // The environment variables and secrets are passed to the function here.
-  {secrets: [dbPassword], region: "europe-west2"},
+  {secrets: [dbPassword], region: "europe-west1"},
   async (request: Request, response: Response) => {
     // Basic security check: only allow GET requests
     if (request.method !== "GET") {
