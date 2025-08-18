@@ -3,7 +3,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
-import { Pool } from "pg";
+import {Pool} from "pg";
 
 admin.initializeApp();
 
@@ -23,7 +23,7 @@ export const seedDatabase = functions
       response.status(405).send("Method Not Allowed");
       return;
     }
-    
+
     // In a real production app, you would add more robust security,
     // e.g., checking for a specific auth token or IP address.
     functions.logger.info("Database seeding process started.");
@@ -43,16 +43,16 @@ export const seedDatabase = functions
 
       const seedSqlPath = path.join(__dirname, "../..", "dataconnect/seed.sql");
       const seedSql = fs.readFileSync(seedSqlPath, "utf8");
-      
+
       // Split the file into individual statements
-      const statements = seedSql.split(';').filter(s => s.trim().length > 0);
+      const statements = seedSql.split(";").filter((s) => s.trim().length > 0);
 
       const client = await pool.connect();
       try {
         await client.query("BEGIN"); // Start transaction
         for (const statement of statements) {
-            functions.logger.info("Executing statement:", statement);
-            await client.query(statement);
+          functions.logger.info("Executing statement:", statement);
+          await client.query(statement);
         }
         await client.query("COMMIT"); // Commit transaction
         functions.logger.info("Database seeding completed successfully.");
@@ -63,7 +63,6 @@ export const seedDatabase = functions
       } finally {
         client.release();
       }
-
     } catch (error) {
       functions.logger.error("Error seeding database:", error);
       response.status(500).send("Failed to seed database.");
