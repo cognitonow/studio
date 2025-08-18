@@ -1,5 +1,11 @@
-
-extend type Mutation @requiresAuth {
-  insertUser(id: String!, name: String!, email: String!, role: String!): User
-    @permission(expression: "auth.token.email.endsWith('@google.com')")
+extend type Mutation {
+  """
+  Inserts a new user into the database.
+  """
+  insertUser(
+    id: String!,
+    name: String!,
+    email: String!,
+    role: String!
+  ): User
 }

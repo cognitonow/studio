@@ -19,6 +19,7 @@
     "@genkit-ai/firebase": "^1.16.1",
     "@genkit-ai/vertexai": "^1.16.1",
     "firebase-admin": "^12.6.0",
+    "@firebasegen/default-connector": "../dataconnect-generated/js/default-connector/",
     "firebase-functions": "^6.0.1",
     "genkit": "^1.16.1",
     "pg": "^8.12.0"

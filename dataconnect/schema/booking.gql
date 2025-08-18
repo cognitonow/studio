@@ -1,16 +1,14 @@
-
-extend type Mutation @requiresAuth {
+extend type Mutation {
   """
-  Inserts a new booking record into the database.
+  Creates a new booking record.
   """
   insertBooking(
+    id: String!,
     providerId: String!,
-    providerName: String!,
+    clientId: String!,
     serviceIds: [String]!,
     date: Timestamp!,
     status: String!,
-    clientName: String,
     isPaid: Boolean!
   ): Booking
-    @permission(expression: "auth.token.email.endsWith('@google.com')")
 }

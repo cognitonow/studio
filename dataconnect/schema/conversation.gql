@@ -1,17 +1,10 @@
-
-type Conversation @table(name: "conversations") {
-  id: Int! @column(key: "id", default: "nextval('conversations_id_seq'::regclass)")
-  providerId: String!
-  clientId: String
-  name: String!
-  avatar: String!
-  dataAiHint: String
-  lastMessage: String!
-  time: String!
-  unread: Int!
-}
-
-extend type Query @requiresAuth {
-  listConversations: [Conversation]
-    @permission(expression: "auth.token.email.endsWith('@google.com')")
+extend type Mutation {
+  """
+  Adds a new message to a conversation.
+  """
+  addMessage(
+    conversationId: Int!,
+    sender: String!,
+    text: String!
+  ): Message
 }

@@ -1,23 +1,27 @@
-
-type Query @requiresAuth {
-  users: [User]
-    @permission(expression: "auth.token.email.endsWith('@google.com')")
+type Query {
+  _version: String
 }
 
-type Mutation @requiresAuth {
-  _: Boolean
+type Mutation {
+  _version: String
 }
 
-type User @table(name: "users") {
-  id: String! @column(key: "id")
+"""
+Represents a user in the system.
+"""
+type User @table(key: "id") {
+  id: String!
   name: String!
   email: String!
   role: String!
-  provider: [ServiceProvider] @relation(on: "id", to: "userId")
+  provider: [ServiceProvider] @relation(on: "userId")
 }
 
-type ServiceProvider @table(name: "service_providers") {
-  id: String! @column(key: "id")
+"""
+Represents a service provider in the system.
+"""
+type ServiceProvider @table(key: "id") {
+  id: String!
   userId: String!
   name: String!
   specialty: String!
@@ -30,29 +34,102 @@ type ServiceProvider @table(name: "service_providers") {
   bio: String!
   location: String!
   playlist: String!
-  user: User @relation(on: "userId", to: "id")
-  services: [Service] @relation(on: "id", to: "providerId")
-  reviews: [Review] @relation(on: "id", to: "providerId")
+  user: User! @relation(on: "userId")
+  services: [Service] @relation(through: "ServiceProviderService")
+  reviews: [Review] @relation(on: "providerId")
 }
 
-type Service @table(name: "services") {
-  id: String! @column(key: "id")
+"""
+Defines a many-to-many relationship between ServiceProviders and Services.
+"""
+type ServiceProviderService @table(key: ["serviceProviderId", "serviceId"]) {
+  serviceProviderId: String!
+  serviceId: String!
+  provider: ServiceProvider! @relation(on: "serviceProviderId")
+  service: Service! @relation(on: "serviceId")
+}
+
+"""
+Represents a single service offered by a provider.
+"""
+type Service @table(key: "id") {
+  id: String!
   categoryId: String!
   name: String!
   description: String!
   price: Float!
-  duration: Int!
-  provider: [ServiceProvider] @relation(on: "id", to: "id")
+  duration: Int! # in minutes
+  category: ServiceCategory! @relation(on: "categoryId")
+  providers: [ServiceProvider] @relation(through: "ServiceProviderService")
 }
 
-type Booking @table(name: "bookings") {
-  id: String! @column(key: "id")
+"""
+A category for grouping Service types (e.g., Hair, Nails).
+"""
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service] @relation(on: "categoryId")
+}
+
+"""
+Represents a review left by a client for a provider.
+"""
+type Review @table(key: "id") {
+  id: String!
+  bookingId: String!
   providerId: String!
-  providerName: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Float!
+  comment: String!
+  title: String
+  booking: Booking! @relation(on: "bookingId")
+  provider: ServiceProvider! @relation(on: "providerId")
+}
+
+"""
+Represents an appointment made by a client with a provider.
+"""
+type Booking @table(key: "id") {
+  id: String!
+  providerId: String!
+  clientId: String!
   serviceIds: [String]!
   date: Timestamp!
   status: String!
-  clientName: String
   isPaid: Boolean!
   reviewId: String
+  provider: ServiceProvider! @relation(on: "providerId")
+  client: User! @relation(on: "clientId")
+  review: Review @relation(on: "reviewId")
+}
+
+"""
+Represents a chat thread between a client and a provider.
+"""
+type Conversation @table(key: "id") {
+  id: Int!
+  providerId: String!
+  clientId: String!
+  lastMessage: String!
+  time: Timestamp!
+  unread: Int!
+  provider: ServiceProvider! @relation(on: "providerId")
+  client: User! @relation(on: "clientId")
+  messages: [Message] @relation(on: "conversationId")
+}
+
+"""
+Represents a single message within a Conversation.
+"""
+type Message @table(key: "id") {
+  id: Int!
+  conversationId: Int!
+  sender: String! # 'user' or 'provider'
+  text: String!
+  isAi: Boolean
+  bookingId: String
+  conversation: Conversation! @relation(on: "conversationId")
 }
