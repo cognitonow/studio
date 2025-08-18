@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, LogIn } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,11 +25,13 @@ function getNavLinks(role: UserRole) {
         guest: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
+                { href: '/login', label: 'Log In', icon: LogIn },
                 { href: '/signup', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
-                { href: '/signup', label: 'Log In / Sign Up' },
+                { href: '/login', label: 'Log In' },
+                { href: '/signup', label: 'Sign Up' },
                 { href: '/', label: 'Home' },
             ],
         },
@@ -68,7 +70,6 @@ function getNavLinks(role: UserRole) {
         }
     };
     
-    // If the user is logged in, they can access all roles, otherwise only guest view.
     const user = useUserStore.getState().user;
     return navConfig[user ? role : 'guest'] || navConfig.guest;
 }
