@@ -134,9 +134,11 @@ export function Header() {
 
       checkUnreads();
       
-      const interval = setInterval(checkUnreads, 5000); 
+      window.addEventListener('focus', checkUnreads);
 
-      return () => clearInterval(interval);
+      return () => {
+        window.removeEventListener('focus', checkUnreads);
+      }
     }
   }, [isMounted, userRole]);
 
