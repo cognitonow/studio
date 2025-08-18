@@ -1,25 +1,12 @@
-type Query {
-  _version: String
-}
 
-type Mutation {
-  _version: String
-}
-
-"""
-Represents a user in the system.
-"""
 type User @table(key: "id") {
   id: String!
   name: String!
   email: String!
   role: String!
-  provider: [ServiceProvider] @relation(on: "userId")
+  provider: [ServiceProvider] @relation(field: "userId")
 }
 
-"""
-Represents a service provider in the system.
-"""
 type ServiceProvider @table(key: "id") {
   id: String!
   userId: String!
@@ -34,47 +21,33 @@ type ServiceProvider @table(key: "id") {
   bio: String!
   location: String!
   playlist: String!
-  user: User! @relation(on: "userId")
+  user: User @relation(on: "userId", to: "id")
   services: [Service] @relation(through: "ServiceProviderService")
-  reviews: [Review] @relation(on: "providerId")
+  reviews: [Review] @relation(field: "providerId")
 }
 
-"""
-Defines a many-to-many relationship between ServiceProviders and Services.
-"""
-type ServiceProviderService @table(key: ["serviceProviderId", "serviceId"]) {
-  serviceProviderId: String!
-  serviceId: String!
-  provider: ServiceProvider! @relation(on: "serviceProviderId")
-  service: Service! @relation(on: "serviceId")
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service] @relation(field: "categoryId")
 }
 
-"""
-Represents a single service offered by a provider.
-"""
 type Service @table(key: "id") {
   id: String!
   categoryId: String!
   name: String!
   description: String!
   price: Float!
-  duration: Int! # in minutes
-  category: ServiceCategory! @relation(on: "categoryId")
-  providers: [ServiceProvider] @relation(through: "ServiceProviderService")
+  duration: Int!
+  provider: [ServiceProvider] @relation(through: "ServiceProviderService")
 }
 
-"""
-A category for grouping Service types (e.g., Hair, Nails).
-"""
-type ServiceCategory @table(key: "id") {
+type ServiceProviderService @table(key: "id") {
   id: String!
-  name: String!
-  services: [Service] @relation(on: "categoryId")
+  serviceProviderId: String!
+  serviceId: String!
 }
 
-"""
-Represents a review left by a client for a provider.
-"""
 type Review @table(key: "id") {
   id: String!
   bookingId: String!
@@ -82,54 +55,50 @@ type Review @table(key: "id") {
   author: String!
   avatarUrl: String
   dataAiHint: String
-  rating: Float!
+  rating: Int!
   comment: String!
   title: String
-  booking: Booking! @relation(on: "bookingId")
-  provider: ServiceProvider! @relation(on: "providerId")
+  provider: ServiceProvider! @relation(on: "providerId", to: "id")
 }
 
-"""
-Represents an appointment made by a client with a provider.
-"""
 type Booking @table(key: "id") {
   id: String!
   providerId: String!
-  clientId: String!
+  providerName: String!
   serviceIds: [String]!
   date: Timestamp!
   status: String!
+  clientName: String
   isPaid: Boolean!
   reviewId: String
-  provider: ServiceProvider! @relation(on: "providerId")
-  client: User! @relation(on: "clientId")
-  review: Review @relation(on: "reviewId")
 }
 
-"""
-Represents a chat thread between a client and a provider.
-"""
 type Conversation @table(key: "id") {
-  id: Int!
+  id: String!
   providerId: String!
-  clientId: String!
+  clientId: String
+  name: String!
+  avatar: String!
+  dataAiHint: String
   lastMessage: String!
-  time: Timestamp!
+  time: String!
   unread: Int!
-  provider: ServiceProvider! @relation(on: "providerId")
-  client: User! @relation(on: "clientId")
-  messages: [Message] @relation(on: "conversationId")
 }
 
-"""
-Represents a single message within a Conversation.
-"""
 type Message @table(key: "id") {
-  id: Int!
-  conversationId: Int!
-  sender: String! # 'user' or 'provider'
+  id: String!
+  conversationId: String!
+  sender: String!
   text: String!
   isAi: Boolean
   bookingId: String
-  conversation: Conversation! @relation(on: "conversationId")
 }
+
+type Query {
+  _version: String
+}
+
+type Mutation {
+  _version: String
+}
+

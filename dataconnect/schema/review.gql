@@ -1,11 +1,17 @@
+extend type Query {
+  listReviewsByProvider(providerId: String!): [Review]
+}
 
-type Review @table(name: "reviews") {
-  id: String! @column(key: "id")
-  bookingId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
+extend type Mutation {
+  insertReview(
+    id: String!,
+    bookingId: String!,
+    providerId: String!,
+    author: String!,
+    avatarUrl: String,
+    dataAiHint: String,
+    rating: Int!,
+    comment: String!,
+    title: String
+  ): Review
 }

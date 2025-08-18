@@ -1,9 +1,3 @@
-
-type Message @table(name: "messages") {
-  id: Int! @column(key: "id", default: "nextval('messages_id_seq'::regclass)")
-  conversationId: Int!
-  sender: String!
-  text: String!
-  isAi: Boolean
-  bookingId: String
+extend type Query {
+    listMessagesByConversation(conversationId: String!): [Message]
 }

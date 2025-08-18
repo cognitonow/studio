@@ -1,10 +1,17 @@
+extend type Query {
+  listConversations: [Conversation]
+}
+
 extend type Mutation {
-  """
-  Adds a new message to a conversation.
-  """
-  addMessage(
-    conversationId: Int!,
-    sender: String!,
-    text: String!
-  ): Message
+  insertConversation(
+    id: String!,
+    providerId: String!,
+    clientId: String,
+    name: String!,
+    avatar: String!,
+    dataAiHint: String,
+    lastMessage: String!,
+    time: String!,
+    unread: Int!
+  ): Conversation
 }

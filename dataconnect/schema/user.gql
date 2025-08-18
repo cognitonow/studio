@@ -1,11 +1,3 @@
 extend type Mutation {
-  """
-  Inserts a new user into the database.
-  """
-  insertUser(
-    id: String!,
-    name: String!,
-    email: String!,
-    role: String!
-  ): User
+    insertUser(id: String!, name: String!, email: String!, role: String!): User
 }

@@ -1,6 +1,4 @@
 extend type Query {
-  """
-  Fetches a list of all service providers.
-  """
   listServiceProviders: [ServiceProvider]
+  getServiceProvider(id: String!): ServiceProvider
 }

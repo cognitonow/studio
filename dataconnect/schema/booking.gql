@@ -1,14 +1,12 @@
 extend type Mutation {
-  """
-  Creates a new booking record.
-  """
-  insertBooking(
-    id: String!,
-    providerId: String!,
-    clientId: String!,
-    serviceIds: [String]!,
-    date: Timestamp!,
-    status: String!,
-    isPaid: Boolean!
-  ): Booking
+    insertBooking(
+        id: String!,
+        providerId: String!,
+        providerName: String!,
+        serviceIds: [String]!,
+        date: Timestamp!,
+        status: String!,
+        clientName: String,
+        isPaid: Boolean!
+    ): Booking
 }
