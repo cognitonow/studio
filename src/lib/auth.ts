@@ -6,20 +6,14 @@ import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers, getProviderByUserId } from './data';
-import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-import { connectorConfig, insertUser } from '@firebasegen/default-connector';
+import { createUserInDatabase } from '@/app/actions/user';
+
 
 interface AuthCredentials {
     name?: string;
     email: string;
     password: string;
     role?: UserRole;
-}
-
-const dataConnect = getDataConnect(connectorConfig);
-
-if (process.env.NODE_ENV === 'development') {
-    connectDataConnectEmulator(dataConnect, 'localhost', 9399);
 }
 
 export async function signUp({ name, email, password, role = 'client' }: AuthCredentials) {
@@ -44,15 +38,13 @@ export async function signUp({ name, email, password, role = 'client' }: AuthCre
             role: role,
         };
         
-        console.log('[auth.ts] Attempting to insert user into Data Connect...');
-        await insertUser(dataConnect, {
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            role: userData.role
-        });
-        console.log('[auth.ts] User inserted into Data Connect successfully.');
-
+        console.log('[auth.ts] Attempting to insert user into database via server action...');
+        const dbResult = await createUserInDatabase(userData);
+        if (!dbResult.success) {
+            // Even if the DB insert fails, we don't want to fail the whole signup.
+            // We can log this for manual correction.
+            console.error(`[auth.ts] CRITICAL: Failed to create user ${userData.id} in the database.`);
+        }
 
         if (role === 'provider') {
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
