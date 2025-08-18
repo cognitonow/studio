@@ -39,3 +39,235 @@
 [info] ✔  functions: Finished running predeploy script. 
 [info] Running command: npm --prefix "$RESOURCE_DIR" run lint
 [info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2025-08-18T21:00:37.368Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:37.368Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:37.368Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko [none]
+[debug] [2025-08-18T21:00:38.018Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko 200
+[debug] [2025-08-18T21:00:38.018Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko {"projectNumber":"630156061433","projectId":"beauty-book-14zko","lifecycleState":"ACTIVE","name":"Beauty Book Prod","labels":{"monospace-workspace-id":"studio-4871785374","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-08-08T15:24:32.979524Z","parent":{"type":"organization","id":"826796034333"}}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: preparing codebase bbcodebase for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-08-18T21:00:38.040Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:38.040Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:38.041Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/beauty-book-14zko/adminSdkConfig [none]
+[debug] [2025-08-18T21:00:38.286Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/beauty-book-14zko/adminSdkConfig 200
+[debug] [2025-08-18T21:00:38.290Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/beauty-book-14zko/adminSdkConfig {"projectId":"beauty-book-14zko","databaseURL":"https://beauty-book-14zko-default-rtdb.europe-west1.firebasedatabase.app","storageBucket":"beauty-book-14zko.firebasestorage.app"}
+[debug] [2025-08-18T21:00:38.294Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:38.294Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:38.297Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/beauty-book-14zko/configs [none]
+[debug] [2025-08-18T21:00:38.523Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/beauty-book-14zko/configs 200
+[debug] [2025-08-18T21:00:38.524Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/beauty-book-14zko/configs {}
+[debug] [2025-08-18T21:00:38.528Z] Validating nodejs source
+[debug] [2025-08-18T21:00:39.752Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "postbuild": "cp src/seed.sql lib/seed.sql",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@genkit-ai/firebase": "^1.16.1",
+    "@genkit-ai/vertexai": "^1.16.1",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
+    "genkit": "^1.16.1",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
+[debug] [2025-08-18T21:00:39.753Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2025-08-18T21:00:39.758Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-18T21:00:39.774Z] Found firebase-functions binary at '/home/user/studio/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8474
+
+[debug] [2025-08-18T21:00:42.776Z] Got response from /__/functions.yaml {"endpoints":{"seedDatabase":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["europe-west2"],"secretEnvironmentVariables":[{"key":"DB_PASSWORD"}],"labels":{},"httpsTrigger":{},"entryPoint":"seedDatabase"},"menuSuggestion":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["europe-west2"],"secretEnvironmentVariables":[{"key":"GOOGLE_GENAI_API_KEY"}],"labels":{},"callableTrigger":{"genkitAction":"menuSuggestionFlow"},"entryPoint":"menuSuggestion"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"type":"secret","name":"DB_PASSWORD"},{"type":"secret","name":"GOOGLE_GENAI_API_KEY"}]}
+[debug] [2025-08-18T21:00:47.013Z] Validating nodejs source
+[debug] [2025-08-18T21:00:48.339Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
+[debug] [2025-08-18T21:00:48.340Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase bbcodebase to determine what to deploy 
+[debug] [2025-08-18T21:00:48.347Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-08-18T21:00:48.361Z] Found firebase-functions binary at '/home/user/studio/bbcodebase/node_modules/.bin/firebase-functions'
+[info] Serving at port 8722
+
+[debug] [2025-08-18T21:00:50.941Z] Got response from /__/functions.yaml {"endpoints":{},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2025-08-18T21:00:55.009Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-08-18T21:00:55.010Z] > authorizing via signed-in user (kai@cognitosolution.com)
+[debug] [2025-08-18T21:00:55.012Z] [iam] checking project beauty-book-14zko for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2025-08-18T21:00:55.012Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.012Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.013Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions [none]
+[debug] [2025-08-18T21:00:55.013Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions x-goog-quota-user=projects/beauty-book-14zko
+[debug] [2025-08-18T21:00:55.013Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-18T21:00:55.188Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions 200
+[debug] [2025-08-18T21:00:55.189Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-08-18T21:00:55.190Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.190Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.199Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/beauty-book-14zko/instances pageSize=100&pageToken=
+[debug] [2025-08-18T21:00:55.954Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/beauty-book-14zko/instances 200
+[debug] [2025-08-18T21:00:55.954Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/beauty-book-14zko/instances {}
+[debug] [2025-08-18T21:00:55.962Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.962Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:55.963Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD [none]
+[debug] [2025-08-18T21:00:56.146Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD 200
+[debug] [2025-08-18T21:00:56.151Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD {"name":"projects/630156061433/secrets/DB_PASSWORD","replication":{"automatic":{}},"createTime":"2025-08-18T14:04:35.189516Z","labels":{"firebase-managed":"functions"},"etag":"\"163ca4383b2dc9\""}
+[debug] [2025-08-18T21:00:56.157Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.157Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.157Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest [none]
+[debug] [2025-08-18T21:00:56.320Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest 200
+[debug] [2025-08-18T21:00:56.320Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest {"name":"projects/630156061433/secrets/DB_PASSWORD/versions/1","createTime":"2025-08-18T14:04:37.102740Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"163ca4384c7894\""}
+[debug] [2025-08-18T21:00:56.321Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.321Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.322Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY [none]
+[debug] [2025-08-18T21:00:56.485Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY 200
+[debug] [2025-08-18T21:00:56.491Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY {"name":"projects/630156061433/secrets/GOOGLE_GENAI_API_KEY","replication":{"automatic":{}},"createTime":"2025-08-18T14:05:32.825527Z","labels":{"firebase-managed":"functions"},"etag":"\"163ca43bb3b1e5\""}
+[debug] [2025-08-18T21:00:56.491Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.496Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.496Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest [none]
+[debug] [2025-08-18T21:00:56.698Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest 200
+[debug] [2025-08-18T21:00:56.698Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest {"name":"projects/630156061433/secrets/GOOGLE_GENAI_API_KEY/versions/1","createTime":"2025-08-18T14:05:35.426314Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"163ca43bc66b0a\""}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged /home/user/studio/functions (136.18 KB) for uploading 
+[debug] [2025-08-18T21:00:56.909Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.909Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:56.909Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/beauty-book-14zko/locations/-/functions [none]
+[debug] [2025-08-18T21:00:57.464Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/beauty-book-14zko/locations/-/functions 200
+[debug] [2025-08-18T21:00:57.467Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/beauty-book-14zko/locations/-/functions {}
+[debug] [2025-08-18T21:00:57.468Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:57.470Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:57.470Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-08-18T21:00:58.398Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/-/functions 200
+[debug] [2025-08-18T21:00:58.404Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/-/functions {"functions":[{"name":"projects/beauty-book-14zko/locations/us-central1/functions/menuSuggestion","buildConfig":{"build":"projects/630156061433/locations/us-central1/builds/56a3321e-0bb3-4944-a26b-3ddbd2483d2c","runtime":"nodejs22","entryPoint":"menuSuggestion","source":{"storageSource":{"bucket":"gcf-v2-sources-630156061433-us-central1","object":"menuSuggestion/function-source.zip","generation":"1755550600840084"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/beauty-book-14zko/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-630156061433-us-central1","object":"menuSuggestion/function-source.zip","generation":"1755550600840084"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/beauty-book-14zko/serviceAccounts/630156061433-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/beauty-book-14zko/locations/us-central1/services/menusuggestion","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"beauty-book-14zko\",\"databaseURL\":\"https://beauty-book-14zko-default-rtdb.europe-west1.firebasedatabase.app\",\"storageBucket\":\"beauty-book-14zko.firebasestorage.app\"}","GCLOUD_PROJECT":"beauty-book-14zko","EVENTARC_CLOUD_EVENT_SOURCE":"projects/beauty-book-14zko/locations/us-central1/services/menuSuggestion","FUNCTION_TARGET":"menuSuggestion","LOG_EXECUTION_ID":"true","FUNCTION_SIGNATURE_TYPE":"http"},"maxInstanceCount":20,"ingressSettings":"ALLOW_ALL","uri":"https://menusuggestion-2ogfqac4la-uc.a.run.app","serviceAccountEmail":"630156061433-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"secretEnvironmentVariables":[{"key":"GOOGLE_GENAI_API_KEY","projectId":"beauty-book-14zko","secret":"GOOGLE_GENAI_API_KEY","version":"1"}],"revision":"menusuggestion-00006-piq","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2025-08-18T20:57:09.303564701Z","labels":{"deployment-tool":"cli-firebase--project-idx","deployment-callable":"true","genkit-action":"true","firebase-functions-hash":"067e2e73dad6f33b7ab53d0b5c03da2d49bf1e42"},"environment":"GEN_2","url":"https://us-central1-beauty-book-14zko.cloudfunctions.net/menuSuggestion","createTime":"2025-08-18T14:07:46.254374246Z","satisfiesPzi":true},{"name":"projects/beauty-book-14zko/locations/us-central1/functions/seedDatabase","buildConfig":{"build":"projects/630156061433/locations/us-central1/builds/56a3321e-0bb3-4944-a26b-3ddbd2483d2c","runtime":"nodejs22","entryPoint":"seedDatabase","source":{"storageSource":{"bucket":"gcf-v2-sources-630156061433-us-central1","object":"seedDatabase/function-source.zip","generation":"1755550514696539"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"dockerRepository":"projects/beauty-book-14zko/locations/us-central1/repositories/gcf-artifacts","sourceProvenance":{"resolvedStorageSource":{"bucket":"gcf-v2-sources-630156061433-us-central1","object":"seedDatabase/function-source.zip","generation":"1755550514696539"}},"dockerRegistry":"ARTIFACT_REGISTRY","serviceAccount":"projects/beauty-book-14zko/serviceAccounts/630156061433-compute@developer.gserviceaccount.com","automaticUpdatePolicy":{}},"serviceConfig":{"service":"projects/beauty-book-14zko/locations/us-central1/services/seeddatabase","timeoutSeconds":60,"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"beauty-book-14zko\",\"databaseURL\":\"https://beauty-book-14zko-default-rtdb.europe-west1.firebasedatabase.app\",\"storageBucket\":\"beauty-book-14zko.firebasestorage.app\"}","GCLOUD_PROJECT":"beauty-book-14zko","EVENTARC_CLOUD_EVENT_SOURCE":"projects/beauty-book-14zko/locations/us-central1/services/seedDatabase","FUNCTION_TARGET":"seedDatabase","LOG_EXECUTION_ID":"true"},"maxInstanceCount":20,"ingressSettings":"ALLOW_ALL","uri":"https://seeddatabase-2ogfqac4la-uc.a.run.app","serviceAccountEmail":"630156061433-compute@developer.gserviceaccount.com","availableMemory":"256Mi","allTrafficOnLatestRevision":true,"secretEnvironmentVariables":[{"key":"DB_PASSWORD","projectId":"beauty-book-14zko","secret":"DB_PASSWORD","version":"1"}],"revision":"seeddatabase-00006-wic","maxInstanceRequestConcurrency":80,"availableCpu":"1"},"state":"ACTIVE","updateTime":"2025-08-18T20:57:08.206686457Z","labels":{"firebase-functions-hash":"d80d76b259da1de1f49c622324e7751cccd3b53c","deployment-tool":"cli-firebase--project-idx"},"environment":"GEN_2","url":"https://us-central1-beauty-book-14zko.cloudfunctions.net/seedDatabase","createTime":"2025-08-18T14:05:59.480151538Z","satisfiesPzi":true}]}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2025-08-18T21:00:58.415Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:58.415Z] Checked if tokens are valid: true, expires at: 1755554006263
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2025-08-18T21:00:58.416Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:58.417Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:58.417Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-18T21:00:58.417Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/pubsub.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/630156061433
+[debug] [2025-08-18T21:00:58.417Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-18T21:00:58.420Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-08-18T21:00:58.420Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/eventarc.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/630156061433
+[debug] [2025-08-18T21:00:58.420Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2025-08-18T21:00:59.218Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-18T21:00:59.219Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-630156061433@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"117028255693732797076"}}
+[debug] [2025-08-18T21:00:59.239Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2025-08-18T21:00:59.239Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/630156061433/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-630156061433@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"115091784912385395053"}}
+[info] i  functions: ensuring required API secretmanager.googleapis.com is enabled... 
+[debug] [2025-08-18T21:00:59.250Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.250Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.250Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.250Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.251Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest [none]
+[debug] [2025-08-18T21:00:59.254Z] >>> [apiv2][query] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest [none]
+[debug] [2025-08-18T21:00:59.415Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest 200
+[debug] [2025-08-18T21:00:59.419Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/DB_PASSWORD/versions/latest {"name":"projects/630156061433/secrets/DB_PASSWORD/versions/1","createTime":"2025-08-18T14:04:37.102740Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"163ca4384c7894\""}
+[debug] [2025-08-18T21:00:59.420Z] Resolved secret version of DB_PASSWORD to 1.
+[debug] [2025-08-18T21:00:59.446Z] <<< [apiv2][status] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest 200
+[debug] [2025-08-18T21:00:59.446Z] <<< [apiv2][body] GET https://secretmanager.googleapis.com/v1/projects/beauty-book-14zko/secrets/GOOGLE_GENAI_API_KEY/versions/latest {"name":"projects/630156061433/secrets/GOOGLE_GENAI_API_KEY/versions/1","createTime":"2025-08-18T14:05:35.426314Z","state":"ENABLED","replicationStatus":{"automatic":{}},"etag":"\"163ca43bc66b0a\""}
+[debug] [2025-08-18T21:00:59.447Z] Resolved secret version of GOOGLE_GENAI_API_KEY to 1.
+[debug] [2025-08-18T21:00:59.456Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.457Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.457Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/630156061433 [none]
+[debug] [2025-08-18T21:00:59.830Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/630156061433 200
+[debug] [2025-08-18T21:00:59.836Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/630156061433 {"kind":"compute#project","id":"8582372459021112834","creationTimestamp":"2025-08-16T17:57:18.147-07:00","name":"beauty-book-14zko","commonInstanceMetadata":{"kind":"compute#metadata","fingerprint":"1_1q77FLneY="},"quotas":[{"metric":"SNAPSHOTS","limit":1000,"usage":0},{"metric":"NETWORKS","limit":5,"usage":1},{"metric":"FIREWALLS","limit":100,"usage":4},{"metric":"IMAGES","limit":100,"usage":0},{"metric":"STATIC_ADDRESSES","limit":8,"usage":0},{"metric":"ROUTES","limit":200,"usage":0},{"metric":"FORWARDING_RULES","limit":15,"usage":0},{"metric":"TARGET_POOLS","limit":50,"usage":0},{"metric":"HEALTH_CHECKS","limit":75,"usage":0},{"metric":"IN_USE_ADDRESSES","limit":8,"usage":0},{"metric":"TARGET_INSTANCES","limit":50,"usage":0},{"metric":"TARGET_HTTP_PROXIES","limit":10,"usage":0},{"metric":"URL_MAPS","limit":10,"usage":0},{"metric":"BACKEND_SERVICES","limit":50,"usage":0},{"metric":"INSTANCE_TEMPLATES","limit":100,"usage":0},{"metric":"TARGET_VPN_GATEWAYS","limit":5,"usage":0},{"metric":"VPN_TUNNELS","limit":10,"usage":0},{"metric":"BACKEND_BUCKETS","limit":3,"usage":0},{"metric":"ROUTERS","limit":10,"usage":0},{"metric":"TARGET_SSL_PROXIES","limit":10,"usage":0},{"metric":"TARGET_HTTPS_PROXIES","limit":10,"usage":0},{"metric":"SSL_CERTIFICATES","limit":10,"usage":0},{"metric":"SUBNETWORKS","limit":100,"usage":0},{"metric":"TARGET_TCP_PROXIES","limit":10,"usage":0},{"metric":"CPUS_ALL_REGIONS","limit":32,"usage":0},{"metric":"SECURITY_POLICIES","limit":10,"usage":0},{"metric":"SECURITY_POLICY_RULES","limit":100,"usage":0},{"metric":"XPN_SERVICE_PROJECTS","limit":1000,"usage":0},{"metric":"PACKET_MIRRORINGS","limit":20,"usage":0},{"metric":"NETWORK_ENDPOINT_GROUPS","limit":100,"usage":0},{"metric":"INTERCONNECTS","limit":6,"usage":0},{"metric":"SSL_POLICIES","limit":10,"usage":0},{"metric":"GLOBAL_INTERNAL_ADDRESSES","limit":5000,"usage":0},{"metric":"VPN_GATEWAYS","limit":5,"usage":0},{"metric":"MACHINE_IMAGES","limit":100,"usage":0},{"metric":"SECURITY_POLICY_CEVAL_RULES","limit":20,"usage":0},{"metric":"GPUS_ALL_REGIONS","limit":0,"usage":0},{"metric":"EXTERNAL_VPN_GATEWAYS","limit":5,"usage":0},{"metric":"PUBLIC_ADVERTISED_PREFIXES","limit":1,"usage":0},{"metric":"PUBLIC_DELEGATED_PREFIXES","limit":10,"usage":0},{"metric":"STATIC_BYOIP_ADDRESSES","limit":128,"usage":0},{"metric":"NETWORK_FIREWALL_POLICIES","limit":10,"usage":0},{"metric":"INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES","limit":15,"usage":0},{"metric":"GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES","limit":15,"usage":0},{"metric":"GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES","limit":50,"usage":0},{"metric":"GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES","limit":50,"usage":0},{"metric":"GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES","limit":50,"usage":0},{"metric":"GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES","limit":250,"usage":0}],"selfLink":"https://www.googleapis.com/compute/v1/projects/beauty-book-14zko","defaultServiceAccount":"630156061433-compute@developer.gserviceaccount.com","xpnProjectStatus":"UNSPECIFIED_XPN_PROJECT_STATUS","defaultNetworkTier":"PREMIUM","vmDnsSetting":"ZONAL_ONLY","cloudArmorTier":"CA_STANDARD"}
+[debug] [2025-08-18T21:00:59.839Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.839Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:00:59.839Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/630156061433:getIamPolicy [none]
+[debug] [2025-08-18T21:01:00.108Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/630156061433:getIamPolicy 200
+[debug] [2025-08-18T21:01:00.112Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/630156061433:getIamPolicy {"version":1,"etag":"BwY8pzzO0F4=","bindings":[{"role":"roles/artifactregistry.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-artifactregistry.iam.gserviceaccount.com"]},{"role":"roles/cloudaicompanion.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-cloudaicompanion.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:630156061433@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-630156061433@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/cloudtrace.agent","members":["serviceAccount:630156061433-compute@developer.gserviceaccount.com"]},{"role":"roles/compute.serviceAgent","members":["serviceAccount:service-630156061433@compute-system.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-630156061433@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.readTokenAccessor","members":["serviceAccount:firebase-app-hosting-compute@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-devconnect.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:630156061433-compute@developer.gserviceaccount.com","serviceAccount:630156061433@cloudservices.gserviceaccount.com","serviceAccount:beauty-book-14zko@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@beauty-book-14zko.iam.gserviceaccount.com","serviceAccount:firebase-app-hosting-compute@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.computeRunner","members":["serviceAccount:firebase-app-hosting-compute@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firebaseapphosting.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/firebasedatabase.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/firebasedataconnect.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firebasedataconnect.iam.gserviceaccount.com"]},{"role":"roles/firebaseml.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firebasevertexai.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-630156061433@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-630156061433@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@beauty-book-14zko.iam.gserviceaccount.com"]},{"role":"roles/logging.logWriter","members":["serviceAccount:630156061433-compute@developer.gserviceaccount.com"]},{"role":"roles/monitoring.metricWriter","members":["serviceAccount:630156061433-compute@developer.gserviceaccount.com"]},{"role":"roles/owner","members":["user:kai@cognitosolution.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-630156061433@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/secretmanager.admin_withcond_76a75af6e405f7fa52ee","members":["serviceAccount:service-630156061433@gcp-sa-devconnect.iam.gserviceaccount.com"]},{"role":"roles/storage.objectViewer","members":["serviceAccount:firebase-app-hosting-compute@beauty-book-14zko.iam.gserviceaccount.com"]}]}
+[debug] [2025-08-18T21:01:00.120Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.120Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.120Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko [none]
+[debug] [2025-08-18T21:01:00.473Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko 200
+[debug] [2025-08-18T21:01:00.477Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko {"projectNumber":"630156061433","projectId":"beauty-book-14zko","lifecycleState":"ACTIVE","name":"Beauty Book Prod","labels":{"monospace-workspace-id":"studio-4871785374","firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-08-08T15:24:32.979524Z","parent":{"type":"organization","id":"826796034333"}}
+[debug] [2025-08-18T21:01:00.487Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.488Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.488Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/beauty-book-14zko/billingInfo [none]
+[debug] [2025-08-18T21:01:00.704Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/beauty-book-14zko/billingInfo 200
+[debug] [2025-08-18T21:01:00.709Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/beauty-book-14zko/billingInfo {"name":"projects/beauty-book-14zko/billingInfo","projectId":"beauty-book-14zko","billingAccountName":"billingAccounts/013E97-520FC8-7341BD","billingEnabled":true}
+[debug] [2025-08-18T21:01:00.714Z] [functions] found 1 new HTTP functions, testing setIamPolicy permission...
+[debug] [2025-08-18T21:01:00.714Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.722Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.726Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions [none]
+[debug] [2025-08-18T21:01:00.727Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions x-goog-quota-user=projects/beauty-book-14zko
+[debug] [2025-08-18T21:01:00.727Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions {"permissions":["cloudfunctions.functions.setIamPolicy"]}
+[debug] [2025-08-18T21:01:00.867Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions 200
+[debug] [2025-08-18T21:01:00.867Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/beauty-book-14zko:testIamPermissions {"permissions":["cloudfunctions.functions.setIamPolicy"]}
+[debug] [2025-08-18T21:01:00.867Z] [functions] found setIamPolicy permission, proceeding with deploy
+[debug] [2025-08-18T21:01:00.877Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.877Z] Checked if tokens are valid: true, expires at: 1755554006263
+[debug] [2025-08-18T21:01:00.878Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/europe-west2/functions:generateUploadUrl [none]
+[debug] [2025-08-18T21:01:03.064Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/europe-west2/functions:generateUploadUrl 200
+[debug] [2025-08-18T21:01:03.065Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/beauty-book-14zko/locations/europe-west2/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com/4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip?GoogleAccessId=service-630156061433@gcf-admin-robot.iam.gserviceaccount.com&Expires=1755552663&Signature=MSe0%2FHBgQJ7otstp%2BC2tBI8gMOoDLAx7ThwFN0EaUZ2g9S53JWbhUMuTsHUZSvbO29cwZ1aswY%2FaXRocJn3503xRHb5PyeHVHVQ3AmAuBjdf4QVzWWUt7FFms%2BDyR3wRsyrE2TOWjyGOUgDhBS8knxvSqr9lBA2XCDGa0Omnq%2BbOzSZNDFH1bETBhZhq%2BsEXSCn%2F49v2lTo2Zx2CfCTfiKeK9lY17VjSoOWzIGXk3l49uLQn%2FOFbkUdERBGNEd6zboqfLwk0EO0eYhObbnaQtlos8DdYOpMMHC6DmIPrXqFSn9cPMiwieWSdsBCnjPcmrBAlAgfUlWBiIkD%2F5VDXpw%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com","object":"4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip"}}
+[debug] [2025-08-18T21:01:03.069Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com/4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip GoogleAccessId=service-630156061433%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1755552663&Signature=MSe0%2FHBgQJ7otstp%2BC2tBI8gMOoDLAx7ThwFN0EaUZ2g9S53JWbhUMuTsHUZSvbO29cwZ1aswY%2FaXRocJn3503xRHb5PyeHVHVQ3AmAuBjdf4QVzWWUt7FFms%2BDyR3wRsyrE2TOWjyGOUgDhBS8knxvSqr9lBA2XCDGa0Omnq%2BbOzSZNDFH1bETBhZhq%2BsEXSCn%2F49v2lTo2Zx2CfCTfiKeK9lY17VjSoOWzIGXk3l49uLQn%2FOFbkUdERBGNEd6zboqfLwk0EO0eYhObbnaQtlos8DdYOpMMHC6DmIPrXqFSn9cPMiwieWSdsBCnjPcmrBAlAgfUlWBiIkD%2F5VDXpw%3D%3D
+[debug] [2025-08-18T21:01:03.069Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com/4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip [stream]
+[debug] [2025-08-18T21:01:03.222Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com/4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip 200
+[debug] [2025-08-18T21:01:03.224Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-630156061433.europe-west2.cloudfunctions.appspot.com/4f6ae59d-51ca-4b44-8eb6-0f869863cdaf.zip [omitted]
+[info] ✔  functions: functions folder uploaded successfully 
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	menuSuggestion(us-central1)
+	seedDatabase(us-central1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+
