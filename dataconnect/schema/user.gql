@@ -1,15 +1,16 @@
 
-"""
-An application user.
-"""
-type User @table(name: "users") {
-  id: ID!
+type User {
+  id: String! @unique
   name: String!
-  email: String! @unique
+  email: String!
   role: String!
-  provider: ServiceProvider @oneToMany(field: "userId")
+  provider: [ServiceProvider] @relation(name: "UserProvider")
 }
 
-type Mutation {
-    insertUser(id: ID!, name: String!, email: String!, role: String!): User! @resolver(name: "user/insertUser")
+extend type Query {
+  users_list: [User!]
+}
+
+extend type Mutation {
+  insertUser(id: String!, name: String!, email: String!, role: String!): User!
 }
