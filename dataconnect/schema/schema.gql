@@ -1,22 +1,75 @@
-# Describes the data available to Data Connect.
-# Learn more at https://firebase.google.com/docs/data-connect/graphql-schema
 
-# Every query and mutation is defined in a GQL file. The GQL files are
-# combined to create a single schema.
-# Learn more at https://firebase.google.com/docs/data-connect/how-to-define-schema#organizing_your_schema
 type Query {
-  listUsers: [User]
-  listServiceProviders: [ServiceProvider]
-  listServices: [Service]
-  listBookings: [Booking]
-  listReviews: [Review]
+  listUsers: [User!]!
+  listServiceProviders: [ServiceProvider!]!
+  listServices: [Service!]!
 }
 
 type Mutation {
   insertUser(
-    id: String!
-    name: String!
-    email: String!
+    id: String!,
+    name: String!,
+    email: String!,
     role: String!
   ): User!
+}
+
+type User {
+  id: String! @unique
+  name: String!
+  email: String! @unique
+  role: String!
+  provider: [ServiceProvider!] @relation(references: ["userId"])
+}
+
+type ServiceProvider {
+  id: String! @unique
+  userId: String!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User! @relation(references: ["id"])
+  services: [Service!] @relation(references: ["id"])
+  reviews: [Review!] @relation(references: ["providerId"])
+}
+
+type Service {
+  id: String! @unique
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  provider: [ServiceProvider!] @relation(references: ["id"])
+}
+
+type Booking {
+  id: String! @unique
+  providerId: String!
+  providerName: String!
+  serviceIds: [String!]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
+
+type Review {
+  id: String! @unique
+  bookingId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
 }

@@ -1,14 +1,3 @@
-
-type Service @table(name: "Service") {
-  id: String! @column(primaryKey: true, default: "gen_random_uuid()")
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider] @manyToMany(joinTable: "ServiceToServiceProvider", thisColumn: "A", thatColumn: "B")
-}
-
-extend type Query {
-  listServices: [Service] @table(name: "Service")
-}
+# This file is intentionally blank. The Service schema is defined in schema.gql.
+# Keeping this file prevents potential issues with file deletion during synchronization.
+# It can be safely removed later if desired.

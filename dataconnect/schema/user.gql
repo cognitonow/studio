@@ -1,16 +1,3 @@
-
-type User {
-  id: String! @unique
-  name: String!
-  email: String!
-  role: String!
-  provider: [ServiceProvider] @relation(name: "UserProvider")
-}
-
-extend type Query {
-  users_list: [User!]
-}
-
-extend type Mutation {
-  insertUser(id: String!, name: String!, email: String!, role: String!): User!
-}
+# This file is intentionally blank. The User schema is defined in schema.gql.
+# Keeping this file prevents potential issues with file deletion during synchronization.
+# It can be safely removed later if desired.

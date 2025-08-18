@@ -1,15 +1,3 @@
-
-"""
-A booking for a service at a specific time.
-"""
-type Booking @table(name: "bookings") {
-  id: ID!
-  providerId: ID!
-  providerName: String!
-  serviceIds: [String]!
-  date: Timestamp!
-  status: String!
-  clientName: String
-  isPaid: Boolean!
-  reviewId: String
-}
+# This file is intentionally blank. The Booking schema is defined in schema.gql.
+# Keeping this file prevents potential issues with file deletion during synchronization.
+# It can be safely removed later if desired.
