@@ -1,6 +1,0 @@
-
-type ServiceCategory @table(name: "service_categories") {
-  id: String! @column(key: "id")
-  name: String!
-  services: [Service] @relation(on: "id", to: "categoryId")
-}

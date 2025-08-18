@@ -1,8 +1,100 @@
 
 type Query {
-  _version: String
+  listServices: [Service]
+  listServiceProviders: [ServiceProvider]
+  listBookings: [Booking]
+  listUsers: [User]
 }
 
 type Mutation {
-  _version: String
+  insertUser(id: String!, name: String!, email: String!, role: String!): User
+  insertBooking(providerId: String!, serviceIds: [String]!, date: Timestamp!, clientName: String!, isPaid: Boolean!): Booking
+  insertConversation(providerId: String!, clientId: String!, lastMessage: String!): Conversation
+  insertMessage(conversationId: String!, sender: String!, text: String!): Message
+}
+
+type User @table(key: "id") {
+  id: String!
+  name: String!
+  email: String!
+  role: String!
+  provider: [ServiceProvider] @relation(on: "userId")
+}
+
+type ServiceProvider @table(key: "id") {
+  id: String!
+  userId: String!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User @relation(on: "userId")
+  services: [Service] @relation(on: "providerId")
+  reviews: [Review] @relation(on: "providerId")
+}
+
+type Service @table(key: "id") {
+  id: String!
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  providerId: String!
+  provider: ServiceProvider @relation(on: "providerId")
+}
+
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service] @relation(on: "categoryId")
+}
+
+type Booking @table(key: "id") {
+  id: String!
+  providerId: String!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
+
+type Review @table(key: "id") {
+  id: String!
+  bookingId: String!
+  providerId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}
+
+type Conversation @table(key: "id") {
+  id: String!
+  providerId: String!
+  clientId: String!
+  lastMessage: String!
+  provider: ServiceProvider @relation(on: "providerId")
+}
+
+type Message @table(key: "id") {
+  id: String!
+  conversationId: String!
+  sender: String!
+  text: String!
+  isAi: Boolean
+  bookingId: String
+  conversation: Conversation @relation(on: "conversationId")
 }
