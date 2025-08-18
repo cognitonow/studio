@@ -1,21 +1,20 @@
 
-"""
-A service offered by a provider.
-"""
+type ServiceCategory @table(name: "service_categories") {
+    id: String! @pk
+    name: String!
+    services: [Service]! @relation(type: "ONE_TO_MANY", on: "categoryId")
+}
+
 type Service @table(name: "services") {
-  id: ID!
-  categoryId: ID!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: ServiceProvider @manyToMany(joinTable: "service_provider_services")
+    id: String! @pk
+    categoryId: String! @map(name: "category_id")
+    name: String!
+    description: String!
+    price: Int!
+    duration: Int!
+    provider: [ServiceProvider]! @relation(type: "MANY_TO_MANY", through: "service_provider_services")
 }
 
 extend type Query {
-  listServices: ServicesPagination! @resolver(name: "service/listServices")
-}
-
-type ServicesPagination {
-  services: [Service!]!
+    listServices: [Service]! @resolver(name: "listServices")
 }

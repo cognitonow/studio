@@ -80,7 +80,7 @@ export default function ServicesPage() {
             {!isLoading && !error && services.length === 0 && (
                 <div className="col-span-full text-center text-muted-foreground py-8">
                     <p>Connection successful, but no services were found in the database.</p>
-                    <p className="text-sm">Please ensure you have run `firebase deploy` and populated your database tables with data.</p>
+                    <p className="text-sm">Please ensure you have run `firebase deploy` and triggered your database seeder function.</p>
                 </div>
             )}
           </div>
