@@ -1,7 +1,7 @@
 
 specVersion: "v1"
 serviceId: "beauty-book-14zko"
-location: "europe-west1"
+location: "europe-west4"
 schema:
   source: "./schema"
   datasource:
