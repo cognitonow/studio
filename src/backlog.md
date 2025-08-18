@@ -21,7 +21,7 @@ This section outlines the essential, one-time setup steps required in the Google
     *   First, ensure you have the `gcloud` CLI installed and authenticated (`gcloud auth login`).
     *   Connect to your Cloud SQL instance using the following command, which will open a `psql` prompt:
         ```bash
-        gcloud sql connect studio-fdc --user=postgres --database=postgres
+        gcloud beta sql connect studio-fdc --user=postgres --database=postgres
         ```
     *   Once connected, run the seed script with the following command inside the `psql` prompt:
         ```psql
