@@ -1,74 +1,22 @@
+# Describes the data available to Data Connect.
+# Learn more at https://firebase.google.com/docs/data-connect/graphql-schema
 
-# Default schema file. You can use this file to define your data model,
-# and Data Connect will generate the corresponding tables in your database.
-#
-# To learn more, visit https://firebase.google.com/docs/dataconnect
-
-# Every Data Connect schema needs to have at least one query.
+# Every query and mutation is defined in a GQL file. The GQL files are
+# combined to create a single schema.
+# Learn more at https://firebase.google.com/docs/data-connect/how-to-define-schema#organizing_your_schema
 type Query {
-  listServices: [Service]
+  listUsers: [User]
   listServiceProviders: [ServiceProvider]
+  listServices: [Service]
+  listBookings: [Booking]
+  listReviews: [Review]
 }
 
 type Mutation {
-    insertUser(id: String!, name: String!, email: String!, role: String!): User
-}
-
-# It's recommended to define each type in its own file.
-# Learn more at https://firebase.google.com/docs/dataconnect/data-modeling#organizing-schema
-type User {
-  id: String! @id
-  name: String!
-  email: String! @unique
-  role: String!
-  provider: [ServiceProvider] @relation(on: "userId")
-}
-
-type ServiceProvider {
-    id: String! @id
-    userId: String!
-    user: User @relation(references: ["userId"])
+  insertUser(
+    id: String!
     name: String!
-    specialty: String!
-    avatarUrl: String!
-    dataAiHint: String
-    rating: Float!
-    reviewCount: Int!
-    isFeatured: Boolean
-    isFavourite: Boolean
-    bio: String!
-    services: [Service] @relation(through: "ServiceProviderService")
-    reviews: [Review] @relation(on: "providerId")
-    location: String!
-    playlist: String!
-}
-
-type Service {
-    id: String! @id
-    name: String!
-    description: String!
-    price: Float!
-    duration: Int!
-    categoryId: String!
-    category: ServiceCategory @relation(references: ["categoryId"])
-    provider: [ServiceProvider] @relation(through: "ServiceProviderService")
-}
-
-type ServiceCategory {
-    id: String! @id
-    name: String!
-    services: [Service] @relation(on: "categoryId")
-}
-
-type Booking {
-    id: String! @id
-    providerId: String!
-    providerName: String!
-    serviceIds: [String!]!
-    date: Timestamp!
-    status: String!
-    clientName: String
-    isPaid: Boolean!
-    reviewId: String
-    review: Review @relation(references: ["reviewId"])
+    email: String!
+    role: String!
+  ): User!
 }
