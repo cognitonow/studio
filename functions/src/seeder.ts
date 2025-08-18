@@ -16,12 +16,6 @@ const dbPassword = defineSecret("DB_PASSWORD");
 // Seeder function should only be run in the emulator or a dev environment.
 // It is not intended for production use.
 export const seedDatabase = onRequest(
-  {
-    // Make the password available to the function
-    secrets: [dbPassword],
-    // Increase the timeout as seeding might take a while
-    timeoutSeconds: 30,
-  },
   async (request: Request, response: Response) => {
     // Basic security check: only allow GET requests
     if (request.method !== "GET") {

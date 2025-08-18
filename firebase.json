@@ -21,7 +21,15 @@
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
+      ],
+      "run": {
+        "seedDatabase": {
+          "environment": {
+            "DB_HOST": "34.89.31.28"
+          },
+          "secrets": ["DB_PASSWORD"]
+        }
+      }
     },
     {
       "source": "bbcodebase",
