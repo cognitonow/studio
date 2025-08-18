@@ -888,6 +888,8 @@ export const getBookingById = (id: string) => bookings.find(b => b.id === id);
 export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
 export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
 export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
+export const getReviewsByProviderId = (providerId: string) => reviews.filter(r => providers.find(p => p.id === providerId)?.reviews.some(review => review.id === r.id));
+export const getBadgesByProviderId = (providerId: string) => providers.find(p => p.id === providerId)?.badges || [];
 export const getExploreQueueProviders = () => providers.slice(3, 5); // Mock: return providers 4 and 5
 export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
 export const getBookingHistoryForProvider = (providerId: string) => {

@@ -3,7 +3,8 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { providers, getFeaturedProviders, serviceCategories, services as allServices, dublinDistricts, getProvidersByPlaylist } from '@/lib/data';
+import { providers as mockProviders, getFeaturedProviders as getMockFeaturedProviders, serviceCategories, services as allServices, dublinDistricts, getProvidersByPlaylist } from '@/lib/data';
+import { getProviders } from '@/app/actions/providers';
 import { ProviderCard } from '@/components/provider-card';
 import {
   Carousel,
@@ -47,13 +48,13 @@ function ExploreStack() {
     const isNext = index === activeIndex + 1;
 
     let transform = 'translateY(0) scale(1)';
-    let zIndex = providers.length - index;
+    let zIndex = mockProviders.length - index;
     let opacity = 0;
     let transition = 'transform 0.3s ease, opacity 0.3s ease';
 
     if (isCurrent) {
         opacity = 1;
-        zIndex = providers.length + 1;
+        zIndex = mockProviders.length + 1;
         if (direction === 'right') {
             transform = 'translateX(100%) rotate(15deg) scale(0.8)';
         } else if (direction === 'left') {
@@ -90,17 +91,17 @@ function ExploreStack() {
   const handleNext = () => {
     setDirection('right');
     setTimeout(() => {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
+      setActiveIndex((prevIndex) => (prevIndex + 1) % mockProviders.length);
       setDirection('none');
     }, 300);
   };
   
   const handleLike = () => {
     setDirection('up');
-    const currentProvider = providers[activeIndex];
+    const currentProvider = mockProviders[activeIndex];
     setExploreQueue(prev => [...prev, currentProvider]);
     setTimeout(() => {
-        setActiveIndex((prevIndex) => (prevIndex + 1) % providers.length);
+        setActiveIndex((prevIndex) => (prevIndex + 1) % mockProviders.length);
         setDirection('none');
     }, 300);
   };
@@ -108,13 +109,13 @@ function ExploreStack() {
   const handlePrevious = () => {
     setDirection('left');
     setTimeout(() => {
-        setActiveIndex((prevIndex) => (prevIndex - 1 + providers.length) % providers.length);
+        setActiveIndex((prevIndex) => (prevIndex - 1 + mockProviders.length) % mockProviders.length);
         setDirection('none');
     }, 300);
   };
   
   const handleProfileView = () => {
-    const currentProvider = providers[activeIndex];
+    const currentProvider = mockProviders[activeIndex];
     setExploreQueue(prev => {
         if (!prev.find(p => p.id === currentProvider.id)) {
             return [...prev, currentProvider];
@@ -123,13 +124,13 @@ function ExploreStack() {
     });
   };
 
-  const currentProvider = providers[activeIndex];
+  const currentProvider = mockProviders[activeIndex];
   const chatHref = currentProvider ? `/messages?providerId=${currentProvider.id}` : '#';
 
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-full max-w-md h-[550px]">
-        {providers.map((provider, index) => (
+        {mockProviders.map((provider, index) => (
           <div key={provider.id} style={getCardStyle(index)}>
             <ExploreProviderCard provider={provider} />
           </div>
@@ -159,7 +160,7 @@ function ExploreStack() {
                         Detailed view of the service provider's profile.
                     </DialogDescription>
                 </DialogHeader>
-                <ProviderProfileView provider={providers[activeIndex]} />
+                <ProviderProfileView provider={mockProviders[activeIndex]} />
             </DialogContent>
           </Dialog>
            <AuthButton
@@ -184,12 +185,27 @@ const categoryToPlaylistMap: Record<string, string> = {
 
 
 export default function DiscoverPage() {
-  const featuredProviders = getFeaturedProviders();
+  const [featuredProviders, setFeaturedProviders] = useState<Provider[]>([]);
+
+  useEffect(() => {
+    const loadProviders = async () => {
+        // Fetch from the live database
+        const liveProviders = await getProviders();
+        const featured = liveProviders.filter(p => p.isFeatured);
+        if (featured.length > 0) {
+            setFeaturedProviders(featured);
+        } else {
+            // Fallback to mock data if live data is not available or not featured
+            setFeaturedProviders(getMockFeaturedProviders());
+        }
+    };
+    loadProviders();
+  }, []);
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [selectedService, setSelectedService] = useState<string | undefined>();
   const [selectedLocations, setSelectedLocations] = useState<Set<string>>(new Set());
-  const [playlistProviders, setPlaylistProviders] = useState<Provider[]>(featuredProviders);
+  const [playlistProviders, setPlaylistProviders] = useState<Provider[]>(getMockFeaturedProviders());
 
   const handleCategorySelect = (categoryId: string) => {
     const newCategory = categoryId === 'all' ? undefined : categoryId;
@@ -199,7 +215,7 @@ export default function DiscoverPage() {
     if(newCategory && categoryToPlaylistMap[newCategory]) {
         setPlaylistProviders(getProvidersByPlaylist(categoryToPlaylistMap[newCategory]));
     } else {
-        setPlaylistProviders(getFeaturedProviders());
+        setPlaylistProviders(getMockFeaturedProviders());
     }
   }
 
