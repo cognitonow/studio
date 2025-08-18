@@ -25,7 +25,7 @@ const ai = genkit({
     // Load the Vertex AI plugin. You can optionally specify your project ID
     // by passing in a config object; if you don't, the Vertex AI plugin uses
     // the value from the GCLOUD_PROJECT environment variable.
-    vertexAI({location: "us-central1"}),
+    vertexAI({location: "europe-west2"}),
   ],
 });
 
