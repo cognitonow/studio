@@ -1,0 +1,21 @@
+
+type Service @table(name: "services") {
+  id: String! @pk
+  name: String!
+  description: String!
+  price: Int!
+  duration: Int!
+  categoryId: String!
+  category: ServiceCategory @relation(field: "categoryId", references: "id")
+}
+
+query listServices {
+  services {
+    id
+    name
+    description
+    price
+    duration
+    categoryId
+  }
+}
