@@ -5,7 +5,7 @@ import { Header } from '@/components/layout/header';
 import { Toaster } from "@/components/ui/toaster";
 import { Footer } from '@/components/layout/footer';
 import { Providers } from './providers';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
   title: 'Beauty Book - Find and Book Beauty Appointments',
@@ -37,7 +37,12 @@ export const metadata: Metadata = {
   icons: {
     shortcut: '/favicon.ico',
   },
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 
