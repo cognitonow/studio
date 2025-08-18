@@ -17,7 +17,17 @@ This section outlines the essential, one-time setup steps required in the Google
     *   Get an API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
     *   In the Google Cloud Console, go to **Secret Manager** and create a new secret named `GOOGLE_GENAI_API_KEY` with the key as its value.
 5.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions.
-
+6.  **(Optional) Seed Your Database:** To test the live connection, you need data in your database.
+    *   First, ensure you have the `gcloud` CLI installed and authenticated (`gcloud auth login`).
+    *   Connect to your Cloud SQL instance using the following command, which will open a `psql` prompt:
+        ```bash
+        gcloud sql connect studio-fdc --user=postgres --database=postgres
+        ```
+    *   Once connected, run the seed script with the following command inside the `psql` prompt:
+        ```psql
+        \i dataconnect/seed.sql
+        ```
+    *   This will populate your `Service` and `ServiceCategory` tables. You can then visit the `/services` page in your app to see the live data.
 
 ## High Priority: Phase 2 - Full Backend Migration
 
