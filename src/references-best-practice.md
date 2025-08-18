@@ -2,7 +2,23 @@
 
 This document outlines the key coding patterns, architectural decisions, and debugging best practices we have established for this project. Following these guidelines will help ensure our code remains clean, consistent, and functional.
 
-## 1. Core Principle: Full-Circle Communication
+## 1. Infrastructure Best Practices
+
+### 1.1. Service Co-location
+
+**All Google Cloud and Firebase services should be deployed to the same region.** This includes, but is not limited to:
+- Cloud Functions
+- Firestore Database
+- Cloud SQL Instance
+- Genkit AI Flows
+
+**Reasoning:** Co-locating services significantly reduces network latency, as the services can communicate over Google's internal network. It also helps avoid potential data egress costs that can occur when data is transferred between different regions.
+
+**Verification:** The primary configuration files for service regions are `firebase.json` and the `setGlobalOptions` call within each function codebase's `index.ts` file (e.g., `functions/src/index.ts`). Ensure the `region` property in these files matches the location of your database.
+
+---
+
+## 2. Core Principle: Full-Circle Communication
 
 Whenever an action is performed by one user that affects another (e.g., booking, cancellation, update), the system must notify **all** relevant parties.
 
@@ -12,16 +28,16 @@ Whenever an action is performed by one user that affects another (e.g., booking,
 
 - **Centralized Triggers:** All notifications and AI messages should be triggered from within the core data-updating functions in `src/lib/data.ts` (e.g., `updateBookingStatus`, `addBooking`, `updateBooking`). This creates a single source of truth and prevents logic from being scattered across UI components.
 
-## 2. AI Integration Patterns & Triggers
+## 3. AI Integration Patterns & Triggers
 
-### 2.1. Dedicated AI Flows
+### 3.1. Dedicated AI Flows
 
 - Each distinct AI task (e.g., drafting a cancellation message, suggesting a badge) must be encapsulated in its own dedicated flow file within `src/ai/flows/`.
 - **Flow Naming Convention:** Use the pattern `draft-[action-name].ts` for message drafting flows (e.g., `draft-booking-cancellation.ts`).
 - **Clear Inputs/Outputs:** Every flow must have clearly defined input and output schemas using Zod. This ensures type safety and makes the AI's task unambiguous.
 - **Provider/Client Context:** For flows that generate messages, the prompt must be aware of the recipient (`provider` or `client`) to tailor the message content and tone appropriately.
 
-### 2.2. Automated Message Triggers
+### 3.2. Automated Message Triggers
 
 All automated AI messages are triggered from within `src/lib/data.ts`. Here is a complete breakdown of every trigger:
 
@@ -35,7 +51,7 @@ All automated AI messages are triggered from within `src/lib/data.ts`. Here is a
 | **Booking Cancelled** | `updateBookingStatus` | `draftBookingCancellation` | When a booking is cancelled by **either** the client or the provider, an AI message is sent to the other party informing them of the cancellation. The message content changes based on who initiated the cancellation. |
 
 
-## 3. State Management & Data Flow
+## 4. State Management & Data Flow
 
 - **Single Source of Truth:** `src/lib/data.ts` acts as our mock database and is the single source of truth for all application data. All data mutations must go through the functions exposed by this file.
 - **Client-Side Actions:** UI components should call functions from `data.ts` to mutate state. They should not modify state directly.
@@ -49,7 +65,7 @@ All automated AI messages are triggered from within `src/lib/data.ts`. Here is a
     }, []);
     ```
 
-## 4. Component-Driven UI & Logic
+## 5. Component-Driven UI & Logic
 
 - **Role-Specific Rendering:** Components should use the `useUserRole` hook to conditionally render UI elements and enable/disable actions based on whether the user is a `client` or a `provider`.
 - **Isolate Complex UI:** Complex, stateful UI sections (like `ServiceManagementCard` or `BadgeProgress`) should be encapsulated in their own components to keep the main page files clean and focused.
@@ -61,7 +77,7 @@ All automated AI messages are triggered from within `src/lib/data.ts`. Here is a
     - The dialog's content (`<DialogContent>`) receives the user input and calls the parent's callback function to update the parent's state. The parent then explicitly closes the dialog by updating its visibility state.
     - This pattern prevents race conditions and ensures a predictable, one-way data flow.
 
-## 5. Debugging Checklist
+## 6. Debugging Checklist
 
 When a feature is not working as expected, follow this checklist:
 1.  **Consult This Document:** Does the feature violate one of the principles outlined here? (e.g., Is a notification being triggered from the UI instead of `data.ts`? Is a dialog trying to manage its own state when it should be controlled by a parent?)
