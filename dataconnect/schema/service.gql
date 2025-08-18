@@ -1,0 +1,8 @@
+
+extend type Query @requiresAuth {
+  """
+  Retrieves a list of all available services.
+  """
+  listServices: [Service]
+    @permission(expression: "auth.token.email.endsWith('@google.com')")
+}

@@ -1,0 +1,5 @@
+
+extend type Query @requiresAuth {
+  listServiceProviders: [ServiceProvider]
+    @permission(expression: "auth.token.email.endsWith('@google.com')")
+}

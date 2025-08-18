@@ -1,12 +1,23 @@
-type User @table(key: "id") {
-  id: String!
+
+type Query @requiresAuth {
+  users: [User]
+    @permission(expression: "auth.token.email.endsWith('@google.com')")
+}
+
+type Mutation @requiresAuth {
+  _: Boolean
+}
+
+type User @table(name: "users") {
+  id: String! @column(key: "id")
   name: String!
   email: String!
   role: String!
+  provider: [ServiceProvider] @relation(on: "id", to: "userId")
 }
 
-type ServiceProvider @table(key: "id") {
-  id: String!
+type ServiceProvider @table(name: "service_providers") {
+  id: String! @column(key: "id")
   userId: String!
   name: String!
   specialty: String!
@@ -19,87 +30,29 @@ type ServiceProvider @table(key: "id") {
   bio: String!
   location: String!
   playlist: String!
+  user: User @relation(on: "userId", to: "id")
+  services: [Service] @relation(on: "id", to: "providerId")
+  reviews: [Review] @relation(on: "id", to: "providerId")
 }
 
-type Service @table(key: "id") {
-  id: String!
+type Service @table(name: "services") {
+  id: String! @column(key: "id")
   categoryId: String!
   name: String!
   description: String!
   price: Float!
   duration: Int!
+  provider: [ServiceProvider] @relation(on: "id", to: "id")
 }
 
-type ServiceCategory @table(key: "id") {
-  id: String!
-  name: String!
-}
-
-type Booking @table(key: "id") {
-  id: String!
+type Booking @table(name: "bookings") {
+  id: String! @column(key: "id")
   providerId: String!
   providerName: String!
-  serviceIds: [String!]!
+  serviceIds: [String]!
   date: Timestamp!
   status: String!
   clientName: String
   isPaid: Boolean!
   reviewId: String
-}
-
-type Review @table(key: "id") {
-  id: String!
-  bookingId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
-}
-
-type Conversation @table(key: "id") {
-  id: String!
-  providerId: String!
-  clientId: String
-  name: String!
-  avatar: String!
-  dataAiHint: String
-  lastMessage: String!
-  time: String!
-  unread: Int!
-}
-
-type Message @table(key: "id") {
-  id: String!
-  conversationId: String!
-  sender: String!
-  text: String!
-  isAi: Boolean
-  bookingId: String
-}
-
-type Query {
-  listUsers: [User!]! @auth(rules: [{ allow: public }])
-  listServiceProviders: [ServiceProvider!]! @auth(rules: [{ allow: public }])
-  listServices: [Service!]! @auth(rules: [{ allow: public }])
-}
-
-type Mutation {
-  insertUser(id: String!, name: String!, email: String!, role: String!): User @auth(rules: [{ allow: public }])
-  insertBooking(
-    id: String!,
-    providerId: String!,
-    providerName: String!,
-    serviceIds: [String!]!,
-    date: Timestamp!,
-    status: String!,
-    clientName: String,
-    isPaid: Boolean!
-  ): Booking @auth(rules: [{ allow: public }])
-  insertMessage(
-    conversationId: String!,
-    sender: String!,
-    text: String!
-  ): Message @auth(rules: [{ allow: public }])
 }

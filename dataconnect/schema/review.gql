@@ -1,0 +1,11 @@
+
+type Review @table(name: "reviews") {
+  id: String! @column(key: "id")
+  bookingId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}

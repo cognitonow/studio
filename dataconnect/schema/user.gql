@@ -1,0 +1,5 @@
+
+extend type Mutation @requiresAuth {
+  insertUser(id: String!, name: String!, email: String!, role: String!): User
+    @permission(expression: "auth.token.email.endsWith('@google.com')")
+}
