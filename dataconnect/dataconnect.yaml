@@ -8,6 +8,6 @@ schema:
     postgresql:
       database: "postgres"
       cloudSql:
-        instanceId: "studio-fdc"
+        instanceId: "beautybook-db"
       # schemaValidation: "COMPATIBLE"
 connectorDirs: ["./connector"]
