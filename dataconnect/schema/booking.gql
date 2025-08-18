@@ -1,19 +1,24 @@
-type Booking @table(key: "id") {
-  id: String!
-  provider: ServiceProvider!
-  services: [Service!]!
+// dataconnect/schema/booking.gql
+import { Timestamp, UUID } from "../../../dataconnect.config";
+
+type Booking @table(name: "bookings", key: "id") {
+  id: UUID!
+  providerId: UUID!
+  providerName: String!
+  serviceIds: [String]!
   date: Timestamp!
   status: String!
   clientName: String
   isPaid: Boolean!
-  review: Review
+  reviewId: String
 }
 
-type Mutation {
+extend type Mutation {
   insertBooking(
-    id: String!
-    providerId: String!
-    serviceIds: [String!]!
+    id: UUID!
+    providerId: UUID!
+    providerName: String!
+    serviceIds: [String]!
     date: Timestamp!
     status: String!
     clientName: String
