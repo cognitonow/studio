@@ -2,6 +2,23 @@
 
 This document contains a list of features, improvements, and ideas for future development.
 
+## Firebase & Cloud Backend Setup
+
+This section outlines the essential, one-time setup steps required in the Google Cloud and Firebase consoles to enable the live backend for this application.
+
+1.  **Upgrade to Blaze Plan:** Your Firebase project must be on the **Blaze (Pay-as-you-go)** plan to use services like Cloud SQL and Secret Manager.
+2.  **Enable Google Cloud APIs:** In your project's Google Cloud Console, ensure the following APIs are enabled:
+    *   Cloud SQL Admin API
+    *   Vertex AI API
+    *   Secret Manager API
+    *   Firebase Data Connect API
+3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `studio-fdc`.
+4.  **Store GenAI API Key:**
+    *   Get an API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
+    *   In the Google Cloud Console, go to **Secret Manager** and create a new secret named `GOOGLE_GENAI_API_KEY` with the key as its value.
+5.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions.
+
+
 ## High Priority: Phase 2 - Full Backend Migration
 
 This section outlines the critical path to migrate the application from the current mock data (`src/lib/data.ts`) to a production-ready backend using Firebase Data Connect and a PostgreSQL database.
