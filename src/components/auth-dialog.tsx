@@ -40,7 +40,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
                 <Button variant="ghost">Continue as Guest</Button>
             </DialogClose>
             <Button asChild>
-                <Link href="/auth">Log In / Sign Up</Link>
+                <Link href="/signup">Log In / Sign Up</Link>
             </Button>
         </DialogFooter>
       </DialogContent>
