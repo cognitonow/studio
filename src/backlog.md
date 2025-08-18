@@ -54,6 +54,8 @@ This section outlines the critical path to migrate the application from the curr
 
 4.  **Full System Test:** Once the migration is complete, conduct a thorough test of all user flows (booking, messaging, reviewing, etc.) to ensure the application behaves as expected with the live database.
 
+5.  **Incremental Testing and Verification (New Step):** After each significant migration step (e.g., migrating `getProviders`), create or update a specific test page or component to visually confirm that the new query or mutation is working correctly with the live database. This ensures issues are caught early and validates progress.
+
 
 ## Features
 
