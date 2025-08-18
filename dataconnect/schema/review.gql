@@ -1,8 +1,0 @@
-type Review @table(key: "id") {
-  id: String!
-  booking: Booking!
-  author: String!
-  rating: Int!
-  comment: String!
-  provider: ServiceProvider!
-}
