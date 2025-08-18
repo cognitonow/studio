@@ -1,20 +1,14 @@
 
-type ServiceCategory @table(name: "service_categories") {
-    id: String! @pk
-    name: String!
-    services: [Service]! @relation(type: "ONE_TO_MANY", on: "categoryId")
+extend type Query {
+    listServices: [Service]
 }
 
-type Service @table(name: "services") {
-    id: String! @pk
-    categoryId: String! @map(name: "category_id")
+type Service @table(key: "id") {
+    id: String! @db(default: "uuid_generate_v4()")
+    categoryId: String!
     name: String!
     description: String!
     price: Int!
     duration: Int!
-    provider: [ServiceProvider]! @relation(type: "MANY_TO_MANY", through: "service_provider_services")
-}
-
-extend type Query {
-    listServices: [Service]! @resolver(name: "listServices")
+    provider: [ServiceProvider] @manyToMany(through: "ServiceToServiceProvider")
 }
