@@ -1,30 +1,3 @@
-
-"""
-A service provider in the application.
-"""
-type ServiceProvider @table(name: "service_providers") {
-  id: ID!
-  userId: ID! @unique
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User @oneToOne(field: "userId")
-  services: [Service] @manyToMany(joinTable: "service_provider_services")
-  reviews: [Review] @oneToMany(field: "providerId") # Assuming Review table has a providerId
-}
-
 extend type Query {
-    listServiceProviders: ServiceProvidersPagination! @resolver(name: "provider/listServiceProviders")
-}
-
-type ServiceProvidersPagination {
-    providers: [ServiceProvider!]!
+  listServiceProviders: [ServiceProvider] @resolver(name: "serviceProviders/listServiceProviders")
 }
