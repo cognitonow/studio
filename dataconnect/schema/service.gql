@@ -1,14 +1,14 @@
 
-extend type Query {
-    listServices: [Service]
+type Service @table(name: "Service") {
+  id: String! @column(primaryKey: true, default: "gen_random_uuid()")
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  provider: [ServiceProvider] @manyToMany(joinTable: "ServiceToServiceProvider", thisColumn: "A", thatColumn: "B")
 }
 
-type Service @table(key: "id") {
-    id: String! @db(default: "uuid_generate_v4()")
-    categoryId: String!
-    name: String!
-    description: String!
-    price: Int!
-    duration: Int!
-    provider: [ServiceProvider] @manyToMany(through: "ServiceToServiceProvider")
+extend type Query {
+  listServices: [Service] @table(name: "Service")
 }
