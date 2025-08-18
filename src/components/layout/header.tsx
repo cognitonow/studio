@@ -1,10 +1,11 @@
 
+
 'use client'
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, Database } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,11 +25,11 @@ function getNavLinks(role: UserRole) {
         guest: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
-                { href: '/auth', label: 'Sign Up', icon: UserPlus }
+                { href: '/signup', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
-                { href: '/auth', label: 'Log In / Sign Up' },
+                { href: '/signup', label: 'Log In / Sign Up' },
                 { href: '/', label: 'Home' },
             ],
         },
