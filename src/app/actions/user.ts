@@ -1,8 +1,10 @@
+
 'use server';
 
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
 import { connectorConfig, insertUser } from '@firebasegen/default-connector';
 import type { User } from '@/lib/types';
+import '@/lib/firebase'; // Ensure Firebase is initialized
 
 const dataConnect = getDataConnect(connectorConfig);
 
