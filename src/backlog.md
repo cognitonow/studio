@@ -12,7 +12,7 @@ This section outlines the essential, one-time setup steps required in the Google
     *   Vertex AI API
     *   Secret Manager API
     *   Firebase Data Connect API
-3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `studio-fdc`. Note the **Connection Name** on the instance details page.
+3.  **Create Cloud SQL Instance:** Create a **PostgreSQL** instance in Cloud SQL with the exact Instance ID: `beautybook-db`. Note the **Connection Name** on the instance details page.
 4.  **Set Database Password**: On the Cloud SQL instance page, go to the "Users" tab and set a password for the default `postgres` user.
 5.  **Store GenAI & DB Secrets:**
     *   Get a GenAI API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
@@ -21,7 +21,7 @@ This section outlines the essential, one-time setup steps required in the Google
         *   `DB_PASSWORD`: with the password you set for the `postgres` user as its value.
     *   Ensure the Cloud Functions service account (`your-project-id@appspot.gserviceaccount.com`) has the "Secret Manager Secret Accessor" role in IAM.
 6.  **Set Environment Variables**: Add the Cloud SQL **Connection Name** to your `.env` file for local testing and to your backend settings for deployment.
-    *   In `.env`, add: `DB_HOST=your-project:your-region:studio-fdc`
+    *   In `.env`, add: `DB_HOST=your-project:your-region:beautybook-db`
     *   In `apphosting.api__settings.yaml`, add the `DB_HOST` variable with the same value.
 7.  **Deploy Backend:** Run `firebase deploy` from your terminal to deploy your database schema and Cloud Functions, including the new seeder function.
 8.  **Seed Your Database:** After deployment, find the URL for the `seedDatabase` function in the Firebase console Functions tab. Open that URL in your browser. It will execute the `dataconnect/seed.sql` script to populate your database tables.
