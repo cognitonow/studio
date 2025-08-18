@@ -1,7 +1,10 @@
 
-type Provider @table(key: "id") {
-  id: String!
-  userId: String!
+"""
+A service provider in the application.
+"""
+type ServiceProvider @table(name: "service_providers") {
+  id: ID!
+  userId: ID! @unique
   name: String!
   specialty: String!
   avatarUrl: String!
@@ -13,16 +16,15 @@ type Provider @table(key: "id") {
   bio: String!
   location: String!
   playlist: String!
-  services: [Service] @manyToMany(joinTable: "ProviderServices")
-  reviews: [Review] @relation(field: "providerId")
-  bookings: [Booking] @relation(field: "providerId")
+  user: User @oneToOne(field: "userId")
+  services: [Service] @manyToMany(joinTable: "service_provider_services")
+  reviews: [Review] @oneToMany(field: "providerId") # Assuming Review table has a providerId
 }
 
-type ProviderServices @joinTable(
-  from: "Provider", to: "Service"
-) {
-  provider: Provider!
-  service: Service!
+extend type Query {
+    listServiceProviders: ServiceProvidersPagination! @resolver(name: "provider/listServiceProviders")
 }
 
-# Queries and Mutations will be added in Phase 2
+type ServiceProvidersPagination {
+    providers: [ServiceProvider!]!
+}

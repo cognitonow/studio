@@ -1,21 +1,21 @@
 
+"""
+A service offered by a provider.
+"""
 type Service @table(name: "services") {
-  id: String! @pk
+  id: ID!
+  categoryId: ID!
   name: String!
   description: String!
-  price: Int!
+  price: Float!
   duration: Int!
-  categoryId: String!
-  category: ServiceCategory @relation(field: "categoryId", references: "id")
+  provider: ServiceProvider @manyToMany(joinTable: "service_provider_services")
 }
 
-query listServices {
-  services {
-    id
-    name
-    description
-    price
-    duration
-    categoryId
-  }
+extend type Query {
+  listServices: ServicesPagination! @resolver(name: "service/listServices")
+}
+
+type ServicesPagination {
+  services: [Service!]!
 }

@@ -1,17 +1,15 @@
 
+"""
+An application user.
+"""
 type User @table(name: "users") {
-  id: String! @pk
+  id: ID!
   name: String!
   email: String! @unique
   role: String!
-  createdAt: Timestamp!
+  provider: ServiceProvider @oneToMany(field: "userId")
 }
 
-extend type Mutation {
-  insertUser(
-    id: String!
-    name: String!
-    email: String!
-    role: String!
-  ): User! @permission(admin: true)
+type Mutation {
+    insertUser(id: ID!, name: String!, email: String!, role: String!): User! @resolver(name: "user/insertUser")
 }
