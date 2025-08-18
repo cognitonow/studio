@@ -26,7 +26,7 @@
       "run": {
         "seedDatabase": {
           "environment": {
-            "DB_HOST": "34.89.31.28"
+            "DB_HOST": "beauty-book-14zko:europe-west1:studio-fdc"
           },
           "secrets": [
             "DB_PASSWORD"
