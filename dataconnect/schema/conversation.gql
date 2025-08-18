@@ -1,26 +1,25 @@
 type Conversation @table(key: "id") {
   id: String!
-  provider: ServiceProvider!
-  clientName: String!
-  lastMessage: String
-  lastMessageTimestamp: Timestamp
-  unreadCount: Int
-  messages: [Message!]!
+  providerId: String!
+  clientId: String
+  name: String!
+  avatar: String!
+  dataAiHint: String
+  lastMessage: String!
+  time: String!
+  unread: Int!
+  messages: [Message]! @relation(through: "Message", from: "conversationId", to: "id")
 }
 
 type Message @table(key: "id") {
   id: String!
-  conversation: Conversation!
-  sender: String! # 'user' or 'provider'
+  conversationId: String!
+  sender: String!
   text: String!
-  timestamp: Timestamp!
   isAi: Boolean
+  bookingId: String
 }
 
-type Mutation {
-  insertMessage(
-    conversationId: String!
-    sender: String!
-    text: String!
-  ): Message
+extend type Mutation {
+  addMessage(conversationId: String!, sender: String!, text: String!): Message!
 }
