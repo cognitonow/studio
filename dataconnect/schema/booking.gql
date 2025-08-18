@@ -1,3 +1,2 @@
-# This file is intentionally blank. The Booking schema is defined in schema.gql.
-# Keeping this file prevents potential issues with file deletion during synchronization.
-# It can be safely removed later if desired.
+# This file is intentionally left blank. 
+# Its definitions have been consolidated into schema.gql to resolve build errors.

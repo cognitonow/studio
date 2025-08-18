@@ -1,61 +1,71 @@
 
 type Query {
-  listUsers: [User!]!
-  listServiceProviders: [ServiceProvider!]!
-  listServices: [Service!]!
+  listUsers: [User] @auth(rules: [{ allow: public }])
+  listServiceProviders: [ServiceProvider] @auth(rules: [{ allow: public }])
+  listServices: listServicesResponse @auth(rules: [{ allow: public }])
 }
 
 type Mutation {
-  insertUser(
-    id: String!,
-    name: String!,
-    email: String!,
-    role: String!
-  ): User!
+  insertUser(id: ID!, name: String!, email: String!, role: String!): insertUserResponse
+    @auth(rules: [{ allow: public }])
+}
+
+type listServicesResponse {
+  services: [Service]
+}
+
+type insertUserResponse {
+  data: User
 }
 
 type User {
-  id: String! @unique
-  name: String!
-  email: String! @unique
-  role: String!
-  provider: [ServiceProvider!] @relation(references: ["userId"])
+  id: ID!
+  name: String
+  email: String
+  role: String
+  provider: [ServiceProvider] @relation(name: "UserToServiceProvider")
 }
 
 type ServiceProvider {
-  id: String! @unique
-  userId: String!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
+  id: ID!
+  userId: ID!
+  name: String
+  specialty: String
+  avatarUrl: String
   dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
+  rating: Float
+  reviewCount: Int
   isFeatured: Boolean
   isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User! @relation(references: ["id"])
-  services: [Service!] @relation(references: ["id"])
-  reviews: [Review!] @relation(references: ["providerId"])
+  bio: String
+  location: String
+  playlist: String
+  user: User @relation(name: "UserToServiceProvider", field: "userId")
+  services: [Service] @relation(name: "ServiceProviderToService")
+  reviews: [Review] @relation(name: "ServiceProviderToReview")
 }
 
 type Service {
-  id: String! @unique
-  categoryId: String!
+  id: ID!
+  categoryId: ID!
+  name: String
+  description: String
+  price: Float
+  duration: Int
+  provider: [ServiceProvider] @relation(name: "ServiceProviderToService")
+}
+
+type ServiceCategory {
+  id: ID!
   name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider!] @relation(references: ["id"])
+  services: [Service]! @relation(name: "ServiceCategoryToService")
 }
 
 type Booking {
-  id: String! @unique
-  providerId: String!
+  id: ID!
+  providerId: ID!
   providerName: String!
-  serviceIds: [String!]!
+  serviceIds: [String]!
   date: Timestamp!
   status: String!
   clientName: String
@@ -64,8 +74,8 @@ type Booking {
 }
 
 type Review {
-  id: String! @unique
-  bookingId: String!
+  id: ID!
+  bookingId: ID!
   author: String!
   avatarUrl: String
   dataAiHint: String
