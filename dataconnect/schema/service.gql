@@ -1,5 +1,0 @@
-
-extend type Query {
-  listServices: [Service!]
-  getService(id: String!): Service
-}

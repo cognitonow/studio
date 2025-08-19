@@ -1,4 +1,12 @@
 
+type User @table(key: "id") {
+  id: String!
+  name: String!
+  email: String!
+  role: String!
+  provider: [ServiceProvider]
+}
+
 type ServiceProvider @table(key: "id") {
   id: String!
   userId: String!
@@ -13,6 +21,15 @@ type ServiceProvider @table(key: "id") {
   bio: String!
   location: String!
   playlist: String!
+  user: User @relation(on: "userId", to: "id")
+  services: [Service]
+  reviews: [Review]
+}
+
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service]
 }
 
 type Service @table(key: "id") {
@@ -22,45 +39,31 @@ type Service @table(key: "id") {
   description: String!
   price: Float!
   duration: Int!
-}
-
-type User @table(key: "id") {
-    id: String!
-    name: String!
-    email: String!
-    role: String!
+  provider: [ServiceProvider] @relation(through: "ServiceProvider_services")
 }
 
 type Booking @table(key: "id") {
-    id: String!
-    providerId: String!
-    providerName: String!
-    serviceIds: [String]!
-    date: Timestamp!
-    status: String!
-    clientName: String
-    isPaid: Boolean!
-    reviewId: String
+  id: String!
+  providerId: String!
+  providerName: String!
+  serviceIds: [String!]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
 }
 
 type Review @table(key: "id") {
-    id: String!
-    bookingId: String!
-    author: String!
-    avatarUrl: String
-    dataAiHint: String
-    rating: Int!
-    comment: String!
-    title: String
+  id: String!
+  bookingId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
 }
-
-type ServiceCategory @table(key: "id") {
-    id: String!
-    name: String!
-}
-
-# The following types are not yet backed by database tables
-# but are included for future use.
 
 type Conversation {
   id: Int!
@@ -84,9 +87,9 @@ type Message {
 }
 
 type Query {
-  listServices: [Service] @auth(rules: [ { allow: all } ])
+  _empty: String
 }
 
 type Mutation {
-    insertUser(id: String!, name: String!, email: String!, role: String!): User @auth(rules: [ { allow: all } ])
+  _empty: String
 }
