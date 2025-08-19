@@ -3,8 +3,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 
-// Initialize the Admin SDK. This is done only once per server instance.
-admin.initializeApp();
+// The Admin SDK is initialized in index.ts
 
 /**
  * A callable Cloud Function to securely list all users from Firebase Auth.

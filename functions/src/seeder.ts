@@ -3,10 +3,9 @@ import {onRequest, Request} from "firebase-functions/v2/https";
 import {Response} from "express";
 import * as logger from "firebase-functions/logger";
 import {defineSecret} from "firebase-functions/params";
-import * as admin from "firebase-admin";
 import {Pool} from "pg";
 
-admin.initializeApp();
+// The Admin SDK is initialized in index.ts
 
 const dbPassword = defineSecret("DB_PASSWORD");
 
