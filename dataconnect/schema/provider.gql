@@ -1,3 +1,0 @@
-extend type Query {
-  listServiceProviders: [ServiceProvider] @resolver(name: "serviceProviders/listServiceProviders")
-}

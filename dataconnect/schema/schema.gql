@@ -1,0 +1,69 @@
+# The base Query type, which will be extended by queries in the connector.
+type Query {
+  _version: String
+}
+
+# The base Mutation type, which will be extended by mutations in the connector.
+type Mutation {
+  _version: String
+}
+
+# Represents a user of the application, either a client or a provider.
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: String! # 'client' or 'provider'
+}
+
+# Represents a service provider, such as a salon or individual stylist.
+type ServiceProvider {
+  id: ID!
+  userId: ID!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+}
+
+# Represents a single service offered by a provider.
+type Service {
+  id: ID!
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int! # in minutes
+}
+
+# Represents a review left by a client for a provider.
+type Review {
+  id: ID!
+  bookingId: ID!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}
+
+# Represents a booking made by a client with a provider.
+type Booking {
+  id: ID!
+  providerId: ID!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String! # e.g., 'Pending', 'Confirmed', 'Completed', 'Cancelled'
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
