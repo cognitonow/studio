@@ -1,18 +1,7 @@
 extend type Query {
-  listServices: listServicesResponse
-  getServiceById(id: ID!): Service
-}
-
-extend type Mutation {
-  insertService(
-    categoryId: ID!
-    name: String!
-    description: String!
-    price: Float!
-    duration: Int!
-  ): Service
+    listServices: listServicesResponse
 }
 
 type listServicesResponse {
-  services: [Service]
+    services: [Service!]!
 }
