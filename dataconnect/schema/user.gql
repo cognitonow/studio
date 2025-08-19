@@ -1,0 +1,12 @@
+extend type Query {
+  listUsers: listUsersResponse
+  getUserById(id: ID!): User
+}
+
+type listUsersResponse {
+  users: [User]
+}
+
+extend type Mutation {
+    insertUser(id: ID!, name: String, email: String!, role: String!): User
+}

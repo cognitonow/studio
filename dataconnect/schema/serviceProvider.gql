@@ -1,0 +1,8 @@
+extend type Query {
+  listServiceProviders: listServiceProvidersResponse
+  getServiceProviderById(id: ID!): ServiceProvider
+}
+
+type listServiceProvidersResponse {
+  serviceprovider: [ServiceProvider]
+}

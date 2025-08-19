@@ -1,0 +1,100 @@
+# Defines the base Query and Mutation types.
+# All other schema files will extend these types.
+
+type Query {
+  _version: String
+}
+
+type Mutation {
+  _version: String
+}
+
+# All data model types are defined here.
+
+type User {
+  id: ID!
+  name: String
+  email: String!
+  role: String!
+  provider: [ServiceProvider] @relation(collection: "users", field: "id", references: "userId")
+}
+
+type ServiceProvider {
+  id: ID!
+  userId: ID!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User @relation(collection: "serviceproviders", field: "userId", references: "id")
+  services: [Service] @relation(collection: "serviceproviders_services", field: "id", references: "serviceproviderId")
+  reviews: [Review] @relation(collection: "reviews", field: "id", references: "providerId") # Assuming reviews are linked to providers
+}
+
+type Service {
+  id: ID!
+  categoryId: ID!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  provider: [ServiceProvider] @relation(collection: "serviceproviders_services", field: "id", references: "serviceId")
+  category: ServiceCategory @relation(collection: "services", field: "categoryId", references: "id")
+}
+
+type ServiceCategory {
+  id: ID!
+  name: String!
+  services: [Service] @relation(collection: "servicecategories", field: "id", references: "categoryId")
+}
+
+type Booking {
+  id: ID!
+  providerId: ID!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
+
+type Review {
+  id: ID!
+  bookingId: ID!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Float!
+  comment: String!
+  title: String
+}
+
+type Conversation {
+  id: Int!
+  providerId: String!
+  clientId: String
+  name: String!
+  avatar: String!
+  dataAiHint: String
+  lastMessage: String!
+  time: String!
+  unread: Int!
+}
+
+type Message {
+  id: Int!
+  conversationId: Int!
+  sender: String!
+  text: String!
+  isAi: Boolean
+  bookingId: String
+}

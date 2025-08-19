@@ -1,0 +1,8 @@
+extend type Query {
+  listConversations: listConversationsResponse
+  getConversationById(id: ID!): Conversation
+}
+
+type listConversationsResponse {
+  conversation: [Conversation]
+}

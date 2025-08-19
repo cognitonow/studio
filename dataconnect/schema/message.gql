@@ -1,0 +1,8 @@
+extend type Query {
+  listMessages: listMessagesResponse
+  getMessagesByConversationId(conversationId: ID!): [Message]
+}
+
+type listMessagesResponse {
+  message: [Message]
+}
