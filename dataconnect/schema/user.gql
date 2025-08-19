@@ -1,3 +1,0 @@
-extend type Mutation {
-  insertUser(id: String!, name: String!, email: String!, role: String!): User
-}

@@ -1,0 +1,15 @@
+schema {
+  query: Query
+}
+
+"""
+A simple type for testing the database connection.
+"""
+type Test {
+  id: ID!
+  message: String
+}
+
+type Query {
+  listTests: [Test]
+}

@@ -1,7 +1,0 @@
-extend type Query {
-    listServices: listServicesResponse
-}
-
-type listServicesResponse {
-    services: [Service!]!
-}
