@@ -1,3 +1,4 @@
+
 extend type Query {
-  listServiceCategories: [ServiceCategory!]
+    listServiceCategories: [ServiceCategory!]!
 }

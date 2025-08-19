@@ -1,11 +1,4 @@
 
-extend type Mutation {
-  insertMessage(
-    id: String!,
-    conversationId: String!,
-    sender: String!,
-    text: String!,
-    isAi: Boolean,
-    bookingId: String
-  ): Message
+extend type Query {
+    listMessages: [Message!]!
 }

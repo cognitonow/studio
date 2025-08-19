@@ -1,8 +1,8 @@
 
-extend type Mutation {
-    insertUser(id: String!, name: String!, email: String!, role: String!): User
+extend type Query {
+  listUsers: [User!]!
 }
 
-extend type Query {
-  listUsers: [User]
+extend type Mutation {
+  insertUser(id: ID!, name: String!, email: String!, role: String!): User!
 }
