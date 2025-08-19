@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -27,6 +28,12 @@ export default function DbTestPage() {
     }
     setIsLoading(false);
   };
+  
+  const handleWipeData = async () => {
+      // In a real app, this would call a secure backend function.
+      // For now, it's just a placeholder.
+      alert("This would call a backend function to wipe data. This is not yet implemented.");
+  }
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -34,13 +41,16 @@ export default function DbTestPage() {
         <CardHeader>
           <CardTitle>Cloud Function Test Page</CardTitle>
           <CardDescription>
-            Use this button to test the `listUsers` Cloud Function. The raw JSON output from the function will be displayed below. This demonstrates the secure way to fetch a list of all Firebase Authentication users.
+            Use this button to test the `listUsers` Cloud Function. This demonstrates the secure way to fetch a list of all Firebase Authentication users. The raw JSON output will be displayed below.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-x-4">
             <Button onClick={handleFetchUsers} disabled={isLoading}>
               {isLoading ? 'Loading...' : 'Test `listUsers` Function'}
+            </Button>
+            <Button variant="destructive" onClick={handleWipeData} disabled={isLoading}>
+                Wipe All Data (Not Implemented)
             </Button>
           </div>
           <div>
