@@ -11,6 +11,7 @@
 import {setGlobalOptions} from "firebase-functions/v2";
 import * as seeder from "./seeder";
 import * as genkit from "./genkit-sample";
+import {listUsers} from "./list-users";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -30,3 +31,4 @@ setGlobalOptions({region: "europe-west1", maxInstances: 10});
 // Export the seeder function so it can be deployed.
 export const seedDatabase = seeder.seedDatabase;
 export const menuSuggestion = genkit.menuSuggestion;
+export const listUsers = listUsers;
