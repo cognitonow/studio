@@ -1,27 +1,17 @@
-# Defines the base Query and Mutation types.
-# All other schema files will extend these types.
-
-type Query {
-  _version: String
-}
-
-type Mutation {
-  _version: String
-}
-
-# All data model types are defined here.
+scalar Timestamp
+scalar UUID
 
 type User {
-  id: ID!
-  name: String
+  id: UUID!
+  name: String!
   email: String!
   role: String!
-  provider: [ServiceProvider] @relation(collection: "users", field: "id", references: "userId")
+  provider: [ServiceProvider]
 }
 
 type ServiceProvider {
-  id: ID!
-  userId: ID!
+  id: UUID!
+  userId: UUID!
   name: String!
   specialty: String!
   avatarUrl: String!
@@ -33,31 +23,30 @@ type ServiceProvider {
   bio: String!
   location: String!
   playlist: String!
-  user: User @relation(collection: "serviceproviders", field: "userId", references: "id")
-  services: [Service] @relation(collection: "serviceproviders_services", field: "id", references: "serviceproviderId")
-  reviews: [Review] @relation(collection: "reviews", field: "id", references: "providerId") # Assuming reviews are linked to providers
+  user: User @relation(on: "userId")
+  services: [Service] @relation(through: "ServiceProviderService")
+  reviews: [Review]
 }
 
 type Service {
-  id: ID!
-  categoryId: ID!
+  id: UUID!
+  categoryId: UUID!
   name: String!
   description: String!
   price: Float!
   duration: Int!
-  provider: [ServiceProvider] @relation(collection: "serviceproviders_services", field: "id", references: "serviceId")
-  category: ServiceCategory @relation(collection: "services", field: "categoryId", references: "id")
+  provider: [ServiceProvider] @relation(through: "ServiceProviderService")
 }
 
 type ServiceCategory {
-  id: ID!
+  id: UUID!
   name: String!
-  services: [Service] @relation(collection: "servicecategories", field: "id", references: "categoryId")
+  services: [Service]
 }
 
 type Booking {
-  id: ID!
-  providerId: ID!
+  id: UUID!
+  providerId: UUID!
   providerName: String!
   serviceIds: [String]!
   date: Timestamp!
@@ -68,33 +57,39 @@ type Booking {
 }
 
 type Review {
-  id: ID!
-  bookingId: ID!
+  id: UUID!
+  bookingId: UUID!
   author: String!
   avatarUrl: String
   dataAiHint: String
-  rating: Float!
+  rating: Int!
   comment: String!
   title: String
 }
 
-type Conversation {
-  id: Int!
-  providerId: String!
-  clientId: String
-  name: String!
-  avatar: String!
-  dataAiHint: String
-  lastMessage: String!
-  time: String!
-  unread: Int!
+type ServiceProviderService {
+  serviceProviderId: UUID!
+  serviceProvider: ServiceProvider
+  serviceId: UUID!
+  service: Service
 }
 
-type Message {
-  id: Int!
-  conversationId: Int!
-  sender: String!
-  text: String!
-  isAi: Boolean
-  bookingId: String
+type Query {
+  _version: String
+  listUsers: [User]
+  getUserById(id: ID!): User
+  listServiceProviders: [ServiceProvider]
+  getServiceProviderById(id: ID!): ServiceProvider
+  listServices: [Service]
+  getServiceById(id: ID!): Service
+  listServiceCategories: [ServiceCategory]
+  getServiceCategoryById(id: ID!): ServiceCategory
+  listBookings: [Booking]
+  getBookingById(id: ID!): Booking
+  listReviews: [Review]
+  getReviewById(id: ID!): Review
+}
+
+type Mutation {
+  insertUser(id: UUID!, name: String!, email: String!, role: String!): User
 }

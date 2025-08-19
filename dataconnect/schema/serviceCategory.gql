@@ -1,8 +1,0 @@
-extend type Query {
-  listServiceCategories: listServiceCategoriesResponse
-  getServiceCategoryById(id: ID!): ServiceCategory
-}
-
-type listServiceCategoriesResponse {
-  serviceCategory: [ServiceCategory]
-}

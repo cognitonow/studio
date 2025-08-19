@@ -1,8 +1,0 @@
-extend type Query {
-  listReviews: listReviewsResponse
-  getReviewById(id: ID!): Review
-}
-
-type listReviewsResponse {
-  review: [Review]
-}
