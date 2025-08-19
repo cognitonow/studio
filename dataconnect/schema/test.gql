@@ -1,17 +1,7 @@
 
-"A simple type for testing the database connection."
+# A minimal test type to verify schema deployment.
+# It does not include a Query type to avoid any redeclaration errors.
 type Test @table(key: "id") {
   id: ID!
   message: String!
-}
-
-"The root query for the application."
-type Query {
-  "Fetches the test message."
-  getTest: Test
-}
-
-"The root mutation for the application."
-type Mutation {
-  _version: String
 }
