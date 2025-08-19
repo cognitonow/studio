@@ -1,25 +1,22 @@
-# The base Query type, which will be extended by queries in the connector.
-type Query {
-  _version: String
-}
+# Defines the root Query and Mutation types that Data Connect will extend.
+# All other types for the application are also defined here.
 
-# The base Mutation type, which will be extended by mutations in the connector.
-type Mutation {
-  _version: String
-}
+type Query {}
 
-# Represents a user of the application, either a client or a provider.
-type User {
-  id: ID!
+type Mutation {}
+
+# Represents a user of the application, who can be a client or a provider.
+type User @table(key: "id") {
+  id: String!
   name: String!
   email: String!
-  role: String! # 'client' or 'provider'
+  role: String! # Corresponds to UserRole: 'client' or 'provider'
 }
 
-# Represents a service provider, such as a salon or individual stylist.
-type ServiceProvider {
-  id: ID!
-  userId: ID!
+# Represents a service provider, such as a salon or stylist.
+type ServiceProvider @table(key: "id") {
+  id: String!
+  userId: String!
   name: String!
   specialty: String!
   avatarUrl: String!
@@ -29,13 +26,15 @@ type ServiceProvider {
   isFeatured: Boolean
   isFavourite: Boolean
   bio: String!
+  # portfolio: JSON # JSON type can be used for arrays of objects initially
   location: String!
-  playlist: String!
+  playlist: String
+  # badges: JSON # JSON type for array of objects
 }
 
 # Represents a single service offered by a provider.
-type Service {
-  id: ID!
+type Service @table(key: "id") {
+  id: String!
   categoryId: String!
   name: String!
   description: String!
@@ -44,9 +43,9 @@ type Service {
 }
 
 # Represents a review left by a client for a provider.
-type Review {
-  id: ID!
-  bookingId: ID!
+type Review @table(key: "id") {
+  id: String!
+  bookingId: String!
   author: String!
   avatarUrl: String
   dataAiHint: String
@@ -55,15 +54,23 @@ type Review {
   title: String
 }
 
-# Represents a booking made by a client with a provider.
-type Booking {
-  id: ID!
-  providerId: ID!
+# Represents an appointment made by a client with a provider.
+type Booking @table(key: "id") {
+  id: String!
+  providerId: String!
+  # Storing providerName denormalizes data but simplifies client-side queries
   providerName: String!
-  serviceIds: [String]!
+  # serviceIds will be stored as an array of strings
+  serviceIds: [String!]!
   date: Timestamp!
-  status: String! # e.g., 'Pending', 'Confirmed', 'Completed', 'Cancelled'
+  status: String! # 'Pending', 'Confirmed', 'Completed', 'Cancelled'
   clientName: String
   isPaid: Boolean!
   reviewId: String
+}
+
+# A category for grouping Service types (e.g., Hair, Nails).
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
 }
