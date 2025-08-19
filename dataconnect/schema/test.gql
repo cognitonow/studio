@@ -1,7 +1,0 @@
-
-# A minimal test type to verify schema deployment.
-# It does not include a Query type to avoid any redeclaration errors.
-type Test @table(key: "id") {
-  id: ID!
-  message: String!
-}
