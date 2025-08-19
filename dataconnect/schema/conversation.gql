@@ -1,0 +1,20 @@
+extend type Query {
+  listConversations: listConversationsResponse
+  getConversationById(id: ID!): Conversation
+}
+
+extend type Mutation {
+  insertConversation(
+    providerId: ID!
+    clientId: String
+    name: String!
+    avatar: String!
+    lastMessage: String!
+    time: String!
+    unread: Int!
+  ): Conversation
+}
+
+type listConversationsResponse {
+  conversation: [Conversation]
+}

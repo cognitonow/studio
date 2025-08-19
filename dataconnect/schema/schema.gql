@@ -1,14 +1,4 @@
-# The base schema that defines all data types and foundational query/mutation types.
 
-# Base Types for Queries and Mutations
-# These will be extended by other schema files.
-type Query {
-  _version: String
-}
-
-type Mutation {
-  _version: String
-}
 
 # Data Structures
 

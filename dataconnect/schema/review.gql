@@ -1,0 +1,19 @@
+extend type Query {
+  listReviews: listReviewsResponse
+  getReviewById(id: ID!): Review
+}
+
+extend type Mutation {
+  insertReview(
+    bookingId: ID!
+    author: String!
+    avatarUrl: String
+    rating: Int!
+    comment: String!
+    title: String
+  ): Review
+}
+
+type listReviewsResponse {
+  review: [Review]
+}

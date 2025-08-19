@@ -1,0 +1,21 @@
+extend type Query {
+  listBookings: listBookingsResponse
+  getBookingById(id: ID!): Booking
+}
+
+extend type Mutation {
+  insertBooking(
+    providerId: ID!
+    providerName: String!
+    serviceIds: [String]!
+    date: Timestamp!
+    status: String!
+    clientName: String
+    isPaid: Boolean!
+  ): Booking
+  updateBooking(id: ID!, status: String): Booking
+}
+
+type listBookingsResponse {
+  booking: [Booking]
+}

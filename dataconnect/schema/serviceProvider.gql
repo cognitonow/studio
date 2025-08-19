@@ -1,0 +1,20 @@
+extend type Query {
+  listServiceProviders: listServiceProvidersResponse
+  getServiceProviderById(id: ID!): ServiceProvider
+}
+
+extend type Mutation {
+  insertServiceProvider(
+    userId: ID!
+    name: String!
+    specialty: String!
+    avatarUrl: String!
+    bio: String!
+    location: String!
+    playlist: String!
+  ): ServiceProvider
+}
+
+type listServiceProvidersResponse {
+  serviceprovider: [ServiceProvider]
+}
