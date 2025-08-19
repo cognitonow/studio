@@ -1,0 +1,6 @@
+
+extend type Query {
+  listUsers: listUsersResponse
+    @permission(public: true)
+    @operation(type: "query")
+}
