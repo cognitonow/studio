@@ -1,12 +1,20 @@
+
+"""
+Extends the base Query type with user-related queries.
+"""
 extend type Query {
-  listUsers: [User!]
+  """
+  Retrieves a list of all users.
+  """
+  listUsers: [User!] @connector(name: "default-connector")
 }
 
+"""
+Extends the base Mutation type with user-related mutations.
+"""
 extend type Mutation {
-  insertUser(
-    id: String!
-    name: String!
-    email: String!
-    role: String!
-  ): User
+  """
+  Inserts a new user into the database.
+  """
+  insertUser(id: ID!, name: String!, email: String!, role: String!): User @connector(name: "default-connector")
 }

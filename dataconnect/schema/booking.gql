@@ -1,16 +1,28 @@
+
+"""
+Extends the base Query type with booking-related queries.
+"""
 extend type Query {
-  listBookings: [Booking!]
+  """
+  Retrieves a list of all bookings.
+  """
+  listBookings: [Booking!] @connector(name: "default-connector")
 }
 
+"""
+Extends the base Mutation type with booking-related mutations.
+"""
 extend type Mutation {
+  """
+  Inserts a new booking into the database.
+  """
   insertBooking(
-    id: String!
-    providerId: String!
-    providerName: String!
-    serviceIds: [String!]!
-    date: Timestamp!
-    status: String!
-    clientName: String
+    providerId: ID!,
+    providerName: String!,
+    serviceIds: [String!]!,
+    date: Timestamp!,
+    status: String!,
+    clientName: String,
     isPaid: Boolean!
-  ): Booking
+  ): Booking @connector(name: "default-connector")
 }

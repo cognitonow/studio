@@ -1,3 +1,10 @@
+
+"""
+Extends the base Query type with service provider-related queries.
+"""
 extend type Query {
-  listServiceProviders: [ServiceProvider!]
+  """
+  Retrieves a list of all service providers.
+  """
+  listServiceProviders: [ServiceProvider!] @connector(name: "default-connector")
 }

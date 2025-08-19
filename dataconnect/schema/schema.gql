@@ -1,83 +1,100 @@
-# Defines the base query and mutation types. All other schemas should extend these.
-# Defines all the primary data structures for the application.
+# The base schema for the application.
+# It defines all the data types and the base Query and Mutation types.
 
-type Query {
-  _placeholder: String
+schema {
+  query: Query
+  mutation: Mutation
 }
 
-type Mutation {
-  _placeholder: String
+"""
+A user of the application. Can be a client or a provider.
+"""
+type User @table(name: "Users") {
+  id: ID! @column(name: "id")
+  name: String! @column(name: "name")
+  email: String! @column(name: "email")
+  role: String! @column(name: "role")
+  provider: [ServiceProvider!] @relation(table: "ServiceProvider", field: "userId")
 }
 
-# Data Structures
-
-type User @table(key: "id") {
-  id: String!
-  name: String!
-  email: String!
-  role: String!
-  provider: [ServiceProvider!] @relation(through: "users_serviceProviders")
+"""
+A service provider, such as a salon or individual stylist.
+"""
+type ServiceProvider @table(name: "ServiceProviders") {
+  id: ID! @column(name: "id")
+  userId: ID! @column(name: "userId")
+  name: String! @column(name: "name")
+  specialty: String! @column(name: "specialty")
+  avatarUrl: String! @column(name: "avatarUrl")
+  dataAiHint: String @column(name: "dataAiHint")
+  rating: Float! @column(name: "rating")
+  reviewCount: Int! @column(name: "reviewCount")
+  isFeatured: Boolean @column(name: "isFeatured")
+  isFavourite: Boolean @column(name: "isFavourite")
+  bio: String! @column(name: "bio")
+  location: String! @column(name: "location")
+  playlist: String! @column(name: "playlist")
+  user: User! @relation(table: "Users", field: "userId")
+  services: [Service!] @relation(table: "Services", field: "providerId")
+  reviews: [Review!] @relation(table: "Reviews", field: "providerId")
 }
 
-type ServiceProvider @table(key: "id") {
-  id: String!
-  userId: String!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User! @relation(on: "userId", to: "id")
-  services: [Service!] @relation(through: "serviceProviders_services")
-  reviews: [Review!]
+"""
+A single service offered by a provider.
+"""
+type Service @table(name: "Services") {
+  id: ID! @column(name: "id")
+  categoryId: ID! @column(name: "categoryId")
+  name: String! @column(name: "name")
+  description: String! @column(name: "description")
+  price: Float! @column(name: "price")
+  duration: Int! @column(name: "duration") # in minutes
+  provider: [ServiceProvider!] @relation(table: "ServiceProviders", field: "providerId")
 }
 
-type Service @table(key: "id") {
-  id: String!
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider!] @relation(through: "serviceProviders_services")
+"""
+A category for grouping services (e.g., Hair, Nails).
+"""
+type ServiceCategory @table(name: "ServiceCategories") {
+  id: ID! @column(name: "id")
+  name: String! @column(name: "name")
+  services: [Service!] @relation(table: "Services", field: "categoryId")
 }
 
-type ServiceCategory @table(key: "id") {
-  id: String!
-  name: String!
-  services: [Service!] @relation(on: "id", to: "categoryId")
+"""
+A booking represents an appointment made by a client with a provider.
+"""
+type Booking @table(name: "Bookings") {
+  id: ID! @column(name: "id")
+  providerId: ID! @column(name: "providerId")
+  providerName: String! @column(name: "providerName")
+  serviceIds: [String!]! @column(name: "serviceIds")
+  date: Timestamp! @column(name: "date")
+  status: String! @column(name: "status") # 'Pending', 'Confirmed', etc.
+  clientName: String @column(name: "clientName")
+  isPaid: Boolean! @column(name: "isPaid")
+  reviewId: String @column(name: "reviewId")
 }
 
-type Booking @table(key: "id") {
-  id: String!
-  providerId: String!
-  providerName: String!
-  serviceIds: [String!]!
-  date: Timestamp!
-  status: String!
-  clientName: String
-  isPaid: Boolean!
-  reviewId: String
+"""
+A review left by a client for a provider.
+"""
+type Review @table(name: "Reviews") {
+  id: ID! @column(name: "id")
+  bookingId: ID! @column(name: "bookingId")
+  author: String! @column(name: "author")
+  avatarUrl: String @column(name: "avatarUrl")
+  dataAiHint: String @column(name: "dataAiHint")
+  rating: Int! @column(name: "rating")
+  comment: String! @column(name: "comment")
+  title: String @column(name: "title")
 }
 
-type Review @table(key: "id") {
-  id: String!
-  bookingId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
-}
-
-type Conversation @table(key: "id") {
+"""
+A conversation thread between a client and a provider.
+This is a logical type, not directly mapped to a single table.
+"""
+type Conversation {
   id: Int!
   providerId: String!
   clientId: String
@@ -89,11 +106,30 @@ type Conversation @table(key: "id") {
   unread: Int!
 }
 
-type Message @table(key: "id") {
+"""
+A single message within a conversation.
+This is a logical type, not directly mapped to a single table.
+"""
+type Message {
   id: Int!
   conversationId: Int!
-  sender: String!
+  sender: String! # 'user' or 'provider'
   text: String!
   isAi: Boolean
   bookingId: String
+}
+
+
+"""
+The base query type. Other schema files will extend this.
+"""
+type Query {
+  _version: String
+}
+
+"""
+The base mutation type. Other schema files will extend this.
+"""
+type Mutation {
+  _version: String
 }
