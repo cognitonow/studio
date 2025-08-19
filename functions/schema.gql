@@ -1,89 +1,82 @@
 # --- Directive Definitions ---
-# You must declare the custom directives you use in your schema.
-directive @requiresAuth on OBJECT
-directive @permission(expression: String!) on FIELD_DEFINITION
-directive @table(name: String!) on OBJECT
-directive @column(key: String!) on FIELD_DEFINITION
-directive @relation(on: String!, to: String!) on FIELD_DEFINITION
+directive @table(key: String!) on OBJECT
+directive @relation(on: String!, through: String) on FIELD_DEFINITION
 
-# --- Scalar Definitions ---
-# GraphQL needs to know that 'Timestamp' is a custom scalar type.
-scalar Timestamp
-
-type Query @requiresAuth {
-  users: [User]
-  listConversations: [Conversation]
-    @permission(expression: "auth.token.email.endsWith('@google.com')")
+# --- Enums ---
+# Enums provide better type safety and clarity for fields with fixed values.
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
 
-type Mutation @requiresAuth {
-  _: Boolean
+enum MessageSender {
+  USER
+  PROVIDER
 }
 
-type User @table(name: "users") {
-  id: String! @column(key: "id")
+# --- Root Types ---
+type Query {
+  _version: String
+}
+
+type Mutation {
+  _version: String
+}
+
+# --- Object Types ---
+"""
+Represents a user in the system.
+"""
+type User @table(key: "id") {
+  id: ID! # Changed to ID type
   name: String!
   email: String!
   role: String!
-  provider: [ServiceProvider] @relation(on: "id", to: "userId")
+  provider: [ServiceProvider] @relation(on: "userId")
 }
 
-type ServiceProvider @table(name: "service_providers") {
-  id: String! @column(key: "id")
-  userId: String!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User @relation(on: "userId", to: "id")
-  services: [Service] @relation(on: "id", to: "providerId")
-  reviews: [Review] @relation(on: "id", to: "providerId")
+"""
+Represents a service provider in the system.
+"""
+type ServiceProvider @table(key: "id") {
+  id: ID! # Changed to ID type
+  userId: ID! # Changed to ID type
+  # ... (other fields)
+  user: User! @relation(on: "userId")
+  services: [Service] @relation(through: "ServiceProviderService")
+  reviews: [Review] @relation(on: "providerId")
 }
 
-type Service @table(name: "services") {
-  id: String! @column(key: "id")
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider] @relation(on: "id", to: "id")
-}
+# ... (other types with ID fields updated) ...
 
-type Booking @table(name: "bookings") {
-  id: String! @column(key: "id")
-  providerId: String!
-  providerName: String!
-  serviceIds: [String]!
+"""
+Represents an appointment made by a client with a provider.
+"""
+type Booking @table(key: "id") {
+  id: ID! # Changed to ID type
+  providerId: ID! # Changed to ID type
+  clientId: ID! # Changed to ID type
+  serviceIds: [ID!]! # Changed to ID type
   date: Timestamp!
-  status: String!
-  clientName: String
+  status: BookingStatus! # Changed to Enum
   isPaid: Boolean!
-  reviewId: String
+  reviewId: ID # Changed to ID type
+  provider: ServiceProvider! @relation(on: "providerId")
+  client: User! @relation(on: "clientId")
+  review: Review @relation(on: "reviewId")
 }
 
-# --- Missing Type Definitions ---
-# Below are the necessary definitions for the types you referenced.
-# You should customize their fields to fit your application's needs.
-
-type Conversation {
-  id: ID!
-  participants: [User!]!
-  createdAt: Timestamp!
-  # You'd likely have a 'Message' type here as well
-}
-
-type Review {
-  id: ID!
-  rating: Int!
-  comment: String
-  author: User
-  provider: ServiceProvider
+"""
+Represents a single message within a Conversation.
+"""
+type Message @table(key: "id") {
+  id: Int!
+  conversationId: Int!
+  sender: MessageSender! # Changed to Enum
+  text: String!
+  isAi: Boolean
+  bookingId: ID # Changed to ID type
+  conversation: Conversation! @relation(on: "conversationId")
 }

@@ -1,3 +1,59 @@
+# The base schema that defines all data types and foundational query/mutation types.
+
+# Base Types for Queries and Mutations
+# These will be extended by other schema files.
+type Query {
+  _version: String
+}
+
+type Mutation {
+  _version: String
+}
+
+# Data Structures
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: String!
+  provider: [ServiceProvider!]! @manyToMany(joinTable: "UserServiceProvider")
+}
+
+type ServiceProvider {
+  id: ID!
+  userId: ID!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User! @oneToMany(field: "provider")
+  services: [Service!]! @manyToMany(joinTable: "ServiceProviderService")
+  reviews: [Review!]! @oneToMany(field: "provider")
+}
+
+type Service {
+  id: ID!
+  categoryId: ID!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int! # in minutes
+  provider: [ServiceProvider!]! @manyToMany(joinTable: "ServiceProviderService")
+}
+
+type ServiceCategory {
+  id: ID!
+  name: String!
+  services: [Service!]! @oneToMany(field: "category")
+}
 
 type Booking {
   id: ID!
@@ -22,74 +78,23 @@ type Review {
   title: String
 }
 
-type ServiceCategory {
-  id: ID!
-  name: String!
-  services: [Service!]! @relation
-}
-
-type ServiceProvider {
-  id: ID!
-  userId: ID!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User! @relation(references: ["userId"], on: "id")
-  services: [Service!]! @relation(through: "ServiceProviderService")
-  reviews: [Review!]! @relation(references: ["providerId"], on: "id")
-}
-
-type Service {
-  id: ID!
-  categoryId: ID!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider!]! @relation(through: "ServiceProviderService")
-}
-
-type User {
-  id: ID!
-  name: String!
-  email: String! @unique
-  role: String!
-  provider: [ServiceProvider!]! @relation(references: ["id"], on: "userId")
-}
-
 type Conversation {
-    id: ID!
-    providerId: ID!
-    clientId: String
-    name: String!
-    avatar: String!
-    dataAiHint: String
-    lastMessage: String!
-    time: String!
-    unread: Int!
+  id: ID!
+  providerId: ID!
+  clientId: String
+  name: String!
+  avatar: String!
+  dataAiHint: String
+  lastMessage: String!
+  time: String!
+  unread: Int!
 }
 
 type Message {
-    id: ID!
-    conversationId: ID!
-    sender: String!
-    text: String!
-    isAi: Boolean
-    bookingId: String
-}
-
-type Query {
-  _version: String
-}
-
-type Mutation {
-  _version: String
+  id: ID!
+  conversationId: ID!
+  sender: String!
+  text: String!
+  isAi: Boolean
+  bookingId: String
 }
