@@ -1,74 +1,81 @@
+
 schema {
   query: Query
-  mutation: Mutation
 }
 
 type Query {
+    listUsers: listUsersResponse
 }
 
 type Mutation {
+    # We will add mutations here in a later step
+    _: Boolean
 }
+
+# -------------------------------------
+# Data Types
+# -------------------------------------
 
 type User {
-  id: ID!
-  name: String!
-  email: String!
-  role: String!
-}
-
-type ServiceProvider {
-  id: ID!
-  userId: String!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-}
-
-type Service {
-  id: ID!
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-}
-
-type Booking {
-  id: ID!
-  providerId: String!
-  providerName: String!
-  serviceIds: [String]!
-  date: Timestamp!
-  status: String!
-  clientName: String
-  isPaid: Boolean!
-  reviewId: String
-}
-
-type Review {
-  id: ID!
-  bookingId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Float!
-  comment: String!
-  title: String
-}
-
-type ServiceCategory {
-    id: ID!
+    id: String!
     name: String!
+    email: String!
+    role: String!
 }
 
 type listUsersResponse {
-  users: [User!]!
+    User: [User!]!
+}
+
+type ServiceProvider {
+    id: String!
+    userId: String!
+    name: String!
+    specialty: String!
+    avatarUrl: String!
+    dataAiHint: String
+    rating: Float!
+    reviewCount: Int!
+    isFeatured: Boolean
+    isFavourite: Boolean
+    bio: String!
+    location: String!
+    playlist: String!
+}
+
+type Service {
+    id: String!
+    categoryId: String!
+    name: String!
+    description: String!
+    price: Float!
+    duration: Int!
+}
+
+type Booking {
+    id: String!
+    providerId: String!
+    providerName: String!
+    serviceIds: [String!]!
+    date: Timestamp!
+    status: String!
+    clientName: String
+    isPaid: Boolean!
+    reviewId: String
+}
+
+type Review {
+    id: String!
+    bookingId: String!
+    author: String!
+    avatarUrl: String
+    dataAiHint: String
+    rating: Int!
+    comment: String!
+    title: String
+}
+
+type ServiceCategory {
+    id: String!
+    name: String!
 }
