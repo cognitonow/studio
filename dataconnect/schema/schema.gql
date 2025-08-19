@@ -1,50 +1,51 @@
 
-type User @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
+type User {
+  id: ID! @unique
   name: String!
   email: String! @unique
   role: String!
-  provider: [ServiceProvider] @relation(on: "userId")
+  provider: [ServiceProvider] @relation(name: "UserToServiceProvider")
 }
 
-type ServiceProvider @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
-  userId: String! @unique
+type ServiceProvider {
+  id: ID! @unique
+  userId: ID!
+  user: User! @relation(name: "UserToServiceProvider", field: "userId")
   name: String!
   specialty: String!
   avatarUrl: String!
   dataAiHint: String
-  rating: Float! @db(default: "0")
-  reviewCount: Int! @db(default: "0")
-  isFeatured: Boolean @db(default: "false")
-  isFavourite: Boolean @db(default: "false")
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
   bio: String!
   location: String!
   playlist: String!
-  user: User @relation(on: "userId")
-  services: [Service] @relation(table: "ServiceProvider_Service", on: [{from: "serviceProviderId", to: "id"}, {from: "serviceId", to: "id"}])
-  reviews: [Review] @relation(on: "providerId")
+  services: [Service] @relation(name: "ServiceProviderToService")
+  reviews: [Review] @relation(name: "ServiceProviderToReview")
 }
 
-type Service @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
-  categoryId: String!
+type Service {
+  id: ID! @unique
+  categoryId: ID!
+  category: ServiceCategory! @relation(name: "ServiceCategoryToService", field: "categoryId")
   name: String!
   description: String!
   price: Float!
   duration: Int!
-  provider: [ServiceProvider] @relation(table: "ServiceProvider_Service", on: [{from: "serviceId", to: "id"}, {from: "serviceProviderId", to: "id"}])
+  provider: [ServiceProvider] @relation(name: "ServiceProviderToService")
 }
 
-type ServiceCategory @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
-  name: String! @unique
-  services: [Service] @relation(on: "categoryId")
+type ServiceCategory {
+  id: ID! @unique
+  name: String!
+  services: [Service] @relation(name: "ServiceCategoryToService")
 }
 
-type Booking @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
-  providerId: String!
+type Booking {
+  id: ID! @unique
+  providerId: ID!
   providerName: String!
   serviceIds: [String]!
   date: Timestamp!
@@ -52,105 +53,80 @@ type Booking @table(key: "id") {
   clientName: String
   isPaid: Boolean!
   reviewId: String
+  review: Review @relation(name: "BookingToReview", field: "reviewId")
 }
 
-type Review @table(key: "id") {
-  id: String! @db(default: "uuid_generate_v4()")
-  bookingId: String! @unique
+type Review {
+  id: ID! @unique
+  bookingId: ID!
+  booking: Booking! @relation(name: "BookingToReview", field: "bookingId")
   author: String!
   avatarUrl: String
   dataAiHint: String
   rating: Int!
   comment: String!
   title: String
+  provider: ServiceProvider @relation(name: "ServiceProviderToReview", field: "providerId")
+  providerId: ID
 }
 
-type Conversation @table(key: "id") {
-  id: ID!
+type Conversation {
+  id: ID! @unique
   providerId: ID!
-  clientId: ID
+  clientId: String
   name: String!
   avatar: String!
   dataAiHint: String
   lastMessage: String!
   time: String!
   unread: Int!
+  messages: [Message] @relation(name: "ConversationToMessage")
 }
 
-type Message @table(key: "id") {
-  id: ID!
+type Message {
+  id: ID! @unique
   conversationId: ID!
+  conversation: Conversation! @relation(name: "ConversationToMessage", field: "conversationId")
   sender: String!
   text: String!
   isAi: Boolean
-  bookingId: ID
+  bookingId: String
 }
 
 type Query {
-  listUsers: listUsersResponse
+  _version: String
+  listUsers: [User]
   getUserById(id: ID!): User
-  listServiceProviders: listServiceProvidersResponse
+  listServiceProviders: [ServiceProvider]
   getServiceProviderById(id: ID!): ServiceProvider
-  listServices: listServicesResponse
+  listServices: [Service]
   getServiceById(id: ID!): Service
-  listServiceCategories: listServiceCategoriesResponse
+  listServiceCategories: [ServiceCategory]
   getServiceCategoryById(id: ID!): ServiceCategory
-  listBookings: listBookingsResponse
+  listBookings: [Booking]
   getBookingById(id: ID!): Booking
-  listReviews: listReviewsResponse
+  listReviews: [Review]
   getReviewById(id: ID!): Review
-  listConversations: listConversationsResponse
+  listConversations: [Conversation]
   getConversationById(id: ID!): Conversation
-  listMessages: listMessagesResponse
+  listMessages: [Message]
   getMessagesByConversationId(conversationId: ID!): [Message]
 }
 
 type Mutation {
-  insertUser(id: String!, name: String!, email: String!, role: String!): User
+  insertUser(id: ID!, name: String!, email: String!, role: String!): User
   updateUser(id: ID!, name: String, email: String, role: String): User
   deleteUser(id: ID!): Boolean
+
   insertServiceProvider(userId: ID!, name: String!, specialty: String!, avatarUrl: String!, bio: String!, location: String!, playlist: String!): ServiceProvider
-  updateServiceProvider(id: ID!, name: String, specialty: String, avatarUrl: String, bio: String, location: String, playlist: String, isFeatured: Boolean, isFavourite: Boolean): ServiceProvider
+  updateServiceProvider(id: ID!, name: String, specialty: String, avatarUrl: String, bio: String, location: String, playlist: String): ServiceProvider
   deleteServiceProvider(id: ID!): Boolean
+
   insertService(categoryId: ID!, name: String!, description: String!, price: Float!, duration: Int!): Service
   updateService(id: ID!, name: String, description: String, price: Float, duration: Int): Service
   deleteService(id: ID!): Boolean
-  insertBooking(providerId: ID!, providerName: String!, serviceIds: [ID]!, date: Timestamp!, status: String!, clientName: String, isPaid: Boolean!): Booking
-  updateBooking(id: ID!, date: Timestamp, status: String, isPaid: Boolean, reviewId: String): Booking
+  
+  insertBooking(providerId: ID!, providerName: String!, serviceIds: [String]!, date: Timestamp!, status: String!, clientName: String, isPaid: Boolean!): Booking
+  updateBooking(id: ID!, status: String, date: Timestamp, isPaid: Boolean): Booking
   deleteBooking(id: ID!): Boolean
-  insertReview(bookingId: ID!, author: String!, rating: Int!, comment: String!): Review
-  updateReview(id: ID!, rating: Int, comment: String): Review
-  deleteReview(id: ID!): Boolean
-}
-
-type listUsersResponse {
-  user: [User]
-}
-
-type listServiceProvidersResponse {
-  serviceprovider: [ServiceProvider]
-}
-
-type listServicesResponse {
-  services: [Service]
-}
-
-type listServiceCategoriesResponse {
-  serviceCategories: [ServiceCategory]
-}
-
-type listBookingsResponse {
-  bookings: [Booking]
-}
-
-type listReviewsResponse {
-  reviews: [Review]
-}
-
-type listConversationsResponse {
-  conversations: [Conversation]
-}
-
-type listMessagesResponse {
-  messages: [Message]
 }
