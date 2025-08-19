@@ -1,0 +1,23 @@
+type Message @table(key: "id") {
+  id: Int!
+  conversationId: Int!
+  sender: String!
+  text: String!
+  isAi: Boolean
+  bookingId: String
+}
+
+extend type Query {
+  listMessages(conversationId: Int!): [Message!]
+}
+
+extend type Mutation {
+  insertMessage(
+    id: Int!
+    conversationId: Int!
+    sender: String!
+    text: String!
+    isAi: Boolean
+    bookingId: String
+  ): Message
+}

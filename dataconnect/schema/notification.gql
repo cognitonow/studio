@@ -1,12 +1,14 @@
-
-type Notification @table {
-  id: String! @id
-  userId: String!
+type Notification @table(key: "id") {
+  id: Int!
   icon: String!
   title: String!
   description: String!
-  isRead: Boolean!
+  time: String!
+  read: Boolean!
   bookingId: String
   providerId: String
-  createdAt: Timestamp
+}
+
+extend type Query {
+  listNotifications: [Notification!]
 }
