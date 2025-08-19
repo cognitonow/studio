@@ -1,8 +1,0 @@
-# The root for all queries and mutations.
-type Query {
-  _version: String
-}
-
-type Mutation {
-  _version: String
-}
