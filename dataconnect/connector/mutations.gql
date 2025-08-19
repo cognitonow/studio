@@ -1,33 +1,21 @@
-# # Example mutations for a simple movie app
+extend type Mutation {
+  insertUser(id: ID!, name: String!, email: String!, role: String!): User @resolver(name: "users/insert")
+  updateUser(id: ID!, name: String, email: String, role: String): User @resolver(name: "users/update")
+  deleteUser(id: ID!): Boolean @resolver(name: "users/delete")
 
-# # Create a movie based on user input
-# mutation CreateMovie($title: String!, $genre: String!, $imageUrl: String!)
-# @auth(level: USER_EMAIL_VERIFIED, insecureReason: "Any email verified users can create a new movie.") {
-#   movie_insert(data: { title: $title, genre: $genre, imageUrl: $imageUrl })
-# }
+  insertServiceProvider(id: ID!, userId: String!, name: String!, specialty: String!, avatarUrl: String!, bio: String!, location: String!, playlist: String!): ServiceProvider @resolver(name: "serviceProviders/insert")
+  updateServiceProvider(id: ID!, name: String, specialty: String, avatarUrl: String, bio: String, location: String, playlist: String): ServiceProvider @resolver(name: "serviceProviders/update")
+  deleteServiceProvider(id: ID!): Boolean @resolver(name: "serviceProviders/delete")
 
-# # Upsert (update or insert) a user's username based on their auth.uid
-# mutation UpsertUser($username: String!) @auth(level: USER) {
-#   # The "auth.uid" server value ensures that users can only register their own user.
-#   user_upsert(data: { id_expr: "auth.uid", username: $username })
-# }
+  insertService(id: ID!, categoryId: String!, name: String!, description: String!, price: Float!, duration: Int!): Service @resolver(name: "services/insert")
+  updateService(id: ID!, name: String, description: String, price: Float, duration: Int): Service @resolver(name: "services/update")
+  deleteService(id: ID!): Boolean @resolver(name: "services/delete")
 
-# # Add a review for a movie
-# mutation AddReview($movieId: UUID!, $rating: Int!, $reviewText: String!)
-# @auth(level: USER) {
-#   review_upsert(
-#     data: {
-#       userId_expr: "auth.uid"
-#       movieId: $movieId
-#       rating: $rating
-#       reviewText: $reviewText
-#       # reviewDate defaults to today in the schema. No need to set it manually.
-#     }
-#   )
-# }
+  insertReview(id: ID!, bookingId: String!, author: String!, rating: Int!, comment: String!): Review @resolver(name: "reviews/insert")
+  updateReview(id: ID!, rating: Int, comment: String): Review @resolver(name: "reviews/update")
+  deleteReview(id: ID!): Boolean @resolver(name: "reviews/delete")
 
-# # Logged in user can delete their review for a movie
-# mutation DeleteReview($movieId: UUID!) @auth(level: USER) {
-#   # The "auth.uid" server value ensures that users can only delete their own reviews.
-#   review_delete(key: { userId_expr: "auth.uid", movieId: $movieId })
-# }
+  insertBooking(id: ID!, providerId: String!, serviceIds: [String!]!, date: Timestamp!, status: String!, isPaid: Boolean!): Booking @resolver(name: "bookings/insert")
+  updateBooking(id: ID!, date: Timestamp, status: String, isPaid: Boolean): Booking @resolver(name: "bookings/update")
+  deleteBooking(id: ID!): Boolean @resolver(name: "bookings/delete")
+}
