@@ -3,13 +3,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 
-// Initialize the Admin SDK within this file to ensure it's always available.
-// This is safe to call multiple times in different function files.
-if (admin.apps.length === 0) {
-  admin.initializeApp();
-  logger.info("Firebase Admin SDK initialized in list-users.ts");
-}
-
+// The Admin SDK is initialized in index.ts, so we don't need to initialize it here.
 
 /**
  * A callable Cloud Function to securely list all users from Firebase Auth.
