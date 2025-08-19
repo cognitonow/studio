@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
@@ -19,21 +20,15 @@ export async function testListUsers(): Promise<{ users?: User[]; error?: string 
         console.log("Testing 'listUsers' query...");
         const result = await listUsers(dataConnect, {});
         
-        if (!result || !result.User) {
-            console.log("No users found.");
+        // The generated SDK nests the result under a key named after the query.
+        if (!result || !result.listUsers) {
+            console.log("No users found or unexpected response structure.");
             return { users: [] };
         }
         
-        console.log(`Fetched ${result.User.length} users.`);
-        // Note: The generated SDK might return a different structure.
-        // We are assuming it returns an object with a User key.
-        // This might need adjustment after seeing the generated SDK code.
-        const users = result.User.map((u: any) => ({
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          role: u.role,
-        }));
+        console.log(`Fetched ${result.listUsers.length} users.`);
+        // The result from the SDK should already be in the correct shape.
+        const users = result.listUsers as User[];
         
         return { users };
     } catch (error: any) {
