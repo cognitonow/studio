@@ -1,15 +1,17 @@
-schema {
-  query: Query
-}
 
-"""
-A simple type for testing the database connection.
-"""
-type Test {
+"A simple type for testing the database connection."
+type Test @table(key: "id") {
   id: ID!
-  message: String
+  message: String!
 }
 
+"The root query for the application."
 type Query {
-  listTests: [Test]
+  "Fetches the test message."
+  getTest: Test
+}
+
+"The root mutation for the application."
+type Mutation {
+  _version: String
 }
