@@ -1,0 +1,15 @@
+
+extend type Query {
+  listUsers: [User]
+    @auth(
+      rules: [
+        {
+          allow: owner
+          ownerField: "id"
+        }
+      ]
+    )
+    @permission(
+      expression: "request.auth != null && resource.auth.uid == request.auth.uid"
+    )
+}
