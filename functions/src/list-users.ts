@@ -8,7 +8,7 @@ import * as logger from "firebase-functions/logger";
 /**
  * A callable Cloud Function to securely list all users from Firebase Auth.
  */
-export const listUsers = onCall(async (request) => {
+export const listUsers = onCall({ region: "europe-west1" }, async (request) => {
   // For production, you would want to add a check here to ensure only
   // authenticated admins can call this function.
   // if (!request.auth || !request.auth.token.admin) {
