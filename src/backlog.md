@@ -39,11 +39,13 @@ Your application uses AI features. This step stores the necessary API key secure
 ---
 
 ### Step 4: Grant Permissions to Functions
-Your Cloud Functions need permission to access the secrets you just created.
+Your Cloud Functions need permission to access the secrets you just created and to manage other Firebase services.
 
 1.  **Go to IAM:** In the Google Cloud Console, navigate to **IAM & Admin > IAM**.
 2.  **Find Service Account:** Find the principal (the user/account) that ends with `@appspot.gserviceaccount.com`. This is the default service account for your Cloud Functions.
-3.  **Grant Role:** Click the pencil icon (Edit principal) for that account, click **ADD ANOTHER ROLE**, and add the role **`Secret Manager Secret Accessor`**.
+3.  **Grant Roles:** Click the pencil icon (Edit principal) for that account, click **ADD ANOTHER ROLE**, and add the following roles:
+    *   **`Secret Manager Secret Accessor`**: Allows functions to read the database password and API keys you created.
+    *   **`Firebase Authentication Admin`**: Allows the `listUsers` function to access Firebase Authentication user data.
 4.  **Save** the changes.
 
 ---

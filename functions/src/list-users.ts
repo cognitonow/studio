@@ -54,3 +54,4 @@ export const listUsers = onCall({ region: "europe-west1" }, async (request) => {
     );
   }
 });
+
