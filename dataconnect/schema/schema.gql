@@ -1,10 +1,22 @@
+# Defines the base query and mutation types. All other schemas should extend these.
+# Defines all the primary data structures for the application.
+
+type Query {
+  _placeholder: String
+}
+
+type Mutation {
+  _placeholder: String
+}
+
+# Data Structures
 
 type User @table(key: "id") {
   id: String!
   name: String!
   email: String!
   role: String!
-  provider: [ServiceProvider]
+  provider: [ServiceProvider!] @relation(through: "users_serviceProviders")
 }
 
 type ServiceProvider @table(key: "id") {
@@ -21,15 +33,9 @@ type ServiceProvider @table(key: "id") {
   bio: String!
   location: String!
   playlist: String!
-  user: User @relation(on: "userId", to: "id")
-  services: [Service]
-  reviews: [Review]
-}
-
-type ServiceCategory @table(key: "id") {
-  id: String!
-  name: String!
-  services: [Service]
+  user: User! @relation(on: "userId", to: "id")
+  services: [Service!] @relation(through: "serviceProviders_services")
+  reviews: [Review!]
 }
 
 type Service @table(key: "id") {
@@ -39,7 +45,13 @@ type Service @table(key: "id") {
   description: String!
   price: Float!
   duration: Int!
-  provider: [ServiceProvider] @relation(through: "ServiceProvider_services")
+  provider: [ServiceProvider!] @relation(through: "serviceProviders_services")
+}
+
+type ServiceCategory @table(key: "id") {
+  id: String!
+  name: String!
+  services: [Service!] @relation(on: "id", to: "categoryId")
 }
 
 type Booking @table(key: "id") {
@@ -65,7 +77,7 @@ type Review @table(key: "id") {
   title: String
 }
 
-type Conversation {
+type Conversation @table(key: "id") {
   id: Int!
   providerId: String!
   clientId: String
@@ -77,19 +89,11 @@ type Conversation {
   unread: Int!
 }
 
-type Message {
+type Message @table(key: "id") {
   id: Int!
   conversationId: Int!
   sender: String!
   text: String!
   isAi: Boolean
   bookingId: String
-}
-
-type Query {
-  _empty: String
-}
-
-type Mutation {
-  _empty: String
 }
