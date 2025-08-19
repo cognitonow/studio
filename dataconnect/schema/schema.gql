@@ -1,21 +1,23 @@
-# Defines the root Query and Mutation types that Data Connect will extend.
-# All other types for the application are also defined here.
-
-type Query {}
-
-type Mutation {}
-
-# Represents a user of the application, who can be a client or a provider.
-type User @table(key: "id") {
-  id: String!
-  name: String!
-  email: String!
-  role: String! # Corresponds to UserRole: 'client' or 'provider'
+schema {
+  query: Query
+  mutation: Mutation
 }
 
-# Represents a service provider, such as a salon or stylist.
-type ServiceProvider @table(key: "id") {
-  id: String!
+type Query {
+}
+
+type Mutation {
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: String!
+}
+
+type ServiceProvider {
+  id: ID!
   userId: String!
   name: String!
   specialty: String!
@@ -26,51 +28,47 @@ type ServiceProvider @table(key: "id") {
   isFeatured: Boolean
   isFavourite: Boolean
   bio: String!
-  # portfolio: JSON # JSON type can be used for arrays of objects initially
   location: String!
-  playlist: String
-  # badges: JSON # JSON type for array of objects
+  playlist: String!
 }
 
-# Represents a single service offered by a provider.
-type Service @table(key: "id") {
-  id: String!
+type Service {
+  id: ID!
   categoryId: String!
   name: String!
   description: String!
   price: Float!
-  duration: Int! # in minutes
+  duration: Int!
 }
 
-# Represents a review left by a client for a provider.
-type Review @table(key: "id") {
-  id: String!
-  bookingId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
-}
-
-# Represents an appointment made by a client with a provider.
-type Booking @table(key: "id") {
-  id: String!
+type Booking {
+  id: ID!
   providerId: String!
-  # Storing providerName denormalizes data but simplifies client-side queries
   providerName: String!
-  # serviceIds will be stored as an array of strings
-  serviceIds: [String!]!
+  serviceIds: [String]!
   date: Timestamp!
-  status: String! # 'Pending', 'Confirmed', 'Completed', 'Cancelled'
+  status: String!
   clientName: String
   isPaid: Boolean!
   reviewId: String
 }
 
-# A category for grouping Service types (e.g., Hair, Nails).
-type ServiceCategory @table(key: "id") {
-  id: String!
-  name: String!
+type Review {
+  id: ID!
+  bookingId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Float!
+  comment: String!
+  title: String
+}
+
+type ServiceCategory {
+    id: ID!
+    name: String!
+}
+
+type listUsersResponse {
+  users: [User!]!
 }
