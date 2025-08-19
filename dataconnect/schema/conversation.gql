@@ -1,20 +1,14 @@
 
-"""
-Extends the base Query type with conversation-related queries.
-"""
-extend type Query {
-  """
-  Retrieves a list of conversations for a user.
-  """
-  listConversations(userId: ID!): [Conversation!] @connector(name: "default-connector")
-}
-
-"""
-Extends the base Mutation type with conversation-related mutations.
-"""
 extend type Mutation {
-  """
-  Starts a new conversation.
-  """
-  startConversation(providerId: ID!, clientId: ID!): Conversation @connector(name: "default-connector")
+  insertConversation(
+    id: String!,
+    providerId: String!,
+    clientId: String,
+    name: String!,
+    avatar: String,
+    dataAiHint: String,
+    lastMessage: String!,
+    time: String!,
+    unread: Int!
+  ): Conversation
 }

@@ -1,26 +1,11 @@
 
-"""
-Extends the base Query type with message-related queries.
-"""
-extend type Query {
-  """
-  Retrieves messages for a specific conversation.
-  """
-  listMessages(conversationId: Int!): [Message!] @connector(name: "default-connector")
-}
-
-"""
-Extends the base Mutation type with message-related mutations.
-"""
 extend type Mutation {
-  """
-  Adds a new message to a conversation.
-  """
-  addMessage(
-    conversationId: Int!,
+  insertMessage(
+    id: String!,
+    conversationId: String!,
     sender: String!,
     text: String!,
     isAi: Boolean,
     bookingId: String
-  ): Message @connector(name: "default-connector")
+  ): Message
 }
