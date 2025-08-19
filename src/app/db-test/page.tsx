@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -29,7 +28,7 @@ export default function DbTestPage() {
         <CardHeader>
           <CardTitle>Database Connection Test Page</CardTitle>
           <CardDescription>
-            Use these buttons to test Data Connect queries and mutations. The raw JSON output will be displayed below.
+            Use this button to test the `listUsers` query. The raw JSON output from the database will be displayed below.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -41,7 +40,7 @@ export default function DbTestPage() {
           <div>
             <h3 className="font-semibold">Result:</h3>
             <pre className="mt-2 p-4 bg-muted rounded-lg overflow-x-auto text-sm">
-              {result || 'Click a button to test a query.'}
+              {result || 'Click the button to test the query.'}
             </pre>
           </div>
         </CardContent>

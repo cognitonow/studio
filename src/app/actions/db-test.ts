@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
@@ -26,7 +25,17 @@ export async function testListUsers(): Promise<{ users?: User[]; error?: string 
         }
         
         console.log(`Fetched ${result.User.length} users.`);
-        return { users: result.User as User[] };
+        // Note: The generated SDK might return a different structure.
+        // We are assuming it returns an object with a User key.
+        // This might need adjustment after seeing the generated SDK code.
+        const users = result.User.map((u: any) => ({
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+        }));
+        
+        return { users };
     } catch (error: any) {
         console.error('[db-test.ts] Failed to fetch users:', error);
         return { error: error.message };
