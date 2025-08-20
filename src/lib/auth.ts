@@ -1,3 +1,4 @@
+
 'use server';
 
 import { app } from './firebase';
@@ -43,7 +44,7 @@ export async function signUp({ name, email, password, role = 'client' }: AuthCre
         if (role === 'provider') {
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
             const newProviderProfile: Provider = {
-                id: `provider-${providers.length + 1}`,
+                id: `provider-${Date.now()}`, // Use a more unique ID
                 userId: firebaseUser.uid,
                 name: `${name}'s Shop`,
                 specialty: 'New Provider',
