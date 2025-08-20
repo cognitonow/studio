@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -99,6 +100,8 @@ function MessagesContent() {
     // Re-fetch immediately to show the new message
     setConversations(fetchConversations()); 
   }
+
+  const activeMessages = activeConversation && userRole !== 'guest' ? fetchMessages(activeConversation.id) : [];
   
   useEffect(() => {
     // This effect ensures messages scroll to bottom when a new one is sent
@@ -111,9 +114,8 @@ function MessagesContent() {
         behavior: 'smooth',
       });
     }
-  }, [messages, providerMessages]); // Rerun when messages data changes
+  }, [activeMessages]); // Rerun when messages data changes
 
-  const activeMessages = activeConversation && userRole !== 'guest' ? fetchMessages(activeConversation.id) : [];
 
   if (!isMounted) {
     return <Loading />;
