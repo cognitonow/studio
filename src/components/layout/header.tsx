@@ -17,6 +17,7 @@ import React from 'react';
 import { getNotifications, getUnreadMessageCount } from '@/lib/data';
 import { useUserStore } from '@/hooks/use-user-store';
 import type { UserRole } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 
 function getNavLinks(role: UserRole) {
@@ -129,6 +130,7 @@ export function Header() {
   const { user, role: userRole, setRole: setUserRole, logout } = useUserStore();
   const [hasUnread, setHasUnread] = React.useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = React.useState(false);
+  const router = useRouter();
   
   React.useEffect(() => {
     setIsMounted(true);
@@ -164,7 +166,7 @@ export function Header() {
     let path = '/';
     if (newRole === 'provider') path = '/dashboard';
     if (newRole === 'client') path = '/discover';
-    window.location.href = path;
+    router.push(path);
   };
 
   return (
