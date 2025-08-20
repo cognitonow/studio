@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useUserStore } from '@/hooks/use-user-store';
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 
 // Provider Dashboard Components
@@ -864,14 +865,24 @@ function ClientDashboard() {
 
 export default function DashboardPage() {
     const { role, isLoading, user } = useUserStore();
+    const router = useRouter();
 
-    if (isLoading) {
-        return <div className="container mx-auto py-12 px-4 text-center">Loading...</div>;
-    }
+    useEffect(() => {
+        if (!isLoading && !user) {
+            router.push('/auth');
+        }
+    }, [isLoading, user, router]);
 
-    if (!user) {
-         // Default to client/guest view if not logged in, but show a simplified version
-        return <ClientDashboard />;
+    if (isLoading || !user) {
+        // Show a loading skeleton or a blank page while redirecting
+        return (
+            <div className="container mx-auto py-12 px-4">
+                 <h1 className="text-4xl font-bold font-headline mb-8">
+                    <Skeleton className="h-10 w-3/4" />
+                </h1>
+                <Skeleton className="h-64 w-full" />
+            </div>
+        );
     }
 
     if (role === 'provider') {
