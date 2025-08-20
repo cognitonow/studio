@@ -41,7 +41,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      {/* <Testimonials /> */}
+      <Testimonials />
     </>
   );
 }
