@@ -193,18 +193,33 @@ Whenever an action is performed by one user that affects another (e.g., booking,
 
 - **Centralized Triggers:** All notifications and AI messages should be triggered from within the core data-updating functions in `src/lib/data.ts` (e.g., `updateBookingStatus`, `addBooking`, `updateBooking`). This creates a single source of truth and prevents logic from being scattered across UI components.
 
-## 2. AI Integration Patterns & Triggers
+## 2. AI Integration & Notification Workflows
 
-### 2.1. Dedicated AI Flows
+### 2.1. System Notification Triggers
+
+All push notifications are triggered from within `src/lib/data.ts` using the `addNotification` function.
+
+| Event/Trigger | File & Function | Recipient(s) | Notification Title & Description |
+| :--- | :--- | :--- | :--- |
+| **New Booking Request** | `addBooking` | Provider & Client | **Provider:** "New Booking Request!" / **Client:** "Booking Request Sent!" |
+| **Booking Approved** | `updateBookingStatus` | Provider & Client | **Provider:** "Booking Approved!" / **Client:** "Action Required - Review & Pay" |
+| **Booking Confirmed** | `updateBookingStatus` | Provider & Client | **Provider:** "Payment Received!" / **Client:** "Booking Confirmed!" |
+| **Booking Completed** | `updateBookingStatus` | Provider & Client | **Provider:** "Booking Completed!" / **Client:** "Service Complete!" |
+| **Booking Updated** | `updateBooking` | Provider & Client | **Provider:** "Booking Updated Successfully" / **Client:** "Your Booking Was Updated" |
+| **Booking Cancelled** | `updateBookingStatus` | Provider & Client | Both parties receive a tailored "Booking Cancelled" notification based on who initiated the action. |
+| **New Review Submitted**| `addReview` | Provider & Client | **Provider:** "You have a new review!" / **Client:** "Review Submitted" |
+| **New Message Sent** | `addMessage` | Recipient | "New Message from [Sender Name]" |
+
+### 2.2. Dedicated AI Flows
 
 - Each distinct AI task (e.g., drafting a cancellation message, suggesting a badge) must be encapsulated in its own dedicated flow file within `src/ai/flows/`.
 - **Flow Naming Convention:** Use the pattern `draft-[action-name].ts` for message drafting flows (e.g., `draft-booking-cancellation.ts`).
 - **Clear Inputs/Outputs:** Every flow must have clearly defined input and output schemas using Zod. This ensures type safety and makes the AI's task unambiguous.
 - **Provider/Client Context:** For flows that generate messages, the prompt must be aware of the recipient (`provider` or `client`) to tailor the message content and tone appropriately.
 
-### 2.2. Automated Message Triggers
+### 2.3. Automated AI Message Triggers
 
-All automated AI messages are triggered from within `src/lib/data.ts`. Here is a complete breakdown of every trigger:
+All automated AI messages are triggered from within `src/lib/data.ts`.
 
 | Event/Trigger | File & Function | AI Flow Used | Description |
 | :--- | :--- | :--- | :--- |
