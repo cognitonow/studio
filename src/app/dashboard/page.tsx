@@ -870,13 +870,14 @@ export default function DashboardPage() {
     }
 
     if (!user) {
-        // You can redirect to login or show a message
-        return <ClientDashboard />; // Default to client/guest view if not logged in
+         // Default to client/guest view if not logged in, but show a simplified version
+        return <ClientDashboard />;
     }
 
     if (role === 'provider') {
         return <ProviderDashboard />;
     }
     
+    // Default to ClientDashboard for 'client' role
     return <ClientDashboard />;
 }
