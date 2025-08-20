@@ -67,15 +67,17 @@ function getNavLinks(role: UserRole) {
         }
     };
     
-    // If the user is logged in, they can access all roles, otherwise only guest view.
-    const user = useUserStore.getState().user;
-    return navConfig[user ? role : 'guest'] || navConfig.guest;
+    return navConfig[role] || navConfig.guest;
 }
 
 
 const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages, isMounted }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean, isMounted: boolean }) => {
     const { desktop } = getNavLinks(role);
     const { user } = useUserStore();
+
+    if (!isMounted) {
+        return null; // Don't render anything on the server for dynamic links
+    }
 
     if (!user) {
         return (
@@ -159,10 +161,10 @@ export function Header() {
   const handleRoleChange = (newRole: UserRole) => {
     setUserRole(newRole);
     // Determine the redirect path after role change
-    let path = '/discover';
+    let path = '/';
     if (newRole === 'provider') path = '/dashboard';
     if (newRole === 'client') path = '/discover';
-    window.location.href = path; // Use a full redirect to ensure store is updated everywhere
+    window.location.href = path;
   };
 
   return (
@@ -173,11 +175,10 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          {isMounted && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-1">
-                      {roleLabels[userRole]}
+                      {isMounted ? roleLabels[userRole] : 'Loading...'}
                       <ChevronDown className="h-4 w-4" />
                   </Button>
               </DropdownMenuTrigger>
@@ -198,7 +199,6 @@ export function Header() {
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
         </div>
 
         {/* Mobile Menu Trigger */}
@@ -227,7 +227,7 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
             <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-              {isMounted && <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} isMounted={isMounted} />}
+              <DesktopNavLinks role={userRole} hasUnreadNotifications={hasUnread} hasUnreadMessages={hasUnreadMessages} isMounted={isMounted} />
             </nav>
         </div>
       </div>
