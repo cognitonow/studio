@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Badge } from '@/components/ui/badge';
 
 interface ClientDashboardData {
     totalBookings: number;
@@ -365,4 +366,3 @@ export default function ClientDashboard() {
     </div>
   );
 }
-
