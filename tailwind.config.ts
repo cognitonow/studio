@@ -56,9 +56,9 @@ export default {
         }
       },
       fontFamily: {
-        body: ["var(--font-inter)", "sans-serif"],
-        headline: ["var(--font-lora)", "serif"],
-        display: ["var(--font-dancing-script)", "cursive"],
+        body: ['Inter', 'sans-serif'],
+        headline: ['Lora', 'serif'],
+        display: ['Dancing Script', 'cursive'],
       },
       borderRadius: {
         lg: 'var(--radius)',

@@ -29,23 +29,19 @@ export function AuthDialog({ children }: AuthDialogProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sprout className="w-6 h-6 text-primary"/>
-            Create an Account or Log In
+            Create an Account to Continue
           </DialogTitle>
           <DialogDescription>
-            To access features like booking, messaging, and saving favourites, you'll need to be logged in. Join our community or log in to your existing account.
+            To access features like booking, messaging, and saving favourites, you'll need to be logged in. Join our community to connect with top beauty professionals.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="sm:justify-between gap-2">
+        <DialogFooter>
             <DialogClose asChild>
-                <Button asChild variant="secondary">
-                    <Link href="/signup">Sign Up</Link>
-                </Button>
+                <Button variant="ghost">Continue as Guest</Button>
             </DialogClose>
-            <DialogClose asChild>
-                <Button asChild>
-                    <Link href="/login">Log In</Link>
-                </Button>
-            </DialogClose>
+            <Button asChild>
+                <Link href="/auth">Log In / Sign Up</Link>
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

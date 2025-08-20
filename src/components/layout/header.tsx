@@ -1,11 +1,10 @@
 
-
 'use client'
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, LogIn } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, Database } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,13 +24,11 @@ function getNavLinks(role: UserRole) {
         guest: {
             desktop: [
                 { href: '/discover', label: 'Discover', icon: Search },
-                { href: '/login', label: 'Log In', icon: LogIn },
-                { href: '/signup', label: 'Sign Up', icon: UserPlus }
+                { href: '/auth', label: 'Sign Up', icon: UserPlus }
             ],
             mobile: [
                 { href: '/discover', label: 'Discover' },
-                { href: '/login', label: 'Log In' },
-                { href: '/signup', label: 'Sign Up' },
+                { href: '/auth', label: 'Log In / Sign Up' },
                 { href: '/', label: 'Home' },
             ],
         },
@@ -70,6 +67,7 @@ function getNavLinks(role: UserRole) {
         }
     };
     
+    // If the user is logged in, they can access all roles, otherwise only guest view.
     const user = useUserStore.getState().user;
     return navConfig[user ? role : 'guest'] || navConfig.guest;
 }
@@ -136,11 +134,9 @@ export function Header() {
 
       checkUnreads();
       
-      window.addEventListener('focus', checkUnreads);
+      const interval = setInterval(checkUnreads, 5000); 
 
-      return () => {
-        window.removeEventListener('focus', checkUnreads);
-      }
+      return () => clearInterval(interval);
     }
   }, [isMounted, userRole]);
 

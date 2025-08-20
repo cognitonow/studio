@@ -1,0 +1,11 @@
+
+type Message @table {
+  id: String! @id
+  conversationId: String!
+  senderId: String!
+  senderRole: String!
+  text: String!
+  isAi: Boolean
+  bookingId: String
+  createdAt: Timestamp
+}

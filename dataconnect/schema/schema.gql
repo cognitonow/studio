@@ -1,68 +1,59 @@
-
-type User {
-  id: ID!
-  name: String
+type User @table {
+  authId: String!
+  userType: String!
+  displayName: String!
+  createdAt: Timestamp!
   email: String
-  role: String
-}
-
-type ServiceProvider {
-  id: ID!
-  userId: ID!
-  name: String
-  specialty: String
-  avatarUrl: String
-  dataAiHint: String
-  rating: Float
-  reviewCount: Int
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String
+  phoneNumber: String
+  profilePictureUrl: String
   location: String
-  playlist: String
 }
 
-type Service {
-  id: ID!
-  categoryId: String
-  name: String
-  description: String
-  price: Float
-  duration: Int
+type ServiceCategory @table {
+  name: String!
+  description: String!
+  imageUrl: String
 }
 
-type Booking {
-  id: ID!
-  providerId: String
-  providerName: String
-  serviceIds: [String]!
-  date: Timestamp
-  status: String
-  clientName: String
-  isPaid: Boolean
-  reviewId: String
+type ServiceProvider @table {
+  user: User!
+  bio: String!
+  averageRating: Float!
+  createdAt: Timestamp!
+  yearsOfExperience: Int
+  portfolioUrl: String
 }
 
-type Review {
-  id: ID!
-  bookingId: ID!
-  author: String
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int
+type Service @table {
+  serviceProvider: ServiceProvider!
+  serviceCategory: ServiceCategory!
+  name: String!
+  description: String!
+  price: Float!
+  createdAt: Timestamp!
+  unit: String
+  minPrice: Float
+  maxPrice: Float
+}
+
+type Booking @table {
+  serviceSeeker: User!
+  serviceProvider: ServiceProvider!
+  service: Service!
+  bookingDate: Date!
+  status: String!
+  totalPrice: Float!
+  createdAt: Timestamp!
+  startTime: Timestamp
+  endTime: Timestamp
+  notes: String
+}
+
+type Review @table {
+  booking: Booking!
+  serviceSeeker: User!
+  serviceProvider: ServiceProvider!
+  rating: Int!
+  createdAt: Timestamp!
   comment: String
-  title: String
-}
-
-type ServiceCategory {
-    id: ID!
-    name: String!
-}
-
-type Query {
-
-}
-
-type Mutation {
-
 }

@@ -3,11 +3,12 @@ import { db } from './firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
 import type { Service } from './types';
 
-// NOTE: This file is deprecated. Data fetching is moving to server actions
-// in `src/app/actions/*` that use Firebase Data Connect with PostgreSQL.
-// This file is kept for reference during the migration but should not be used for new development.
+// NOTE: This is a placeholder for fetching real data.
+// In a real app, this data would be populated in your Firestore database.
+// For now, it will likely return an empty array, but a successful empty
+// fetch still proves the connection and API key are working.
 
-export async function getServicesFromFirestore(): Promise<Service[]> {
+export async function getServices(): Promise<Service[]> {
   if (!db) {
     console.error("Firestore database is not initialized.");
     throw new Error("Firestore not initialized");

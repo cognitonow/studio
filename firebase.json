@@ -10,7 +10,7 @@
   },
   "firestore": {
     "database": "beauty-book-14zko",
-    "location": "europe-west1",
+    "location": "europe-west2",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -18,26 +18,24 @@
     {
       "source": "functions",
       "codebase": "default",
-      "region": "europe-west1",
       "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" install",
+        "$RESOURCE_DIR/node_modules/.bin/eslint --ext .js,.ts $RESOURCE_DIR", 
         "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "run": {
-        "seedDatabase": {
-          "environment": {
-            "DB_HOST": "beauty-book-14zko:europe-west1:beautybook-db"
-          },
-          "secrets": [
-            "DB_PASSWORD"
-          ]
-        }
-      }
+      ]
     },
     {
       "source": "bbcodebase",
       "codebase": "bbcodebase",
-      "region": "europe-west2",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
       "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }

@@ -1,4 +1,3 @@
-
 /**
  * Import function triggers from their respective submodules:
  *
@@ -8,14 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {setGlobalOptions} from "firebase-functions/v2";
-import * as admin from "firebase-admin";
-import * as seeder from "./seeder";
-import * as genkit from "./genkit-sample";
-import {listUsers as listUsersFunction} from "./list-users";
-
-// Initialize the Admin SDK. This is done only once per functions deployment.
-admin.initializeApp();
+import {setGlobalOptions} from "firebase-functions";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -27,12 +19,12 @@ admin.initializeApp();
 // `maxInstances` option in the function's options, e.g.
 // `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
 // NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({maxInstances: 10}) instead.
+// functions should each use functions.runWith({ maxInstances: 10 }) instead.
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
-setGlobalOptions({region: "europe-west1", maxInstances: 10});
+setGlobalOptions({maxInstances: 10});
 
-// Export the seeder function so it can be deployed.
-export const seedDatabase = seeder.seedDatabase;
-export const menuSuggestion = genkit.menuSuggestion;
-export const listUsers = listUsersFunction;
+// export const helloWorld = onRequest((request, response) => {
+//   logger.info("Hello logs!", { structuredData: true });
+//   response.send("Hello from Firebase!");
+// });

@@ -1,0 +1,8 @@
+
+type Conversation @table {
+  id: String! @id
+  providerId: String!
+  clientId: String!
+  lastMessage: String
+  lastMessageAt: Timestamp
+}

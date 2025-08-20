@@ -51,7 +51,7 @@ function ProviderDashboard() {
   const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProviderData = () => {
+  useEffect(() => {
     if (user) {
       const currentProvider = getProviderByUserId(user.id);
       if (currentProvider) {
@@ -61,15 +61,24 @@ function ProviderDashboard() {
       }
       setIsLoading(false);
     }
-  }
-
-  useEffect(() => {
-    fetchProviderData();
-    window.addEventListener('focus', fetchProviderData);
-    return () => {
-      window.removeEventListener('focus', fetchProviderData);
-    };
   }, [user]);
+  
+  useEffect(() => {
+    if (!provider) return;
+    
+    const fetchBookings = () => {
+      setBookings(getProviderBookings(provider.id));
+    };
+    
+    fetchBookings();
+    
+    // Re-fetch data on window focus to keep it fresh
+    window.addEventListener('focus', fetchBookings);
+
+    return () => {
+      window.removeEventListener('focus', fetchBookings);
+    };
+  }, [provider]);
 
   if (isLoading) {
       return <div className="container mx-auto py-12 px-4 text-center">Loading Provider Dashboard...</div>;
@@ -153,7 +162,7 @@ function ProviderDashboard() {
 
   const pastBookings = bookings.filter(b => 
       new Date(b.date) < today || b.status === 'Completed' || b.status === 'Cancelled'
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(b.date).getTime());
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 
   return (

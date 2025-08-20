@@ -1,0 +1,17 @@
+
+type Review @table(key: "id") {
+  id: String!
+  bookingId: String!
+  providerId: String!
+  provider: Provider! @relation(field: "providerId")
+  author: String!
+  authorId: String!
+  authorUser: User! @relation(field: "authorId")
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}
+
+# Queries and Mutations will be added in Phase 2

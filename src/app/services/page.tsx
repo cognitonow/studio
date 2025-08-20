@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getServices } from '@/app/actions/services';
+import { getServices } from '@/lib/firestore';
 import type { Service } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -22,8 +22,8 @@ export default function ServicesPage() {
         const fetchedServices = await getServices();
         setServices(fetchedServices);
       } catch (e: any) {
-        console.error("Data Connect fetch error:", e);
-        setError(`Failed to fetch services. Please ensure your backend is deployed and the database is populated. Error: ${e.message}`);
+        console.error("Firestore fetch error:", e);
+        setError(`Failed to fetch services. Please ensure your Firestore database is set up correctly and your security rules allow reads to the 'services' collection. Error: ${e.message}`);
       } finally {
         setIsLoading(false);
       }
@@ -38,7 +38,7 @@ export default function ServicesPage() {
         <CardHeader>
           <CardTitle>Our Services</CardTitle>
           <CardDescription>
-            This page verifies the connection to your PostgreSQL database via Firebase Data Connect. Below is a list of services fetched from the live backend.
+            This is a test page to verify the connection to Firestore. Below is a list of services fetched directly from the database.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,24 +63,20 @@ export default function ServicesPage() {
                     </CardContent>
                   </Card>
                 ))
-              : services.length > 0 
-                ? services.map((service) => (
-                    <Card key={service.id}>
-                      <CardHeader>
-                        <CardTitle>{service.name}</CardTitle>
-                        <CardDescription>${service.price} - {service.duration} min</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">{service.description}</p>
-                      </CardContent>
-                    </Card>
-                  ))
-                : null
-            }
+              : services.map((service) => (
+                  <Card key={service.id}>
+                    <CardHeader>
+                      <CardTitle>{service.name}</CardTitle>
+                      <CardDescription>${service.price} - {service.duration} min</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{service.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
             {!isLoading && !error && services.length === 0 && (
-                <div className="col-span-full text-center text-muted-foreground py-8">
-                    <p>Connection successful, but no services were found in the database.</p>
-                    <p className="text-sm">Please ensure you have run `firebase deploy` and triggered your database seeder function.</p>
+                <div className="col-span-full text-center text-muted-foreground">
+                    No services found in the database, but the connection was successful.
                 </div>
             )}
           </div>

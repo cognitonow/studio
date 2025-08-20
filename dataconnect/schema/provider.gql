@@ -1,0 +1,28 @@
+
+type Provider @table(key: "id") {
+  id: String!
+  userId: String!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  services: [Service] @manyToMany(joinTable: "ProviderServices")
+  reviews: [Review] @relation(field: "providerId")
+  bookings: [Booking] @relation(field: "providerId")
+}
+
+type ProviderServices @joinTable(
+  from: "Provider", to: "Service"
+) {
+  provider: Provider!
+  service: Service!
+}
+
+# Queries and Mutations will be added in Phase 2

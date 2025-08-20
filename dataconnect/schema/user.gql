@@ -1,0 +1,11 @@
+
+type User @table(key: "id") {
+  id: String!
+  name: String
+  email: String
+  role: String
+}
+
+mutation insertUser(id: String!, name: String, email: String, role: String) @firebaseDataConnect(
+  mutation: "users.insert"
+)
