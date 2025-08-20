@@ -104,17 +104,15 @@ function MessagesContent() {
   const activeMessages = activeConversation && userRole !== 'guest' ? fetchMessages(activeConversation.id) : [];
   
   useEffect(() => {
-    // This effect ensures messages scroll to bottom when a new one is sent
-    const activeConvos = fetchConversations();
-    setConversations(activeConvos);
-    
+    // This effect ensures messages scroll to the bottom when a new one arrives.
+    // It should ONLY handle scrolling.
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
         top: scrollAreaRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
-  }, [activeMessages]); // Rerun when messages data changes
+  }, [activeMessages]); // Rerun only when messages data changes
 
 
   if (!isMounted) {
