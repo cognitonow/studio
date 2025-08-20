@@ -1,6 +1,6 @@
 # Application Guide
 
-This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows.
+This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows. For a detailed mapping of which data functions power each page, please see `page-data-map.md`.
 
 ---
 
