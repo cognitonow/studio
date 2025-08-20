@@ -409,15 +409,23 @@ export const addMessage = (
         conversation.unread = (conversation.unread || 0) + 1;
     }
 
+    // Determine who the recipient is for the notification
+    const recipientRole = isProviderView ? 'client' : 'provider';
+
+    // Get the correct name for the notification title
+    const senderName = isProviderView 
+        ? getProviderById(conversation.providerId)?.name // If provider sends, it's their name
+        : conversation.name; // If client sends, it's the provider's name (which is the convo name)
+    
     // Trigger a notification for the recipient
-    if (isProviderView && sender === 'user') { // Provider receiving from client
-        addNotification('provider', {
+    if (sender === 'provider') { // Provider sends message
+        addNotification('client', {
             icon: 'message',
-            title: `New Message from ${conversation.name}`,
+            title: `New Message from ${senderName}`,
             description: text,
         });
-    } else if (!isProviderView && sender === 'provider') { // Client receiving from provider
-        addNotification('client', {
+    } else { // Client ('user') sends message
+         addNotification('provider', {
             icon: 'message',
             title: `New Message from ${conversation.name}`,
             description: text,
