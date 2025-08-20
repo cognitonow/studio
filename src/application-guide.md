@@ -1,8 +1,6 @@
 # Application Guide
 
-This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows. For a detailed mapping of which data functions power each page, please see `page-data-map.md`.
-
-For a complete definition of all data models (e.g., `Provider`, `Booking`), please refer to `data-structures.md`.
+This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows. For a complete definition of all data models (e.g., `Provider`, `Booking`), please refer to `data-structures.md`.
 
 ---
 
@@ -16,8 +14,8 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/page.tsx`
 -   **Purpose:** Serves as the primary marketing and entry point for new or logged-out users. It's designed to introduce the app's value proposition and drive user engagement towards discovery and booking.
 -   **Key Components:**
-    -   **Hero Section:** A full-width section containing the main headline, a short descriptive paragraph, a prominent "Book Now" button, and a large, an aspirational hero image.
-    -   **Testimonials Section (`@/components/testimonials.tsx`):** A carousel displaying social proof through client reviews. Each testimonial is presented in a `Card` that includes the reviewer's comment, name, and avatar.
+    -   **Hero Section:** A full-width section containing the main headline (`h1`), a short descriptive paragraph (`p`), a prominent "Book Now" `Button`, and a large, an aspirational hero `Image`.
+    -   **Testimonials Section (`@/components/testimonials.tsx`):** A `Carousel` displaying social proof through client reviews. Each testimonial is presented in a `Card` that includes the reviewer's comment (`p` with a `Quote` icon), and an `Avatar` with the reviewer's name and title.
 -   **Role-Based Views:**
     -   **Guest:** This page is primarily designed for guests. All functionality is visible.
     -   **Client / Provider:** Logged-in users are typically redirected to their respective dashboards but can navigate to this page. The experience is the same, but the main header navigation will reflect their logged-in state.
@@ -28,11 +26,11 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/discover/page.tsx`
 -   **Purpose:** The central hub for clients to find, explore, and interact with service providers. It offers multiple modes of discovery to suit different user intentions.
 -   **Key Components:**
-    -   **Hero/Search Section:** A large banner image with an embedded search bar.
+    -   **Hero/Search Section:** A large banner `Image` with an embedded search `Input` field.
     -   **Tabbed Interface (`Tabs`):** Organizes three discovery methods: Explore, Featured Providers, and Find a Service.
-    -   **Explore Stack (`ExploreProviderCard`):** A swipeable card interface for browsing providers. Each card is a large, detailed profile summary showing a multi-image header, provider name, specialty, bio, rating, location, and badges. It includes action buttons for "Save," "View Profile," and "Chat."
+    -   **Explore Stack (`ExploreProviderCard`):** A swipeable card interface for browsing providers. Each card is a large, detailed profile summary showing a multi-image header, provider name, specialty, bio, rating, location, and badges. It includes action buttons (`Button`) for "Save," "View Profile" (in a `Dialog`), and "Chat."
     -   **Featured Carousel (`Carousel`):** A horizontally scrolling list of curated `ProviderCard` components. The `ProviderCard` is a compact summary showing the provider's main image, name, specialty, and rating, designed for quick browsing in grids and carousels.
-    -   **Advanced Search:** Includes a circular category menu and dropdowns for specific services and locations.
+    -   **Advanced Search:** Includes a circular category menu and dropdowns (`Select`) for specific services and locations (`DropdownMenu` with `DropdownMenuCheckboxItem` for multi-select).
 -   **Role-Based Views:**
     -   **Guest:** Can view all providers and services. Actions like "Save to List," "View Profile," or "Start Chat" will trigger a login/signup dialog (`AuthDialog`).
     -   **Client:** Has full access. All actions are enabled, allowing them to save providers, start chats, and navigate to booking pages.
@@ -45,8 +43,8 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Purpose:** A single, unified page for handling both user sign-up and login.
 -   **Key Components:**
     -   **Tabbed Interface (`Tabs`):** Switches between "Sign Up" and "Log In" forms, which are contained within a parent `Card` component for styling.
-    -   **Sign Up Form:** Inputs for name, email, password, and a `RadioGroup` to select 'Client' or 'Provider' role.
-    -   **Log In Form:** Inputs for email and password.
+    -   **Sign Up Form:** `Input` fields for name, email, and password, and a `RadioGroup` to select 'Client' or 'Provider' role.
+    -   **Log In Form:** `Input` fields for email and password.
 -   **Role-Based Views:**
     -   **Guest:** This is the primary user for this page.
     -   **Client / Provider:** Logged-in users will not see this page. They are redirected to their dashboard if they attempt to access it.
@@ -58,14 +56,14 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Purpose:** The main hub for logged-in users, displaying a completely different interface based on the user's role.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access this page. They are redirected to the `/auth` page.
-    -   **Provider View:** A comprehensive business management center with a tabbed interface.
-        -   **Shop Management Tab:** Contains multiple cards for business settings. The **Shop Profile Card** has form inputs to edit the public profile. The **Portfolio Card** allows for uploading and managing images. The **Availability Card** sets working hours. The **Service Management Card** allows a provider to add, edit, and remove the services they offer using a table and an "Add Service" dialog.
-        -   **Booking Management Tab:** Displays current and past bookings in sortable tables (`Table`) within a `Card`. Includes action buttons to approve, decline, or manage each booking.
+    -   **Provider View:** A comprehensive business management center with a tabbed interface (`Tabs`).
+        -   **Shop Management Tab:** Contains multiple cards for business settings. The **Shop Profile Card** has form `Input`s to edit the public profile. The **Portfolio Card** allows for uploading and managing images using `Checkbox` components. The **Availability Card** uses `Select` dropdowns to set working hours. The **Service Management Card** allows a provider to add, edit, and remove the services they offer using a `Table` and an "Add Service" `Dialog`.
+        -   **Booking Management Tab:** Displays current and past bookings in sortable tables (`Table`) within a `Card`. Includes action buttons (`Button`) to approve, decline, or manage each booking.
         -   **Stats Tab:** Showcases key business analytics. Four top-level `Card` components display headline stats (Total Revenue, Bookings, New Clients, Avg. Rating), and a larger `Card` contains the `MonthlyEarningsChart`.
     -   **Client View:** A personalized summary of the client's activity.
-        -   **Your Stats Card (`Card`):** A single card displaying the client's key stats: total bookings and average spend, along with their recent booking history in a small table.
-        -   **Active Booking Card:** A prominent `Card` that highlights the client's next upcoming appointment. It shows the provider name, date, time, status, services booked, and total cost, with a primary button to "Manage Booking." If there are multiple active bookings, it allows the user to cycle through them.
-        -   **Favorite Provider Card:** A detailed `Card` showcasing the client's top provider. It features a multi-image header, the provider's name, specialty, rating, location, bio, and top badges, with a button to view their full profile.
+        -   **Your Stats Card (`Card`):** A single card displaying the client's key stats: total bookings and average spend, along with their recent booking history in a small `Table`.
+        -   **Active Booking Card:** A prominent `Card` that highlights the client's next upcoming appointment. It shows the provider name, date, time, status (`StatusBadge`), services booked, and total cost, with a primary `Button` to "Manage Booking." If there are multiple active bookings, it allows the user to cycle through them with arrow `Button`s.
+        -   **Favorite Provider Card:** A detailed `Card` showcasing the client's top provider. It features a multi-image header, the provider's name, specialty, rating, location, bio, and top badges (`Badge`), with a `Button` to view their full profile.
         -   **My Lists Card:** A call-to-action `Card` that directs the user to the `/my-lists` page to view their saved providers.
 
 ---
@@ -74,10 +72,10 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/provider/[id]/page.tsx`
 -   **Purpose:** Displays the full, detailed public profile for a single service provider.
 -   **Key Components:**
-    -   **Provider Header:** `Avatar`, name, location, rating, and `Badge` components.
-    -   **Portfolio:** An image grid of the provider's work.
-    -   **Tabbed Section:** Contains `Card`s for each tab. The **Verified Reviews Card** lists individual reviews, each with an avatar, author, rating, and comment. The **Chat Card** provides a button to initiate a conversation. The **Your History Card** shows a table of past bookings with this provider.
-    -   **Services Accordion (`Accordion`):** A sticky-positioned `Card` containing a list of all services offered by the provider. Each service can be expanded to show details and a "Book Now" button.
+    -   **Provider Header:** `Avatar`, name, location, rating (`Star` icon), and `Badge` components.
+    -   **Portfolio:** An image grid (`Image`) of the provider's work.
+    -   **Tabbed Section (`Tabs`):** Contains `Card`s for each tab. The **Verified Reviews Card** lists individual reviews, each with an `Avatar`, author, rating, and comment. The **Chat Card** provides a `Button` to initiate a conversation. The **Your History Card** shows a `Table` of past bookings with this provider.
+    -   **Services Accordion (`Accordion`):** A sticky-positioned `Card` containing a list of all services offered by the provider. Each service can be expanded with an `AccordionTrigger` to show details and a "Book Now" `Button`.
 -   **Role-Based Views:**
     -   **Guest:** Can view all public information (profile, portfolio, services, reviews). Actions like "Book Now," "Chat," or "Save to Favourites" will trigger the `AuthDialog`.
     -   **Client:** Has full access. All action buttons are enabled. The "Your History" tab will be populated with their specific past bookings with this provider.
@@ -89,7 +87,7 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/book/[providerId]/page.tsx`
 -   **Purpose:** A dedicated page for a client to select a date and time for a specific service.
 -   **Key Components:**
-    -   **Details Card (`Card`):** Summarizes the selected service and provider. It displays the service name, provider name (with avatar), price, and duration.
+    -   **Details Card (`Card`):** Summarizes the selected service and provider. It displays the service name, provider name (with `Avatar`), price, and duration.
     -   **Calendar Card (`Card`):** Contains the main `Calendar` component for date selection and a `Select` dropdown for choosing an available time slot.
     -   **Request to Book Button (`Button`):** Submits the booking request.
 -   **Role-Based Views:**
@@ -103,17 +101,17 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/booking/manage/[bookingId]/page.tsx`
 -   **Purpose:** A multi-functional page for viewing and managing a single booking, with actions and information changing based on role and booking status.
 -   **Key Components & Cards:**
-    -   **Client Details Card (Provider View):** A `Card` that shows a snapshot of the client's history, including total bookings, average spend, and recent appointments.
-    -   **Provider Details Card (Client View):** A simple `Card` showing the provider's name and avatar with a link to their profile.
-    -   **Booked Services Card:** A `Card` that lists all services included in the appointment. The provider can add or remove services. It also displays the total cost and duration.
+    -   **Client Details Card (Provider View):** A `Card` that shows a snapshot of the client's history, including total bookings, average spend, and recent appointments in a `Table`.
+    -   **Provider Details Card (Client View):** A simple `Card` showing the provider's name and `Avatar` with a `Link` to their profile.
+    -   **Booked Services Card:** A `Card` that lists all services included in the appointment. The provider can add (`Dialog`) or remove (`Button` with `Trash2` icon) services. It also displays the total cost and duration.
     -   **Amend Date & Time Card:** A `Card` containing the `Calendar` and time `Select` components, allowing the provider to modify the appointment time.
-    -   **Payment Form Card (Client View):** When a booking is in the 'Review Order and Pay' status, a `Card` containing a payment form is displayed for the client to enter their credit card details.
+    -   **Payment Form Card (Client View):** When a booking is in the 'Review Order and Pay' status, a `Card` containing a payment form with `Input` fields is displayed for the client.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Provider View:**
         -   Can view the `ClientDetails` card.
         -   Can modify the `Booked Services` and `Amend Date & Time` cards.
-        -   Can approve, decline, or cancel the booking using action buttons (`Button`).
+        -   Can approve, decline, or cancel the booking using action buttons (`Button`) which may trigger a confirmation `AlertDialog`.
     -   **Client View:**
         -   Can view the `Provider Details` card.
         -   If booking status is 'Review Order and Pay', the **Payment Form Card** is displayed.
@@ -127,7 +125,7 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Key Components:**
     -   **Tabbed Interface (`Tabs`):** Separates "Upcoming" and "Past" bookings, each within its own `Card`.
     -   **Bookings Table (`Table`):** Lists bookings with details (provider, services, date, status).
-    -   **Dynamic Action Buttons:** Buttons change based on booking status (e.g., "Make Payment," "Manage," "Leave a Review").
+    -   **Dynamic Action Buttons:** Buttons change based on booking status (e.g., "Make Payment," "Manage," "Leave a Review"). The "Leave a Review" `Button` opens a `Dialog` with a star rating system and a `Textarea` for comments.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** This page is exclusively for clients.
@@ -140,9 +138,9 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Purpose:** The in-app chat interface for direct communication.
 -   **Key Components:**
     -   A two-column layout where each column is a `Card`.
-    -   **Conversations List Card:** The left card displays a scrollable list of all active conversations.
-    -   **Active Chat Card:** The right card displays the full message history for the selected conversation and an input field to send a new message.
-    -   Messages are styled differently based on the sender (`UserMessage`, `ProviderMessage`, `AiMessage`).
+    -   **Conversations List Card:** The left card displays a `ScrollArea` with a list of all active conversations, each showing an `Avatar`, name, last message, and unread count.
+    -   **Active Chat Card:** The right card displays the full message history for the selected conversation in a `ScrollArea` and an `Input` field to send a new message.
+    -   Messages are styled differently based on the sender (`UserMessage`, `ProviderMessage`, `AiMessage`), each containing the text and sender `Avatar`.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** Sees a list of their conversations with providers. They are the 'user' sender.
@@ -167,10 +165,10 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/account/page.tsx`
 -   **Purpose:** Allows logged-in users to manage their personal account settings.
 -   **Key Components:**
-    -   A tabbed interface where each tab's content is wrapped in a `Card`.
-    -   **Profile Settings Card:** Contains form inputs for changing name, email, and bio.
-    -   **Billing Information Card:** Shows saved payment methods and a button to add a new one.
-    -   **Security Card:** Contains form inputs for changing the user's password.
+    -   A tabbed interface (`Tabs`) where each tab's content is wrapped in a `Card`.
+    -   **Profile Settings Card:** Contains form `Input`s for changing name, email, and a `Textarea` for the bio. Includes an `Avatar` and a "Change Photo" `Button`.
+    -   **Billing Information Card:** Shows saved payment methods (represented by a `CreditCard` icon) and a `Button` to add a new one.
+    -   **Security Card:** Contains `Input` fields for changing the user's password.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client / Provider:** Both roles have access to this page to manage their own account settings. The functionality is identical for both.
@@ -181,7 +179,7 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **File:** `src/app/notifications/page.tsx`
 -   **Purpose:** Displays a centralized list of all system-generated notifications.
 -   **Key Components:**
-    -   A single `Card` that contains a list of all notifications, each with a distinct icon, title, description, and timestamp.
+    -   A single `Card` that contains a list of all notifications, each with a distinct icon (`Bell`, `CheckCircle`, etc.), title, description, and timestamp. Unread notifications have a distinct visual style.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** Sees notifications relevant to their bookings and messages (e.g., "Booking Approved," "New Message from Provider").
