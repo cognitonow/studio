@@ -23,8 +23,13 @@ const nextConfig: NextConfig = {
     config,
     { isServer }
   ) => {
-    // Add a rule to handle the handlebars dependency issue with Genkit
-    // This prevents the Next.js compiler from crashing when it encounters this file.
+    // This is the correct way to fix the "Cannot find module './handlebars.runtime'" error.
+    // It tells Webpack to treat 'handlebars' as an external module that will be required at runtime,
+    // rather than trying to bundle it, which fixes the resolution issue on the server.
+    if (isServer) {
+        config.externals = [...config.externals, 'handlebars'];
+    }
+
     config.module.noParse = /handlebars\.js$/;
     config.module.rules.push({
       test: /\.mjs$/,
@@ -32,7 +37,6 @@ const nextConfig: NextConfig = {
       type: "javascript/auto",
     });
 
-    // Add rules to ignore missing optional dependencies
     config.resolve.alias['@opentelemetry/winston-transport'] = false;
     config.resolve.alias['@opentelemetry/exporter-jaeger'] = false;
 
