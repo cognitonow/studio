@@ -1,3 +1,4 @@
+
 'use client'
 
 import Link from 'next/link';
@@ -158,7 +159,9 @@ export function Header() {
   const handleRoleChange = (newRole: UserRole) => {
     setUserRole(newRole);
     // Determine the redirect path after role change
-    const path = newRole === 'provider' ? '/dashboard' : '/discover';
+    let path = '/discover';
+    if (newRole === 'provider') path = '/dashboard';
+    if (newRole === 'client') path = '/discover';
     window.location.href = path; // Use a full redirect to ensure store is updated everywhere
   };
 
@@ -170,7 +173,7 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          {isMounted && user && (
+          {isMounted && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-1">
@@ -183,7 +186,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={() => handleRoleChange('guest')}>
                           <Globe className="mr-2 h-4 w-4"/>
-                          <span>Guest View (Log Out)</span>
+                          <span>Guest View</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleRoleChange('client')}>
                       <Eye className="mr-2 h-4 w-4"/>
