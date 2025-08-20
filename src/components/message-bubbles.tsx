@@ -38,7 +38,7 @@ export const UserMessage = ({ message, view }: UserMessageProps) => {
             </div>
             <Avatar className="w-8 h-8">
                 <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person face" />
-                <AvatarFallback>{view === 'client' ? 'U' : 'P'}</AvatarFallback>
+                <AvatarFallback>{view === 'client' ? 'A' : 'S'}</AvatarFallback>
             </Avatar>
         </div>
     );

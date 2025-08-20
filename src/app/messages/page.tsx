@@ -7,21 +7,21 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Send, User } from "lucide-react";
 import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data";
-import { useState, useEffect, useRef, Suspense } from "react"; // Import Suspense
+import { useState, useEffect, useRef, Suspense } from "react";
 import type { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { UserMessage, ProviderMessage, AiMessage } from "@/components/message-bubbles";
-import { useUserRole } from "@/hooks/use-user-role";
+import { useUserStore } from "@/hooks/use-user-store";
 
 // Simple loading component
 function Loading() {
-  return <div>Loading...</div>;
+  return <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center"><p>Loading chats...</p></div>;
 }
 
 function MessagesContent() {
-  const { role: userRole } = useUserRole();
+  const { role: userRole } = useUserStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
   const [isMounted, setIsMounted] = useState(false);
@@ -38,82 +38,95 @@ function MessagesContent() {
      const isProviderView = userRole === 'provider';
      return isProviderView ? getProviderConversations() : getConversations();
   }
+  
+  const fetchMessages = (convoId: number) => {
+    const isProviderView = userRole === 'provider';
+    return isProviderView ? getProviderMessagesForConversation(convoId) : getMessagesForConversation(convoId);
+  }
 
   useEffect(() => {
-    if (!isMounted || userRole === 'guest') return; // Add check for guest role
+    if (!isMounted || userRole === 'guest') return;
 
     const convos = fetchConversations();
     setConversations(convos);
 
     let initialConvo: Conversation | undefined = undefined;
+    const providerIdToChat = searchParams.get('providerId');
+    const clientIdToChat = searchParams.get('clientId');
 
-    if (userRole === 'client') {
-        const providerIdToChat = searchParams.get('providerId');
-        if (providerIdToChat) {
-            const existingConvo = convos.find(c => c.providerId === providerIdToChat);
-            if (existingConvo) {
-                initialConvo = existingConvo;
-            } else {
-                const newConvo = startConversationWithProvider(providerIdToChat);
-                if (newConvo) {
-                    setConversations(prev => [newConvo, ...prev]);
-                    initialConvo = newConvo;
-                }
+    if (userRole === 'client' && providerIdToChat) {
+        const existingConvo = convos.find(c => c.providerId === providerIdToChat);
+        if (existingConvo) {
+            initialConvo = existingConvo;
+        } else {
+            const newConvo = startConversationWithProvider(providerIdToChat);
+            if (newConvo) {
+                setConversations(prev => [newConvo, ...prev]);
+                initialConvo = newConvo;
             }
         }
-    } else if (userRole === 'provider') {
-        const clientIdToChat = searchParams.get('clientId');
-        if (clientIdToChat) {
-            const existingConvo = convos.find(c => c.clientId === clientIdToChat);
-            if (existingConvo) {
-                initialConvo = existingConvo;
-            }
-        }
+        router.replace('/messages', {scroll: false}); // Clean up URL params after handling
+    } else if (userRole === 'provider' && clientIdToChat) {
+        initialConvo = convos.find(c => c.clientId === clientIdToChat);
+        router.replace('/messages', {scroll: false}); // Clean up URL params after handling
     }
-
-    if (initialConvo) {
-      router.replace('/messages'); // Clean up URL params after handling
-    } else if (convos.length > 0) {
+    
+    if (!initialConvo && convos.length > 0) {
       initialConvo = convos[0];
     }
-
+    
     setActiveConversation(initialConvo);
 
-  }, [userRole, searchParams, router, isMounted]);
+  }, [userRole, isMounted]); // Removed searchParams and router from deps to avoid re-triggering
 
   const handleConversationSelect = (convo: Conversation) => {
     setActiveConversation(convo);
-    if (userRole !== 'guest' && convo.unread > 0) { // Add check for guest role
- markAllMessagesAsRead(convo.id, userRole as 'client' | 'provider');
+    if (userRole !== 'guest' && convo.unread > 0) {
+      markAllMessagesAsRead(convo.id, userRole);
       setConversations(fetchConversations());
     }
   }
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim() || !activeConversation || userRole === 'guest') return; // Add check for guest role
+    if (!messageText.trim() || !activeConversation || userRole === 'guest') return;
 
-    const sender = userRole; // userRole will be 'client' or 'provider' here
-    addMessage(activeConversation.id, sender as 'user' | 'provider', messageText, userRole as 'client' | 'provider'); // Cast sender and role for the function
+    const sender = userRole === 'client' ? 'user' : 'provider';
+    addMessage(activeConversation.id, sender, messageText, userRole);
 
 
     setMessageText("");
-    setConversations(fetchConversations());
+    // Re-fetch immediately to show the new message
+    setConversations(fetchConversations()); 
   }
-
-   useEffect(() => {
+  
+  useEffect(() => {
+    // This effect ensures messages scroll to bottom when a new one is sent
+    const activeConvos = fetchConversations();
+    setConversations(activeConvos);
+    
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
         top: scrollAreaRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
-  }, [activeConversation]);
+  }, [messages, providerMessages]); // Rerun when messages data changes
 
-  const activeMessages = activeConversation && userRole !== 'guest' ? // Add check for guest role
-    (userRole === 'provider' ? getProviderMessagesForConversation(activeConversation.id) : getMessagesForConversation(activeConversation.id))
-    : [];
+  const activeMessages = activeConversation && userRole !== 'guest' ? fetchMessages(activeConversation.id) : [];
 
+  if (!isMounted) {
+    return <Loading />;
+  }
+
+  if (userRole === 'guest') {
+     return (
+        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
+             <p className="text-muted-foreground">You must be logged in to view messages.</p>
+             <Button asChild><Link href="/auth">Log In / Sign Up</Link></Button>
+        </div>
+    )
+  }
 
   if (conversations.length === 0) {
     return (
@@ -124,11 +137,7 @@ function MessagesContent() {
   }
 
   if (!activeConversation) {
-    return (
-      <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center">
-        <p>Loading chats...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -143,7 +152,6 @@ function MessagesContent() {
             </div>
             <div className="relative pt-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                {/* Corrected Input component */}
                 <Input placeholder="Search messages..." className="pl-10" />
             </div>
           </CardHeader>
@@ -203,10 +211,19 @@ function MessagesContent() {
                             if (message.isAi) {
                                 return <AiMessage key={message.id} message={message} activeConversation={activeConversation} view={userRole} />;
                             }
-                            if (message.sender === userRole) {
-                                return <UserMessage key={message.id} message={message} view={userRole} />;
+                            // In provider view, 'user' is the client. In client view, 'user' is the client.
+                            if (message.sender === 'user') {
+                                return userRole === 'provider' 
+                                    ? <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} /> 
+                                    : <UserMessage key={message.id} message={message} view={userRole} />;
                             }
-                            return <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />;
+                            // 'provider' sender
+                             if (message.sender === 'provider') {
+                                return userRole === 'client' 
+                                    ? <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />
+                                    : <UserMessage key={message.id} message={message} view={userRole} />;
+                            }
+                            return null;
                         })}
                     </div>
                 </ScrollArea>

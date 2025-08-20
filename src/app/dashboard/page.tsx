@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 // Provider Dashboard Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Users, Award, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight as ArrowRightIcon } from "lucide-react"
+import { Calendar, DollarSign, Users, Award, Store, Clock, List, GalleryHorizontal, PlusCircle, Trash2, Upload, Info, Save, User, Star, MapPin, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight as ArrowRightIcon, MessageSquare } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -192,6 +192,7 @@ function ProviderDashboard() {
   };
 
   const getBookingActions = (booking: Booking) => {
+    const chatLink = `/messages?providerId=${booking.providerId}&clientId=${booking.clientName}`;
     if (booking.status === 'Pending') {
         return (
             <div className="flex gap-2">
@@ -199,6 +200,11 @@ function ProviderDashboard() {
                     <Link href={`/booking/manage/${booking.id}`}>
                         <ThumbsUp className="h-4 w-4 mr-2" />
                         Approve
+                    </Link>
+                </Button>
+                 <Button size="sm" variant="ghost" asChild>
+                    <Link href={chatLink}>
+                        <MessageSquare className="h-4 w-4" />
                     </Link>
                 </Button>
             </div>

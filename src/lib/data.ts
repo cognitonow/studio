@@ -254,26 +254,26 @@ let bookings: Booking[] = [
     { id: "2", providerId: "2", providerName: "Glow & Go Esthetics", serviceIds: ["facials-1"], date: "2024-07-16T10:00:00.000Z", status: "Completed", clientName: 'Sarah K.', isPaid: true, reviewId: '1' },
     { id: "3", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-1", "nails-8"], date: "2024-08-18T11:00:00.000Z", status: "Review Order and Pay", clientName: 'Jane D.', isPaid: false },
     { id: "4", providerId: "4", providerName: "Bridal Beauty Co.", serviceIds: ["makeup-2"], date: "2024-06-01T09:00:00.000Z", status: "Completed", clientName: 'Someone Bridey', isPaid: true },
-    { id: "5", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
-    { id: "6", providerId: '3', providerName: 'Chloe\'s Hair Haven', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled', isPaid: false },
+    { id: "5", providerId: '2', providerName: 'Glow & Go Esthetics', serviceIds: ['hair-1'], clientName: 'Alex Ray', date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Pending', isPaid: false },
+    { id: "6", providerId: '2', providerName: 'Glow & Go Esthetics', serviceIds: ['makeup-2'], clientName: 'Taylor Swift', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Cancelled', isPaid: false },
     { id: "7", providerId: "1", providerName: "Olivia's Nail Studio", serviceIds: ["nails-3"], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: "Confirmed", clientName: 'Alex Ray', isPaid: true },
 ];
 
 let conversations: Conversation[] = [
   { id: 1, providerId: '1', name: "Olivia's Nail Studio", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman face", lastMessage: "Let me know if you have any questions!", time: "2h", unread: 0 },
-  { id: 2, providerId: '3', name: "Chloe's Hair Haven", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Can't wait to see you!", time: "1d", unread: 0 },
+  { id: 2, providerId: '2', name: "Glow & Go Esthetics", avatar: "https://placehold.co/100x100.png", dataAiHint: "person smiling", lastMessage: "Can't wait to see you!", time: "1d", unread: 0 },
 ];
 
 let messages: Message[] = [
     { id: 1, conversationId: 1, sender: 'user', text: "Hi Olivia, I'd like to book an appointment." },
     { id: 2, conversationId: 1, sender: 'provider', text: "Hi! Of course, feel free to use the booking button on my profile. Let me know if you have any questions!" },
-    { id: 3, conversationId: 2, sender: 'user', text: "Hi Chloe, looking forward to my appointment tomorrow!" },
+    { id: 3, conversationId: 2, sender: 'user', text: "Hi Sofia, looking forward to my appointment tomorrow!" },
     { id: 4, conversationId: 2, sender: 'provider', text: "Me too! Can't wait to see you!" },
 ];
 
 let providerConversations: Conversation[] = [
-    { id: 1, providerId: '3', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'Alex Ray' },
-    { id: 2, providerId: '3', name: "Emily R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman smiling", lastMessage: "Thank you so much for the amazing balayage!", time: "1d", unread: 0, clientId: 'Emily R.' },
+    { id: 1, providerId: '2', name: "Alex Ray", avatar: "https://placehold.co/100x100.png", dataAiHint: "man face", lastMessage: "I've sent the request for a haircut.", time: "1h", unread: 1, clientId: 'Alex Ray' },
+    { id: 2, providerId: '2', name: "Emily R.", avatar: "https://placehold.co/100x100.png", dataAiHint: "woman smiling", lastMessage: "Thank you so much for the amazing balayage!", time: "1d", unread: 0, clientId: 'Emily R.' },
 ];
 
 let providerMessages: Message[] = [
@@ -405,7 +405,9 @@ export const addMessage = (
     // Update conversation metadata
     conversation.lastMessage = text;
     conversation.time = 'Just now';
-    conversation.unread = (conversation.unread || 0) + 1;
+    if (!isAi) { // Don't increment unread for AI messages
+        conversation.unread = (conversation.unread || 0) + 1;
+    }
 
     // Trigger a notification for the recipient
     if (isProviderView && sender === 'user') { // Provider receiving from client
@@ -432,7 +434,7 @@ const sendAutomatedMessage = async (
         try {
             const payload = { ...data, recipient: to };
             const response = await messageGenerator(payload);
-            const providerId = data.providerId || data.providerName; // Handle both booking and review cases
+            const providerId = data.providerId;
             const clientName = data.clientName || data.author;
 
             if (to === 'client') {
@@ -441,7 +443,7 @@ const sendAutomatedMessage = async (
                     addMessage(conversation.id, 'provider', response.message, 'client', true, data.id);
                 }
             } else { // to provider
-                const providerConversation = providerConversations.find(pc => pc.clientId === clientName);
+                const providerConversation = providerConversations.find(pc => pc.clientId === clientName && pc.providerId === providerId);
                  if (providerConversation) {
                     addMessage(providerConversation.id, 'provider', response.message, 'provider', true, data.id);
                 }
@@ -625,7 +627,7 @@ export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
         bookingId: newBooking.id
     });
     
-    let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName);
+    let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName && c.providerId === newBooking.providerId);
     if (!providerConvo) {
         providerConvo = {
             id: providerConversations.length + 1,

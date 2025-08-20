@@ -8,9 +8,11 @@ import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } 
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useUserRole } from '@/hooks/use-user-role';
+import { useUserStore } from '@/hooks/use-user-store';
 
 const NotificationList = ({ items, onItemClick }: { items: Notification[], onItemClick: (id: number) => void }) => {
+    const { role } = useUserStore();
+    
     const getIcon = (icon: Notification['icon']) => {
         switch (icon) {
             case 'new-booking':
@@ -31,6 +33,12 @@ const NotificationList = ({ items, onItemClick }: { items: Notification[], onIte
     }
     
     const getNotificationLink = (notification: Notification) => {
+        // For providers, a message notification should link to the specific client chat
+        if (role === 'provider' && notification.icon === 'message') {
+            const clientName = notification.title.replace('New Message from ', '');
+            return `/messages?clientId=${encodeURIComponent(clientName)}`;
+        }
+        
         if (notification.bookingId) {
             // Special case for review confirmations, link to the provider's page
             if (notification.icon === 'review' && notification.providerId) {
@@ -38,9 +46,12 @@ const NotificationList = ({ items, onItemClick }: { items: Notification[], onIte
             }
             return `/booking/manage/${notification.bookingId}`;
         }
+        
+        // Default message link for clients
         if (notification.icon === 'message') {
             return '/messages';
         }
+        
         return '#';
     }
 
@@ -86,21 +97,27 @@ const NotificationList = ({ items, onItemClick }: { items: Notification[], onIte
 
 
 export default function NotificationsPage() {
-    const { role } = useUserRole();
+    const { role } = useUserStore();
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     useEffect(() => {
-        setNotifications(getNotifications(role));
+        if (role !== 'guest') {
+            setNotifications(getNotifications(role));
+        }
     }, [role]);
 
     const handleMarkAllAsRead = () => {
-        markAllNotificationsAsRead(role);
-        setNotifications(getNotifications(role));
+        if (role !== 'guest') {
+            markAllNotificationsAsRead(role);
+            setNotifications(getNotifications(role));
+        }
     }
 
     const handleItemClick = (id: number) => {
-        markNotificationAsRead(id, role);
-        setNotifications(getNotifications(role));
+        if (role !== 'guest') {
+            markNotificationAsRead(id, role);
+            setNotifications(getNotifications(role));
+        }
     }
 
     return (
