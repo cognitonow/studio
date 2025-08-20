@@ -1,5 +1,4 @@
 
-
 import { Star, Zap, Brush, ShieldCheck, Heart, Palette, Gem, MapPin, Award, UserPlus, Trophy, Scissors, Eye, Hand, Layers, Sparkles, Wind } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
