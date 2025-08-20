@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -109,7 +110,54 @@ function ProviderDashboard() {
   };
 
   if (isLoading) {
-      return <div className="container mx-auto py-12 px-4 text-center">Loading Provider Dashboard...</div>;
+      return (
+        <div className="container mx-auto py-12 px-4">
+            <h1 className="text-4xl font-bold font-headline mb-8">
+                <Skeleton className="h-10 w-3/4" />
+            </h1>
+            <div className="space-y-4">
+                <div className="flex space-x-1">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-10 w-48" />
+                </div>
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-8">
+                        <Card>
+                            <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-8 w-full" />
+                                <Skeleton className="h-8 w-full" />
+                                <Skeleton className="h-24 w-full" />
+                                <Skeleton className="h-10 w-32" />
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-16 w-full" />
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="space-y-8">
+                        <Card>
+                            <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
+                            <CardContent className="space-y-4">
+                                 <Skeleton className="h-16 w-full" />
+                                 <Skeleton className="h-10 w-32" />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-40 w-full" />
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </div>
+      );
   }
   
   if (!provider) {
