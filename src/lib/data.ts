@@ -338,7 +338,7 @@ export const getBookings = () => {
     const today = startOfDay(new Date());
     const upcoming = bookings
         .filter(b => new Date(b.date) >= today && (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay'))
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        .sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime());
 
     const past = bookings
         .filter(b => new Date(b.date) < today || b.status === 'Completed' || b.status === 'Cancelled')
