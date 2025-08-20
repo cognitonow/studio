@@ -1,4 +1,3 @@
-
 import type { BadgeLevel } from './badges';
 
 export type UserRole = 'guest' | 'client' | 'provider';

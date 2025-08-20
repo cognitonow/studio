@@ -1,4 +1,3 @@
-
 import './firebase';
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
@@ -9,14 +8,7 @@ import { draftBookingCancellation } from '@/ai/flows/draft-booking-cancellation'
 import { draftNewBookingRequest } from '@/ai/flows/draft-new-booking-request';
 import { draftBookingUpdate } from '@/ai/flows/draft-booking-update';
 import { draftNewReviewMessage } from '@/ai/flows/draft-new-review';
-import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-import { connectorConfig } from '@firebasegen/default-connector';
 
-const dataConnect = getDataConnect(connectorConfig);
-
-if (process.env.NODE_ENV === 'development') {
-    connectDataConnectEmulator(dataConnect, 'localhost', 9399);
-}
 
 // MOCK DATA - This will be replaced with real database calls.
 
