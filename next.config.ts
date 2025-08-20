@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
       type: "javascript/auto",
     });
 
+    // Add rules to ignore missing optional dependencies
+    config.resolve.alias['@opentelemetry/winston-transport'] = false;
+    config.resolve.alias['@opentelemetry/exporter-jaeger'] = false;
+
+
     return config
   },
 };
