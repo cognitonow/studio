@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell, Database } from 'lucide-react';
+import { Menu, Sprout, MessageSquare, User, Search, UserPlus, LayoutDashboard, ChevronDown, Eye, Briefcase, Globe, Book, Bell } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,6 +74,16 @@ function getNavLinks(role: UserRole) {
 
 const DesktopNavLinks = ({ role, hasUnreadNotifications, hasUnreadMessages, isMounted }: { role: UserRole, hasUnreadNotifications: boolean, hasUnreadMessages: boolean, isMounted: boolean }) => {
     const { desktop } = getNavLinks(role);
+    const { user } = useUserStore();
+
+    if (!user) {
+        return (
+            <>
+                <Button variant="ghost" asChild><Link href="/discover">Discover</Link></Button>
+                <Button asChild><Link href="/auth">Sign Up</Link></Button>
+            </>
+        )
+    }
     
     return (
         <>
@@ -113,7 +123,7 @@ const MobileNavLinks = ({ role }: { role: UserRole }) => {
 
 export function Header() {
   const [isMounted, setIsMounted] = React.useState(false);
-  const { user, role: userRole, setRole: setUserRole } = useUserStore();
+  const { user, role: userRole, setRole: setUserRole, logout } = useUserStore();
   const [hasUnread, setHasUnread] = React.useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = React.useState(false);
   
@@ -145,6 +155,12 @@ export function Header() {
     provider: 'Provider View'
   }
   
+  const handleLogout = () => {
+    logout();
+    // Redirect to home page after logging out
+    window.location.href = '/';
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 max-w-7xl items-center">
@@ -153,22 +169,20 @@ export function Header() {
             <Sprout className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg text-foreground">Beauty Book</span>
           </Link>
-          {user && (
+          {isMounted && user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-1">
-                      {isMounted ? roleLabels[userRole] : roleLabels['client']}
+                      {roleLabels[userRole]}
                       <ChevronDown className="h-4 w-4" />
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                   <DropdownMenuLabel>Switch View</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setUserRole('guest')}>
-                      <Link href="/" className="flex items-center w-full">
+                    <DropdownMenuItem onClick={handleLogout}>
                           <Globe className="mr-2 h-4 w-4"/>
-                          Guest View (Log Out)
-                      </Link>
+                          <span>Guest View (Log Out)</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setUserRole('client')}>
                       <Link href="/discover" className="flex items-center w-full">

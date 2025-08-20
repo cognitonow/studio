@@ -36,7 +36,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   setRole: (role: UserRole) => {
      // When manually switching roles for demo purposes, if switching to guest, log out.
     if (role === 'guest') {
-      set({ user: null, role: 'guest' });
+      get().logout();
     } else {
       set({ role });
     }
