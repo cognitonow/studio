@@ -24,6 +24,8 @@ const nextConfig: NextConfig = {
     { isServer }
   ) => {
     // Add a rule to handle the handlebars dependency issue with Genkit
+    // This prevents the Next.js compiler from crashing when it encounters this file.
+    config.module.noParse = /handlebars\.js$/;
     config.module.rules.push({
       test: /\.mjs$/,
       include: /node_modules/,
