@@ -1,6 +1,8 @@
 # Application Guide
 
-This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows. 
+This document provides a comprehensive overview of the Beauty Book application, detailing its page structure, user roles, core principles, and AI-driven workflows. For a detailed mapping of which data functions power each page, please see `page-data-map.md`.
+
+For a complete definition of all data models (e.g., `Provider`, `Booking`), please refer to `data-structures.md`.
 
 ---
 
@@ -16,7 +18,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Key Components:**
     -   **Hero Section:** A full-width section containing the main headline, a short descriptive paragraph, a prominent "Book Now" button, and a large, an aspirational hero image.
     -   **Testimonials Section (`@/components/testimonials.tsx`):** A carousel displaying social proof through client reviews. Each testimonial is presented in a `Card` that includes the reviewer's comment, name, and avatar.
--   **Data Functions:** None. This is a static marketing page.
 -   **Role-Based Views:**
     -   **Guest:** This page is primarily designed for guests. All functionality is visible.
     -   **Client / Provider:** Logged-in users are typically redirected to their respective dashboards but can navigate to this page. The experience is the same, but the main header navigation will reflect their logged-in state.
@@ -32,12 +33,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Explore Stack (`ExploreProviderCard`):** A swipeable card interface for browsing providers. Each card is a large, detailed profile summary showing a multi-image header, provider name, specialty, bio, rating, location, and badges. It includes action buttons for "Save," "View Profile," and "Chat."
     -   **Featured Carousel (`Carousel`):** A horizontally scrolling list of curated `ProviderCard` components. The `ProviderCard` is a compact summary showing the provider's main image, name, specialty, and rating, designed for quick browsing in grids and carousels.
     -   **Advanced Search:** Includes a circular category menu and dropdowns for specific services and locations.
--   **Data Functions:**
-    -   `getFeaturedProviders()`: Used for the main carousel.
-    -   `providers`: The entire list is used for the "Explore" stack.
-    -   `serviceCategories`, `services`: Used to populate the "Find a Service" advanced search filters.
-    -   `dublinDistricts`: Used for the location filter dropdown.
-    -   `getProvidersByPlaylist()`: Used to dynamically update the "Your Playlist" section based on category selection.
 -   **Role-Based Views:**
     -   **Guest:** Can view all providers and services. Actions like "Save to List," "View Profile," or "Start Chat" will trigger a login/signup dialog (`AuthDialog`).
     -   **Client:** Has full access. All actions are enabled, allowing them to save providers, start chats, and navigate to booking pages.
@@ -52,8 +47,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Tabbed Interface (`Tabs`):** Switches between "Sign Up" and "Log In" forms, which are contained within a parent `Card` component for styling.
     -   **Sign Up Form:** Inputs for name, email, password, and a `RadioGroup` to select 'Client' or 'Provider' role.
     -   **Log In Form:** Inputs for email and password.
--   **Data Functions:**
-    -   This page collects user input (name, email, password, role) and sends it to the `signUp` or `signIn` function in `src/lib/auth.ts`.
 -   **Role-Based Views:**
     -   **Guest:** This is the primary user for this page.
     -   **Client / Provider:** Logged-in users will not see this page. They are redirected to their dashboard if they attempt to access it.
@@ -63,16 +56,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
 ### 4.  **Dashboard (`/dashboard`)**
 -   **File:** `src/app/dashboard/page.tsx`
 -   **Purpose:** The main hub for logged-in users, displaying a completely different interface based on the user's role.
--   **Data Functions (Client):**
-    - `getClientDashboardData()`: A comprehensive function that fetches:
-        - `totalBookings`, `averageSpend`
-        - `previousBookings`: A list of past bookings.
-        - `favoriteProvider`: The complete `Provider` object for the user's favorite.
-        - `activeBooking`: The next upcoming `Booking` with its associated `Service` details.
--   **Data Functions (Provider):**
-    - `getProviderBookings(providerId)`: Fetches all bookings associated with the provider.
-    - `providerServices`: The list of services the provider currently offers.
-    - The provider's own `Provider` profile data for editing (name, bio, portfolio, etc.).
 -   **Role-Based Views:**
     -   **Guest:** Cannot access this page. They are redirected to the `/auth` page.
     -   **Provider View:** A comprehensive business management center with a tabbed interface.
@@ -95,9 +78,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Portfolio:** An image grid of the provider's work.
     -   **Tabbed Section:** Contains `Card`s for each tab. The **Verified Reviews Card** lists individual reviews, each with an avatar, author, rating, and comment. The **Chat Card** provides a button to initiate a conversation. The **Your History Card** shows a table of past bookings with this provider.
     -   **Services Accordion (`Accordion`):** A sticky-positioned `Card` containing a list of all services offered by the provider. Each service can be expanded to show details and a "Book Now" button.
--   **Data Functions:**
-    -   `getProviderById(id)`: Fetches the complete profile for the displayed provider.
-    -   `getBookingHistoryForProvider(id)`: Fetches past bookings for the "Booking History" tab.
 -   **Role-Based Views:**
     -   **Guest:** Can view all public information (profile, portfolio, services, reviews). Actions like "Book Now," "Chat," or "Save to Favourites" will trigger the `AuthDialog`.
     -   **Client:** Has full access. All action buttons are enabled. The "Your History" tab will be populated with their specific past bookings with this provider.
@@ -112,11 +92,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Details Card (`Card`):** Summarizes the selected service and provider. It displays the service name, provider name (with avatar), price, and duration.
     -   **Calendar Card (`Card`):** Contains the main `Calendar` component for date selection and a `Select` dropdown for choosing an available time slot.
     -   **Request to Book Button (`Button`):** Submits the booking request.
--   **Data Functions:**
-    - `getProviderById(providerId)`: To display provider info.
-    - `services`: To find the selected service details.
-    - `getBookedTimes(providerId, date)`: To determine available time slots in the calendar.
-    - `addBooking()`: The function called to create a new booking record.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access this page directly. They are funneled through the `AuthDialog` from a provider's profile before landing here.
     -   **Client:** This page is designed for clients. All functionality is available.
@@ -133,12 +108,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Booked Services Card:** A `Card` that lists all services included in the appointment. The provider can add or remove services. It also displays the total cost and duration.
     -   **Amend Date & Time Card:** A `Card` containing the `Calendar` and time `Select` components, allowing the provider to modify the appointment time.
     -   **Payment Form Card (Client View):** When a booking is in the 'Review Order and Pay' status, a `Card` containing a payment form is displayed for the client to enter their credit card details.
--   **Data Functions:**
-    - `getBookingById(bookingId)`: Fetches all details for the specific booking.
-    - `getServicesByIds()`: To display details of the services included in the booking.
-    - `getClientHistoryByName()`: *(Provider View)* Fetches stats about the client associated with the booking.
-    - `updateBooking()`: Function called when changes are saved.
-    - `updateBookingStatus()`: Function called for approvals, cancellations, etc.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Provider View:**
@@ -159,9 +128,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Tabbed Interface (`Tabs`):** Separates "Upcoming" and "Past" bookings, each within its own `Card`.
     -   **Bookings Table (`Table`):** Lists bookings with details (provider, services, date, status).
     -   **Dynamic Action Buttons:** Buttons change based on booking status (e.g., "Make Payment," "Manage," "Leave a Review").
--   **Data Functions:**
-    - `getBookings()`: Fetches all bookings for the current client, separated into `upcoming` and `past`.
-    - `getServicesByIds()`: To display service names.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** This page is exclusively for clients.
@@ -177,10 +143,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Conversations List Card:** The left card displays a scrollable list of all active conversations.
     -   **Active Chat Card:** The right card displays the full message history for the selected conversation and an input field to send a new message.
     -   Messages are styled differently based on the sender (`UserMessage`, `ProviderMessage`, `AiMessage`).
--   **Data Functions:**
-    - `getConversations()` / `getProviderConversations()`: Fetches the list of all chat threads for the user.
-    - `getMessagesForConversation()` / `getProviderMessagesForConversation()`: Fetches the message history for the active chat.
-    - `addMessage()`: Function to send a new message.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** Sees a list of their conversations with providers. They are the 'user' sender.
@@ -194,9 +156,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Key Components:**
     -   **Tabbed Interface (`Tabs`):** Separates "Explore Queue" and "My Favourites," each within its own `Card`.
     -   **Provider Grid:** Both tabs display a grid of `ProviderCard` components.
--   **Data Functions:**
-    - `getExploreQueueProviders()`: Fetches providers the user has saved from the "Explore" stack.
-    - `getFavouriteProviders()`: Fetches providers the user has explicitly marked as a favorite.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** This page is exclusively for clients.
@@ -212,7 +171,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
     -   **Profile Settings Card:** Contains form inputs for changing name, email, and bio.
     -   **Billing Information Card:** Shows saved payment methods and a button to add a new one.
     -   **Security Card:** Contains form inputs for changing the user's password.
--   **Data Functions:** None. This page currently uses static placeholder data.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client / Provider:** Both roles have access to this page to manage their own account settings. The functionality is identical for both.
@@ -224,8 +182,6 @@ This section provides a detailed overview of each page in the Beauty Book applic
 -   **Purpose:** Displays a centralized list of all system-generated notifications.
 -   **Key Components:**
     -   A single `Card` that contains a list of all notifications, each with a distinct icon, title, description, and timestamp.
--   **Data Functions:**
-    - `getNotifications(role)`: Fetches all relevant notifications for the user's role.
 -   **Role-Based Views:**
     -   **Guest:** Cannot access. Redirected to `/auth`.
     -   **Client:** Sees notifications relevant to their bookings and messages (e.g., "Booking Approved," "New Message from Provider").
