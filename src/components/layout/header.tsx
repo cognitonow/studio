@@ -155,11 +155,12 @@ export function Header() {
     provider: 'Provider View'
   }
   
-  const handleLogout = () => {
-    logout();
-    // Redirect to home page after logging out
-    window.location.href = '/';
-  }
+  const handleRoleChange = (newRole: UserRole) => {
+    setUserRole(newRole);
+    // Determine the redirect path after role change
+    const path = newRole === 'provider' ? '/dashboard' : '/discover';
+    window.location.href = path; // Use a full redirect to ensure store is updated everywhere
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -180,21 +181,17 @@ export function Header() {
               <DropdownMenuContent>
                   <DropdownMenuLabel>Switch View</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
+                    <DropdownMenuItem onSelect={() => handleRoleChange('guest')}>
                           <Globe className="mr-2 h-4 w-4"/>
                           <span>Guest View (Log Out)</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setUserRole('client')}>
-                      <Link href="/discover" className="flex items-center w-full">
-                          <Eye className="mr-2 h-4 w-4"/>
-                          Client View
-                      </Link>
+                  <DropdownMenuItem onSelect={() => handleRoleChange('client')}>
+                      <Eye className="mr-2 h-4 w-4"/>
+                      Client View
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setUserRole('provider')}>
-                      <Link href="/dashboard" className="flex items-center w-full">
-                          <Briefcase className="mr-2 h-4 w-4"/>
-                          Provider View
-                      </Link>
+                  <DropdownMenuItem onSelect={() => handleRoleChange('provider')}>
+                      <Briefcase className="mr-2 h-4 w-4"/>
+                      Provider View
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

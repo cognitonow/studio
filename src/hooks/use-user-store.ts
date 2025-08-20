@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import type { User, UserRole } from '@/lib/types';
-import { getProviderByUserId } from '@/lib/data';
+import { getProviderByUserId, mockClientUser, mockProviderUser } from '@/lib/data';
 
 interface UserState {
   user: User | null;
@@ -34,12 +34,15 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ user: null, role: 'guest', isLoading: false });
   },
   setRole: (role: UserRole) => {
-     // When manually switching roles for demo purposes, if switching to guest, log out.
     if (role === 'guest') {
       get().logout();
-    } else {
-      set({ role });
+      return;
     }
+    
+    // When switching roles, log in the corresponding mock user
+    const userToLogin = role === 'client' ? mockClientUser : mockProviderUser;
+    get().login(userToLogin);
+    set({ role });
   },
   initialize: () => {
     // In a real app, you would check for a token in localStorage or a cookie
