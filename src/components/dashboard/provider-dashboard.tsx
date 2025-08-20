@@ -32,6 +32,7 @@ import { BadgeProgress } from '@/components/badge-progress';
 import { ServiceManagementCard } from '@/components/service-management-card';
 import { StatusBadge } from '@/components/status-badge';
 import { Skeleton } from '../ui/skeleton';
+import { allBadges } from '@/lib/badges';
 
 export default function ProviderDashboard() {
   const { user } = useUserStore();
