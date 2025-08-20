@@ -1,7 +1,9 @@
+
 'use client'
 
 import { useState, useEffect } from 'react';
 import { useUserStore } from '@/hooks/use-user-store';
+import { useToast } from "@/hooks/use-toast";
 
 
 // Provider Dashboard Components
@@ -19,7 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds, providers as allProviders, getActiveBookings, getProviderByUserId } from '@/lib/data';
+import { getProviderBookings, updateBookingStatus, getServicesByIds, providers as allProviders, getActiveBookings, getProviderByUserId, saveProviderProfile } from '@/lib/data';
 import type { Booking, Provider, Service } from '@/lib/types';
 import { format, startOfDay, formatDistanceToNowStrict } from 'date-fns';
 import Link from 'next/link';
@@ -45,10 +47,18 @@ import { allBadges } from '@/lib/badges';
 // Provider Dashboard Component
 function ProviderDashboard() {
   const { user } = useUserStore();
+  const { toast } = useToast();
   const [provider, setProvider] = useState<Provider | undefined>(undefined);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
+
+  // State for the editable profile fields
+  const [shopName, setShopName] = useState('');
+  const [specialty, setSpecialty] = useState('');
+  const [location, setLocation] = useState('');
+  const [bio, setBio] = useState('');
+
 
   useEffect(() => {
     if (user) {
@@ -57,6 +67,11 @@ function ProviderDashboard() {
         setProvider(currentProvider);
         setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
         setBookings(getProviderBookings(currentProvider.id));
+        // Initialize form state
+        setShopName(currentProvider.name);
+        setSpecialty(currentProvider.specialty);
+        setLocation(currentProvider.location);
+        setBio(currentProvider.bio);
       }
       setIsLoading(false);
     }
@@ -78,6 +93,20 @@ function ProviderDashboard() {
       window.removeEventListener('focus', fetchBookings);
     };
   }, [provider]);
+
+  const handleProfileSave = () => {
+    if (!provider) return;
+    saveProviderProfile(provider.id, {
+      name: shopName,
+      specialty: specialty,
+      location: location,
+      bio: bio,
+    });
+    toast({
+      title: "Profile Saved!",
+      description: "Your public profile has been updated.",
+    });
+  };
 
   if (isLoading) {
       return <div className="container mx-auto py-12 px-4 text-center">Loading Provider Dashboard...</div>;
@@ -190,19 +219,19 @@ function ProviderDashboard() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="shop-name">Shop Name</Label>
-                            <Input id="shop-name" defaultValue={provider.name} />
+                            <Input id="shop-name" value={shopName} onChange={e => setShopName(e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="specialty">Specialty</Label>
-                            <Input id="specialty" defaultValue={provider.specialty} />
+                            <Input id="specialty" value={specialty} onChange={e => setSpecialty(e.target.value)} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="location">Location</Label>
-                            <Input id="location" defaultValue={provider.location} />
+                            <Input id="location" value={location} onChange={e => setLocation(e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="bio">About / Bio</Label>
-                            <Textarea id="bio" defaultValue={provider.bio} rows={5} />
+                            <Textarea id="bio" value={bio} onChange={e => setBio(e.target.value)} rows={5} />
                         </div>
                          <div className="space-y-2">
                             <Label>Your Badges</Label>
@@ -216,6 +245,10 @@ function ProviderDashboard() {
                                 })}
                             </div>
                         </div>
+                         <Button onClick={handleProfileSave}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Profile
+                        </Button>
                     </CardContent>
                 </Card>
 

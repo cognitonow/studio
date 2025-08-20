@@ -1,3 +1,4 @@
+
 import './firebase';
 import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
@@ -820,6 +821,13 @@ export const saveProviderServices = (providerId: string, updatedServices: Servic
         console.error(`[data.ts] Provider with ID ${providerId} not found.`);
     }
      console.log('[data.ts] Final global services list:', services);
+};
+
+export const saveProviderProfile = (providerId: string, profileData: Partial<Provider>) => {
+  const providerIndex = providers.findIndex(p => p.id === providerId);
+  if (providerIndex !== -1) {
+    providers[providerIndex] = { ...providers[providerIndex], ...profileData };
+  }
 };
 
 
