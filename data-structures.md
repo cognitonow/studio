@@ -31,7 +31,7 @@ export type Provider = {
   portfolio: { id: string; url: string; dataAiHint: string }[];
   services: Service[];
   reviews: Review[];
-  badges: string[];
+  badges: ProviderBadge[];
   location: string;
   playlist: string;
 };
@@ -68,6 +68,7 @@ export type Booking = {
     status: 'Pending' | 'Review Order and Pay' | 'Confirmed' | 'Completed' | 'Cancelled';
     clientName?: string; // Optional client name for provider view
     isPaid: boolean;
+    reviewId?: string;
 };
 ```
 
@@ -114,12 +115,13 @@ Represents a system notification for a user, typically triggered by a booking st
 ```typescript
 export type Notification = {
   id: number;
-  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation' | 'payment';
+  icon: 'new-booking' | 'cancellation' | 'message' | 'confirmation' | 'payment' | 'review';
   title: string;
   description: string;
   time: string;
   read: boolean;
   bookingId?: string;
+  providerId?: string;
 };
 ```
 
@@ -131,6 +133,7 @@ Represents a review left by a client for a provider.
 ```typescript
 export type Review = {
   id:string;
+  bookingId: string;
   author: string;
   avatarUrl: string;
   dataAiHint?: string;
@@ -149,5 +152,19 @@ A category for grouping `Service` types (e.g., Hair, Nails).
 export type ServiceCategory = {
   id: string;
   name: string;
+}
+```
+
+---
+
+### `ProviderBadge`
+Represents a badge earned by a provider.
+
+```typescript
+import type { BadgeLevel } from './badges';
+
+export type ProviderBadge = {
+  name: string;
+  level: BadgeLevel;
 }
 ```

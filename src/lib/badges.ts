@@ -120,7 +120,7 @@ export const allBadges: BadgeInfo[] = [
     id: 'color-whiz',
     name: 'Color Whiz',
     icon: Palette,
-    description: 'A master of hair color, from subtle highlights to bold transformations.',
+    description: 'A master of hair color, from subtle highlights to bold new transformations.',
     category: 'Specialty',
     levels: {
       'New': { name: 'Colorist', rules: 'Complete 5+ "Colour" services.' },
