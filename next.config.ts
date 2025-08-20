@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -17,6 +18,19 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  webpack: (
+    config,
+    { isServer }
+  ) => {
+    // Add a rule to handle the handlebars dependency issue with Genkit
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: "javascript/auto",
+    });
+
+    return config
   },
 };
 
