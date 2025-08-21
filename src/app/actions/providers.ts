@@ -1,77 +1,23 @@
 
 'use server';
 
-import { getDataConnect, connectDataConnectEmulator } from 'firebase/data-connect';
-import { connectorConfig, listServices } from '@firebasegen/default-connector';
 import type { Provider } from '@/lib/types';
-import { getReviewsByProviderId, getBadgesByProviderId } from '@/lib/data';
-import '@/lib/firebase';
-
-const dataConnect = getDataConnect(connectorConfig);
-
-if (process.env.NODE_ENV === 'development') {
-    connectDataConnectEmulator(dataConnect, 'localhost', 9399);
-}
+import { providers } from '@/lib/data';
 
 /**
- * Fetches all service providers from the PostgreSQL database via Data Connect.
- * This is a server action and should only be called from server-side code.
+ * Fetches all service providers.
+ * This is a server action.
+ * NOTE: This function currently uses mock data due to issues with the Data Connect SDK.
  */
 export async function getProviders(): Promise<Provider[]> {
     try {
-        console.log("Fetching services to derive providers from Data Connect...");
-        const result = await listServices(dataConnect, {});
-        
-        if (!result || !result.services) {
-            console.log("No services found in Data Connect.");
-            return [];
-        }
-        
-        console.log(`Fetched ${result.services.length} services.`);
-
-        // Create a map to store unique providers to avoid duplicates
-        const providerMap = new Map<string, Provider>();
-
-        result.services.forEach(service => {
-            // The generated SDK may return a single object or an array. Handle both.
-            const providers = Array.isArray(service.provider) ? service.provider : (service.provider ? [service.provider] : []);
-            
-            providers.forEach(p => {
-                if (p && !providerMap.has(p.id)) {
-                    // The 'user' field on ServiceProvider is an array in the DC schema, but single in app type.
-                    const user = Array.isArray(p.user) ? p.user?.[0] : p.user;
-
-                    providerMap.set(p.id, {
-                        id: p.id,
-                        userId: p.userId,
-                        name: p.name,
-                        specialty: p.specialty,
-                        avatarUrl: p.avatarUrl,
-                        dataAiHint: p.dataAiHint,
-                        rating: p.rating,
-                        reviewCount: p.reviewCount,
-                        isFeatured: p.isFeatured,
-                        isFavourite: p.isFavourite,
-                        bio: p.bio,
-                        location: p.location,
-                        playlist: p.playlist,
-                        // For now, we use mock functions for these nested properties.
-                        // In a real implementation, these would also be fetched via Data Connect.
-                        portfolio: [], 
-                        services: [], // This will be populated later if needed
-                        reviews: getReviewsByProviderId(p.id), // Mock data
-                        badges: getBadgesByProviderId(p.id), // Mock data
-                    });
-                }
-            });
-        });
-
-        const providers = Array.from(providerMap.values());
-        console.log(`Derived ${providers.length} unique providers.`);
-
-        return providers;
+        console.log("Fetching providers from mock data source...");
+        // Directly return the mock providers from the data file.
+        const allProviders = providers;
+        console.log(`Fetched ${allProviders.length} providers from mock data.`);
+        return allProviders;
     } catch (error) {
-        console.error('[providers.ts] Failed to fetch providers from Data Connect:', error);
+        console.error('[providers.ts] Failed to fetch providers from mock data:', error);
         return [];
     }
 }

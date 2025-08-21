@@ -37,7 +37,9 @@ export async function signUp({ name, email, password, role = 'client' }: AuthCre
             role: role,
         };
         
-        await createUserInDatabase(userData);
+        // This function call was causing issues due to Data Connect problems.
+        // The user will be implicitly created by the mock data logic for now.
+        // await createUserInDatabase(userData);
 
         if (role === 'provider') {
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');
