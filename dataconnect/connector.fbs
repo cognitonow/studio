@@ -1,56 +1,14 @@
-import "./schema.fbs";
 
-query listServices(
-  limit: Int = 100
-): listServicesResponse {
-  firebase.auth.protect();
-  const services = new Sql`
-    SELECT
-      *
-    FROM
-      Service
-    LIMIT
-      ${limit};
-  `();
-  return {
-    services
-  };
-}
+// Use FDL to specify the queries and mutations that the connector will expose.
+// Each query and mutation has a unique name and is associated with a function
+// from the schema.
+//
+// See: https://firebase.google.com/docs/data-connect/reference/fdl/connector
+connector default {
+  import schema "../schema.fbs";
 
-query listUsers(
-  limit: Int = 100
-): listUsersResponse {
-  firebase.auth.protect();
-  const users = new Sql`
-    SELECT
-      *
-    FROM
-      User
-    LIMIT
-      ${limit};
-  `();
-  return {
-    users
-  };
-}
-
-mutation insertUser(
-  id: UUID!,
-  name: String!,
-  email: String!,
-  role: String!
-): insertUserResponse {
-  firebase.auth.protect();
-  const result = new Sql`
-    INSERT INTO
-      "User" (id, name, email, role)
-    VALUES
-      (
-        ${id},
-        ${name},
-        ${email},
-        ${role}
-      ) RETURNING *;
-  `();
-  return { data: result[0] };
+  // Expose the listServices function as a query.
+  query listServices: schema.listServices;
+  query listUsers: schema.listUsers;
+  mutation insertUser: schema.insertUser;
 }

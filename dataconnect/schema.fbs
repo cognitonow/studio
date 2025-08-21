@@ -1,80 +1,107 @@
 
-// The schema for the Beauty Book app.
+// Use FDL to define the data model for the service.
+// See: https://firebase.google.com/docs/data-connect/reference/fdl/schema
 
+version: "1.0";
+
+// Define the User table
 table User {
-  id: UUID! @primaryKey
-  name: String!
-  email: String!
-  role: String!
-  provider: [ServiceProvider] @foreignKey(references: [userId])
+  id: String! @primaryKey;
+  name: String;
+  email: String!;
+  role: String;
+  provider: [ServiceProvider] @foreignKey(references: "userId");
 }
 
+// Define the ServiceProvider table
 table ServiceProvider {
-  id: UUID! @primaryKey
-  userId: UUID! @unique
-  name: String!
-  specialty: String!
-  avatarUrl: String!
-  dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
-  isFeatured: Boolean
-  isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  user: User @foreignKey(references: [userId])
-  services: [Service] @foreignKey(references: [id])
-  reviews: [Review] @foreignKey(references: [id])
+  id: String! @primaryKey;
+  userId: String! @primaryKey(references: "id");
+  name: String!;
+  specialty: String;
+  avatarUrl: String;
+  dataAiHint: String;
+  rating: Float;
+  reviewCount: Int;
+  isFeatured: Boolean;
+  isFavourite: Boolean;
+  bio: String;
+  location: String;
+  playlist: String;
+  user: User @foreignKey(references: "userId");
+  services: [Service] @relation(on: "ServiceToProvider");
+  reviews: [Review] @foreignKey(references: "id");
 }
 
+// Define the Service table
 table Service {
-  id: UUID! @primaryKey
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  provider: [ServiceProvider] @foreignKey(references: [id])
+  id: String! @primaryKey;
+  categoryId: String!;
+  name: String!;
+  description: String;
+  price: Float!;
+  duration: Int;
+  provider: [ServiceProvider] @relation(on: "ServiceToProvider");
 }
 
-table Booking {
-  id: UUID! @primaryKey
-  providerId: UUID!
-  providerName: String!
-  serviceIds: [String]!
-  date: Timestamp!
-  status: String!
-  clientName: String
-  isPaid: Boolean!
-  reviewId: String
+// Define the joining table for the many-to-many relationship
+// between Service and ServiceProvider
+table ServiceToProvider {
+  service: Service;
+  provider: ServiceProvider;
 }
 
-table Review {
-  id: UUID! @primaryKey
-  bookingId: UUID!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
-}
-
+// Define the ServiceCategory table
 table ServiceCategory {
-  id: UUID! @primaryKey
-  name: String!
-  services: [Service] @foreignKey(references: [id])
+  id: String! @primaryKey;
+  name: String!;
+  services: [Service] @foreignKey(references: "categoryId");
 }
 
-type listServicesResponse {
-  services: [Service]!
+// Define the Booking table
+table Booking {
+    id: String! @primaryKey;
+    providerId: String!;
+    providerName: String;
+    serviceIds: [String];
+    date: Timestamp;
+    status: String;
+    clientName: String;
+    isPaid: Boolean;
+    reviewId: String;
 }
 
-type listUsersResponse {
-  users: [User]!
+// Define the Review table
+table Review {
+    id: String! @primaryKey;
+    bookingId: String!;
+    author: String;
+    avatarUrl: String;
+    dataAiHint: String;
+    rating: Int;
+    comment: String;
+    title: String;
 }
 
-type insertUserResponse {
-  data: User
+// Define a query to list all services
+query listServices(): [Service] {
+  // Specify the data source as Firestore
+  // In a real app, you would have different data sources
+  // e.g., firestore, postgres, etc.
+  // We will mock this for now.
+  // fetch.http(url: "...");
+  return [];
+}
+
+query listUsers(): [User] {
+    return [];
+}
+
+mutation insertUser(id: String!, name: String, email: String!, role: String): User {
+    return {
+        id: id,
+        name: name,
+        email: email,
+        role: role
+    };
 }
