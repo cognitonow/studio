@@ -3,11 +3,11 @@ specVersion: "v1"
 serviceId: "beauty-book-14zko"
 location: "europe-west2"
 schema:
-  source: "./schema"
+  source: "./schema.fbs"
   datasource:
     postgresql:
       database: "postgres"
       cloudSql:
         instanceId: "studio-fdc"
-connectorDirs: ["./connector"]
+connectorDirs: ["./"]
 entrypoints: ["connector.fbs"]

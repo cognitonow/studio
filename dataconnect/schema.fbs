@@ -1,0 +1,80 @@
+
+// The schema for the Beauty Book app.
+
+table User {
+  id: UUID! @primaryKey
+  name: String!
+  email: String!
+  role: String!
+  provider: [ServiceProvider] @foreignKey(references: [userId])
+}
+
+table ServiceProvider {
+  id: UUID! @primaryKey
+  userId: UUID! @unique
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  user: User @foreignKey(references: [userId])
+  services: [Service] @foreignKey(references: [id])
+  reviews: [Review] @foreignKey(references: [id])
+}
+
+table Service {
+  id: UUID! @primaryKey
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  provider: [ServiceProvider] @foreignKey(references: [id])
+}
+
+table Booking {
+  id: UUID! @primaryKey
+  providerId: UUID!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
+
+table Review {
+  id: UUID! @primaryKey
+  bookingId: UUID!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}
+
+table ServiceCategory {
+  id: UUID! @primaryKey
+  name: String!
+  services: [Service] @foreignKey(references: [id])
+}
+
+type listServicesResponse {
+  services: [Service]!
+}
+
+type listUsersResponse {
+  users: [User]!
+}
+
+type insertUserResponse {
+  data: User
+}

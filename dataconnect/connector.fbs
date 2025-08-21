@@ -1,0 +1,56 @@
+import "./schema.fbs";
+
+query listServices(
+  limit: Int = 100
+): listServicesResponse {
+  firebase.auth.protect();
+  const services = new Sql`
+    SELECT
+      *
+    FROM
+      Service
+    LIMIT
+      ${limit};
+  `();
+  return {
+    services
+  };
+}
+
+query listUsers(
+  limit: Int = 100
+): listUsersResponse {
+  firebase.auth.protect();
+  const users = new Sql`
+    SELECT
+      *
+    FROM
+      User
+    LIMIT
+      ${limit};
+  `();
+  return {
+    users
+  };
+}
+
+mutation insertUser(
+  id: UUID!,
+  name: String!,
+  email: String!,
+  role: String!
+): insertUserResponse {
+  firebase.auth.protect();
+  const result = new Sql`
+    INSERT INTO
+      "User" (id, name, email, role)
+    VALUES
+      (
+        ${id},
+        ${name},
+        ${email},
+        ${role}
+      ) RETURNING *;
+  `();
+  return { data: result[0] };
+}
