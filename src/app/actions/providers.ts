@@ -33,12 +33,13 @@ export async function getProviders(): Promise<Provider[]> {
         const providerMap = new Map<string, Provider>();
 
         result.services.forEach(service => {
-            service.provider?.forEach(p => {
+            // The generated SDK may return a single object or an array. Handle both.
+            const providers = Array.isArray(service.provider) ? service.provider : (service.provider ? [service.provider] : []);
+            
+            providers.forEach(p => {
                 if (p && !providerMap.has(p.id)) {
-                    // Note: The 'User' type from Data Connect and our app's 'User' type might differ.
-                    // We need to ensure the mapping is correct. For now, we assume the structure aligns.
-                    // The 'user' field on ServiceProvider is an array in the DC schema, but single in app type. Taking the first.
-                    const user = p.user?.[0];
+                    // The 'user' field on ServiceProvider is an array in the DC schema, but single in app type.
+                    const user = Array.isArray(p.user) ? p.user?.[0] : p.user;
 
                     providerMap.set(p.id, {
                         id: p.id,
@@ -55,7 +56,6 @@ export async function getProviders(): Promise<Provider[]> {
                         location: p.location,
                         playlist: p.playlist,
                         // For now, we use mock functions for these nested properties.
-                        // In a real implementation, these would also be fetched via Data Connect queries.
                         portfolio: [], // This field is not in the DC schema yet
                         services: [], // This will be populated later if needed
                         reviews: getReviewsByProviderId(p.id), // Mock data

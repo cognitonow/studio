@@ -9,5 +9,5 @@ schema:
       database: "postgres"
       cloudSql:
         instanceId: "studio-fdc"
-      # schemaValidation: "COMPATIBLE"
 connectorDirs: ["./connector"]
+entrypoints: ["connector.fbs"]

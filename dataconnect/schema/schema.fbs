@@ -1,133 +1,163 @@
-
-// Use latest version of the FDL syntax
-// highlight-next-line
-version: "1.0"
-
-// Each table in your database needs to be represented as a type.
-// The @table directive maps the type to a database table.
+// Copyright 2024 Google LLC
 //
-// Read more about types:
-// https://firebase.google.com/docs/data-connect/reference/fdl/types
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// highlight-next-line
-type User @table(name: "Users") {
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Defines the data model for the application.
+
+// Every table needs a primary key.
+// Data Connect will create a primary key for you if you don't specify one.
+
+// Users can be either clients or providers.
+table User {
   id: String! @primaryKey
-  name: String!
-  email: String!
-  role: String!
-  // highlight-next-line
-  provider: [ServiceProvider] @relation(on: "userId", to: "id")
+  name: String
+  email: String
+  role: String // 'client' or 'provider'
+  // A user can be a service provider.
+  provider: ServiceProvider @foreignKey(references: "userId")
 }
 
-// highlight-next-line
-type ServiceProvider @table(name: "ServiceProviders") {
+// ServiceProviders are users who offer services.
+table ServiceProvider {
   id: String! @primaryKey
-  userId: String!
-  name: String!
-  specialty: String!
-  avatarUrl: String!
+  userId: String! // Foreign key to User table
+  name: String
+  specialty: String
+  avatarUrl: String
   dataAiHint: String
-  rating: Float!
-  reviewCount: Int!
+  rating: Float
+  reviewCount: Int
   isFeatured: Boolean
   isFavourite: Boolean
-  bio: String!
-  location: String!
-  playlist: String!
-  // highlight-next-line
-  user: [User] @relation(on: "id", to: "userId")
-  // highlight-next-line
-  services: [Service] @relation(through: "ServiceToProvider", from: "serviceProviderId", to: "serviceId")
-  // highlight-next-line
-  reviews: [Review] @relation(on: "id", to: "providerId")
+  bio: String
+  location: String
+  playlist: String
+  // A provider has one user profile.
+  user: User @foreignKey(references: "userId")
+  // A provider can have many services.
+  services: [Service] @relation(on: "ServiceProviderToService")
+  // A provider can have many reviews.
+  reviews: [Review] @relation(on: "ServiceProviderToReview")
 }
 
-// highlight-next-line
-type Service @table(name: "Services") {
+// Services are the offerings by providers.
+table Service {
   id: String! @primaryKey
-  categoryId: String!
-  name: String!
-  description: String!
-  price: Float!
-  duration: Int!
-  // highlight-next-line
-  provider: [ServiceProvider] @relation(through: "ServiceToProvider", from: "serviceId", to: "serviceProviderId")
+  categoryId: String
+  name: String
+  description: String
+  price: Float
+  duration: Int
+  // A service can be offered by many providers.
+  provider: [ServiceProvider] @relation(on: "ServiceProviderToService")
 }
 
-// highlight-next-line
-type ServiceToProvider @table(name: "ServiceToProvider") {
-  serviceId: String! @primaryKey
-  serviceProviderId: String! @primaryKey
+// Reviews are left by clients for providers.
+table Review {
+  id: String! @primaryKey
+  bookingId: String!
+  author: String
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int
+  comment: String
+  title: String
+  // A review belongs to one service provider.
+  serviceProvider: ServiceProvider @foreignKey(references: "id")
 }
 
-// highlight-next-line
-type Booking @table(name: "Bookings") {
+// Bookings are appointments made by clients.
+table Booking {
   id: String! @primaryKey
   providerId: String!
-  providerName: String!
-  serviceIds: [String]!
-  date: Timestamp!
-  status: String!
+  providerName: String
+  serviceIds: [String]
+  date: Timestamp
+  status: String
   clientName: String
-  isPaid: Boolean!
+  isPaid: Boolean
   reviewId: String
 }
 
-// highlight-next-line
-type Review @table(name: "Reviews") {
-  id: String! @primaryKey
-  bookingId: String!
-  providerId: String!
-  author: String!
-  avatarUrl: String
-  dataAiHint: String
-  rating: Int!
-  comment: String!
-  title: String
+// A join table for the many-to-many relationship between providers and services.
+table ServiceProviderToService {
+  providerId: String! @primaryKey
+  serviceId: String! @primaryKey
 }
 
-// highlight-next-line
-type ServiceCategory @table(name: "ServiceCategories") {
-  id: String! @primaryKey
-  name: String!
-  services: [Service] @relation(on: "id", to: "categoryId")
+// A join table for the one-to-many relationship between providers and reviews.
+table ServiceProviderToReview {
+  providerId: String! @primaryKey
+  reviewId: String! @primaryKey
 }
 
-// You can create queries that return a list of a certain type.
-// In this case, a list of all services is returned.
-//
-// Read more about queries:
-// https://firebase.google.com/docs/data-connect/reference/fdl/queries
-//
-// highlight-next-line
-query listServices(): [Service] {
-  // You can use standard SQL to query your database.
-  // The results of the query will be mapped to the return type.
-  //
-  // Read more about SQL in FDL:
-  // https://firebase.google.com/docs/data-connect/reference/fdl/sql
-  //
-  // highlight-next-line
-  sql: "SELECT * FROM Services"
+// Defines a query to list all services and their associated providers.
+query listServices() {
+  // This query will be accessible from the client-side SDK.
+  // It fetches all services and includes the provider details for each service.
+  services: Service[] {
+    id,
+    name,
+    description,
+    price,
+    duration,
+    provider: ServiceProvider[] {
+      id,
+      userId,
+      name,
+      specialty,
+      avatarUrl,
+      dataAiHint,
+      rating,
+      reviewCount,
+      isFeatured,
+      isFavourite,
+      bio,
+      location,
+      playlist,
+      user: User {
+          id,
+          name,
+          email,
+          role
+      }
+    }
+  }
 }
 
-// You can also create mutations that write data to your database.
-//
-// Read more about mutations:
-// https://firebase.google.com/docs/data-connect/reference/fdl/mutations
-//
-// highlight-next-line
+// Defines a query to list all users.
+query listUsers() {
+    users: User[] {
+        id,
+        name,
+        email,
+        role
+    }
+}
+
+// Defines a mutation to insert a new user.
 mutation insertUser(
-  id: String!
-  name: String!
-  email: String!
-  role: String!
+    id: String!,
+    name: String!,
+    email: String!,
+    role: String!
 ) {
-  // FDL supports INSERT, UPDATE, and DELETE statements.
-  //
-  // Read more about SQL in FDL:
-  // https://firebase.google.com/docs/data-connect/reference/fdl/sql
-  //
-  // highlight-next-line
-  sql: "INSERT INTO Users (id, name, email, role) VALUES (${id}, ${name}, ${email}, ${role})"
+    data: User @insert(table: "User", data: {
+        id: id,
+        name: name,
+        email: email,
+        role: role
+    }) {
+        id
+    }
 }

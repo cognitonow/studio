@@ -5,3 +5,5 @@ generate:
     package: "@firebasegen/default-connector"
     packageJsonDir: ../..
     react: true
+    serviceId: "beauty-book-14zko"
+    location: "europe-west2"
