@@ -1,14 +1,25 @@
 
-// Use FDL to specify the queries and mutations that the connector will expose.
-// Each query and mutation has a unique name and is associated with a function
-// from the schema.
-//
-// See: https://firebase.google.com/docs/data-connect/reference/fdl/connector
-connector default {
-  import schema "../schema.fbs";
+// The content of this file has been moved to schema.fbs to resolve build issues.
+// This file will be removed in a subsequent step if this fix is successful.
+// Keeping it temporarily to avoid breaking the file-based build system.
+// Imports the definitions from the schema.fbs file.
+import "schema.fbs";
 
-  // Expose the listServices function as a query.
-  query listServices: schema.listServices;
-  query listUsers: schema.listUsers;
-  mutation insertUser: schema.insertUser;
+// Defines the 'default' connector, which is a collection of queries and mutations.
+connector default {
+  // Exposes the listServices query through this connector.
+  query listServices(p: listServicesRequest): listServicesResponse {
+    // The 'postges' here refers to the default datasource name.
+    handler "postgres.listServices";
+  }
+
+  // Exposes the listUsers query
+  query listUsers(p: listUsersRequest): listUsersResponse {
+    handler "postgres.listUsers";
+  }
+
+  // Exposes the insertUser mutation
+  mutation insertUser(p: insertUserRequest): insertUserResponse {
+    handler "postgres.insertUser";
+  }
 }

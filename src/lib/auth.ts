@@ -5,9 +5,8 @@ import { app } from './firebase';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import type { User, UserRole, Provider } from './types';
 import { providers, getProviderByUserId } from './data';
-// The import for `insertUser` and related Data Connect logic has been removed temporarily
-// to resolve the immediate build issue. We will re-introduce database interactions
-// in a subsequent step.
+import { createUserInDatabase } from '@/app/actions/user';
+
 
 interface AuthCredentials {
     name?: string;
@@ -38,8 +37,7 @@ export async function signUp({ name, email, password, role = 'client' }: AuthCre
             role: role,
         };
         
-        // TODO: Re-introduce the call to `createUserInDatabase` once the Data Connect
-        // setup is stable and the function exists.
+        await createUserInDatabase(userData);
 
         if (role === 'provider') {
             console.log('[auth.ts] User is a provider. Creating mock provider profile.');

@@ -1,107 +1,106 @@
 
-// Use FDL to define the data model for the service.
-// See: https://firebase.google.com/docs/data-connect/reference/fdl/schema
+// Custom scalar type for UUIDs.
+scalar UUID
 
-version: "1.0";
-
-// Define the User table
+// Represents a User in the system.
 table User {
-  id: String! @primaryKey;
-  name: String;
-  email: String!;
-  role: String;
-  provider: [ServiceProvider] @foreignKey(references: "userId");
+  id: UUID! (primary_key);
+  name: String!;
+  email: String! (unique);
+  role: String!;
+  // A user can be a service provider.
+  provider: ServiceProvider (references: [userId]);
 }
 
-// Define the ServiceProvider table
+// Represents a Service Provider.
 table ServiceProvider {
-  id: String! @primaryKey;
-  userId: String! @primaryKey(references: "id");
+  id: UUID! (primary_key);
+  userId: UUID! (unique);
   name: String!;
-  specialty: String;
-  avatarUrl: String;
+  specialty: String!;
+  avatarUrl: String!;
   dataAiHint: String;
-  rating: Float;
-  reviewCount: Int;
+  rating: Float!;
+  reviewCount: Int!;
   isFeatured: Boolean;
   isFavourite: Boolean;
-  bio: String;
-  location: String;
-  playlist: String;
-  user: User @foreignKey(references: "userId");
-  services: [Service] @relation(on: "ServiceToProvider");
-  reviews: [Review] @foreignKey(references: "id");
+  bio: String!;
+  location: String!;
+  playlist: String!;
+  // The user associated with this provider profile.
+  user: User! (references: [userId]);
+  // Services offered by this provider.
+  services: [Service] (references: [id]);
+  // Reviews received by this provider.
+  reviews: [Review] (references: [providerId]);
 }
 
-// Define the Service table
+// Represents a Service offered by a provider.
 table Service {
-  id: String! @primaryKey;
-  categoryId: String!;
+  id: UUID! (primary_key);
+  categoryId: UUID!;
   name: String!;
-  description: String;
+  description: String!;
   price: Float!;
-  duration: Int;
-  provider: [ServiceProvider] @relation(on: "ServiceToProvider");
+  duration: Int!;
+  // The category this service belongs to.
+  category: ServiceCategory! (references: [categoryId]);
+  // The providers who offer this service.
+  provider: [ServiceProvider] (references: [id]);
 }
 
-// Define the joining table for the many-to-many relationship
-// between Service and ServiceProvider
-table ServiceToProvider {
-  service: Service;
-  provider: ServiceProvider;
-}
-
-// Define the ServiceCategory table
+// Represents a category for services.
 table ServiceCategory {
-  id: String! @primaryKey;
-  name: String!;
-  services: [Service] @foreignKey(references: "categoryId");
+  id: UUID! (primary_key);
+  name: String! (unique);
+  // The services within this category.
+  services: [Service] (references: [categoryId]);
 }
 
-// Define the Booking table
-table Booking {
-    id: String! @primaryKey;
-    providerId: String!;
-    providerName: String;
-    serviceIds: [String];
-    date: Timestamp;
-    status: String;
-    clientName: String;
-    isPaid: Boolean;
-    reviewId: String;
-}
-
-// Define the Review table
+// Represents a review left by a user for a provider.
 table Review {
-    id: String! @primaryKey;
-    bookingId: String!;
-    author: String;
-    avatarUrl: String;
-    dataAiHint: String;
-    rating: Int;
-    comment: String;
-    title: String;
+  id: UUID! (primary_key);
+  bookingId: UUID!;
+  author: String!;
+  avatarUrl: String;
+  dataAiHint: String;
+  rating: Int!;
+  comment: String!;
+  title: String;
+  // The booking this review is for.
+  booking: Booking! (references: [bookingId]);
+  // The provider being reviewed.
+  provider: ServiceProvider! (references: [id]);
 }
 
-// Define a query to list all services
-query listServices(): [Service] {
-  // Specify the data source as Firestore
-  // In a real app, you would have different data sources
-  // e.g., firestore, postgres, etc.
-  // We will mock this for now.
-  // fetch.http(url: "...");
-  return [];
+// Represents a booking of a service.
+table Booking {
+  id: UUID! (primary_key);
+  providerId: UUID!;
+  providerName: String!;
+  serviceIds: String[];
+  date: Timestamp!;
+  status: String!;
+  clientName: String;
+  isPaid: Boolean!;
+  reviewId: String;
+  // The provider for this booking.
+  provider: ServiceProvider! (references: [providerId]);
 }
 
-query listUsers(): [User] {
-    return [];
+// --- QUERIES and MUTATIONS ---
+
+// Query to fetch all services, along with their providers.
+query listServices(p: listServicesRequest!): listServicesResponse {
+  "sql": "SELECT * FROM Service"
 }
 
-mutation insertUser(id: String!, name: String, email: String!, role: String): User {
-    return {
-        id: id,
-        name: name,
-        email: email,
-        role: role
-    };
+// Query to fetch all users
+query listUsers(p: listUsersRequest!): listUsersResponse {
+  "sql": "SELECT * FROM Users"
+}
+
+// Mutation to insert a new user
+mutation insertUser(p: insertUserRequest!): insertUserResponse {
+  "sql": "INSERT INTO Users (id, name, email, role) VALUES (p.id, p.name, p.email, p.role) RETURNING *"
 }
