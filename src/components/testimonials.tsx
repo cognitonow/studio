@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import {
   Carousel,
   CarouselContent,
@@ -8,12 +7,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { reviews } from "@/lib/data"
+import type { Review } from "@/lib/types";
 import { Card, CardContent } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Quote } from 'lucide-react'
 
-export function Testimonials() {
+interface TestimonialsProps {
+  reviews: Review[];
+}
+
+export function Testimonials({ reviews }: TestimonialsProps) {
   return (
     <section className="py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

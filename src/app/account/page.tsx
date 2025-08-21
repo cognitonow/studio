@@ -1,3 +1,4 @@
+'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,8 +8,23 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { User, CreditCard, Shield } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUserStore } from "@/hooks/use-user-store"
+import { useEffect, useState } from "react";
 
+// This is now a client component to handle the form state and interactions.
+// The parent page can still be a server component that fetches initial data if needed.
 export default function AccountPage() {
+  const { user } = useUserStore();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  
+  useEffect(() => {
+      if (user) {
+          setName(user.name);
+          setEmail(user.email);
+      }
+  }, [user]);
+
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-4xl font-bold font-headline mb-8">My Account</h1>
@@ -38,17 +54,17 @@ export default function AccountPage() {
                 <div className="flex items-center gap-4">
                     <Avatar className="h-20 w-20">
                         <AvatarImage src="https://placehold.co/100x100.png" alt="User avatar" data-ai-hint="person face" />
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <Button variant="outline">Change Photo</Button>
                 </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue="Jane Doe" />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="jane.doe@example.com" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>

@@ -1,12 +1,15 @@
-'use client';
+'use server';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Testimonials } from '@/components/testimonials';
+import { reviews } from '@/lib/data';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  // Fetch testimonials data on the server
+  const testimonialData = reviews;
 
   return (
     <>
@@ -41,7 +44,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <Testimonials />
+      <Testimonials reviews={testimonialData} />
     </>
   );
 }
