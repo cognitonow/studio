@@ -1,0 +1,12 @@
+
+// Use latest version of the FDL syntax
+// highlight-next-line
+version: "1.0"
+
+// Each connector needs a unique ID.
+// highlight-next-line
+connector default {
+  // Each connector can include multiple schema files.
+  // highlight-next-line
+  schema: "schema.fbs"
+}

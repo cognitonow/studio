@@ -1,0 +1,133 @@
+
+// Use latest version of the FDL syntax
+// highlight-next-line
+version: "1.0"
+
+// Each table in your database needs to be represented as a type.
+// The @table directive maps the type to a database table.
+//
+// Read more about types:
+// https://firebase.google.com/docs/data-connect/reference/fdl/types
+//
+// highlight-next-line
+type User @table(name: "Users") {
+  id: String! @primaryKey
+  name: String!
+  email: String!
+  role: String!
+  // highlight-next-line
+  provider: [ServiceProvider] @relation(on: "userId", to: "id")
+}
+
+// highlight-next-line
+type ServiceProvider @table(name: "ServiceProviders") {
+  id: String! @primaryKey
+  userId: String!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  // highlight-next-line
+  user: [User] @relation(on: "id", to: "userId")
+  // highlight-next-line
+  services: [Service] @relation(through: "ServiceToProvider", from: "serviceProviderId", to: "serviceId")
+  // highlight-next-line
+  reviews: [Review] @relation(on: "id", to: "providerId")
+}
+
+// highlight-next-line
+type Service @table(name: "Services") {
+  id: String! @primaryKey
+  categoryId: String!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  // highlight-next-line
+  provider: [ServiceProvider] @relation(through: "ServiceToProvider", from: "serviceId", to: "serviceProviderId")
+}
+
+// highlight-next-line
+type ServiceToProvider @table(name: "ServiceToProvider") {
+  serviceId: String! @primaryKey
+  serviceProviderId: String! @primaryKey
+}
+
+// highlight-next-line
+type Booking @table(name: "Bookings") {
+  id: String! @primaryKey
+  providerId: String!
+  providerName: String!
+  serviceIds: [String]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+}
+
+// highlight-next-line
+type Review @table(name: "Reviews") {
+  id: String! @primaryKey
+  bookingId: String!
+  providerId: String!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+}
+
+// highlight-next-line
+type ServiceCategory @table(name: "ServiceCategories") {
+  id: String! @primaryKey
+  name: String!
+  services: [Service] @relation(on: "id", to: "categoryId")
+}
+
+// You can create queries that return a list of a certain type.
+// In this case, a list of all services is returned.
+//
+// Read more about queries:
+// https://firebase.google.com/docs/data-connect/reference/fdl/queries
+//
+// highlight-next-line
+query listServices(): [Service] {
+  // You can use standard SQL to query your database.
+  // The results of the query will be mapped to the return type.
+  //
+  // Read more about SQL in FDL:
+  // https://firebase.google.com/docs/data-connect/reference/fdl/sql
+  //
+  // highlight-next-line
+  sql: "SELECT * FROM Services"
+}
+
+// You can also create mutations that write data to your database.
+//
+// Read more about mutations:
+// https://firebase.google.com/docs/data-connect/reference/fdl/mutations
+//
+// highlight-next-line
+mutation insertUser(
+  id: String!
+  name: String!
+  email: String!
+  role: String!
+) {
+  // FDL supports INSERT, UPDATE, and DELETE statements.
+  //
+  // Read more about SQL in FDL:
+  // https://firebase.google.com/docs/data-connect/reference/fdl/sql
+  //
+  // highlight-next-line
+  sql: "INSERT INTO Users (id, name, email, role) VALUES (${id}, ${name}, ${email}, ${role})"
+}
