@@ -56,7 +56,8 @@ export async function getProviders(): Promise<Provider[]> {
                         location: p.location,
                         playlist: p.playlist,
                         // For now, we use mock functions for these nested properties.
-                        portfolio: [], // This field is not in the DC schema yet
+                        // In a real implementation, these would also be fetched via Data Connect.
+                        portfolio: [], 
                         services: [], // This will be populated later if needed
                         reviews: getReviewsByProviderId(p.id), // Mock data
                         badges: getBadgesByProviderId(p.id), // Mock data

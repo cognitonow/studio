@@ -1,106 +1,176 @@
 
-// Custom scalar type for UUIDs.
-scalar UUID
+// Set the version of the FDL language
+version: "1.0"
 
-// Represents a User in the system.
+// --- Top Level Queries & Mutations ---
+// These are the entry points for our application to interact with the database.
+
+query listServices(): listServicesResponse {
+  // This query fetches a list of all services, along with their associated providers.
+  // It's the primary query used to populate the Discover page.
+  POST "/listServices"
+  // The 'dataconnect' block tells the system how to resolve this query.
+  dataconnect {
+    // We are querying the 'Service' table from our database.
+    Service {
+      // For each service, we are selecting these specific fields.
+      id,
+      name,
+      description,
+      price,
+      duration,
+      categoryId,
+      // We also want to fetch the related 'ServiceProvider' for each service.
+      provider: {
+        id,
+        userId,
+        name,
+        specialty,
+        avatarUrl,
+        dataAiHint,
+        rating,
+        reviewCount,
+        isFeatured,
+        isFavourite,
+        bio,
+        location,
+        playlist
+      }
+    }
+  }
+}
+
+// Response type for the listServices query.
+type listServicesResponse {
+  services: [Service]
+}
+
+// A simple query to list all users. Useful for testing and admin purposes.
+query listUsers(): listUsersResponse {
+  POST "/listUsers"
+  dataconnect {
+    User {
+      id,
+      name,
+      email,
+      role
+    }
+  }
+}
+
+type listUsersResponse {
+  users: [User]
+}
+
+// A mutation to insert a new user into the database.
+// This is called when a new user signs up.
+mutation insertUser(id: UUID, name: String, email: String, role: String): insertUserResponse {
+  POST "/insertUser"
+  dataconnect {
+    User(
+      id: id,
+      name: name,
+      email: email,
+      role: role
+    ) {
+      // After inserting, we return the data that was just created.
+      data: {
+        id,
+        name,
+        email,
+        role
+      }
+    }
+  }
+}
+
+type insertUserResponse {
+  data: User
+}
+
+
+// --- Table Definitions ---
+// These types correspond to the tables in our PostgreSQL database.
+
+// The User table stores basic information about anyone who signs up.
 table User {
-  id: UUID! (primary_key);
-  name: String!;
-  email: String! (unique);
-  role: String!;
-  // A user can be a service provider.
-  provider: ServiceProvider (references: [userId]);
+  id: UUID! primary key
+  name: String!
+  email: String!
+  role: String!
+  // A user can be a service provider. This defines the one-to-many relationship.
+  provider: [ServiceProvider] on provider.userId = id
 }
 
-// Represents a Service Provider.
+// The ServiceProvider table stores detailed information about a beauty professional or business.
 table ServiceProvider {
-  id: UUID! (primary_key);
-  userId: UUID! (unique);
-  name: String!;
-  specialty: String!;
-  avatarUrl: String!;
-  dataAiHint: String;
-  rating: Float!;
-  reviewCount: Int!;
-  isFeatured: Boolean;
-  isFavourite: Boolean;
-  bio: String!;
-  location: String!;
-  playlist: String!;
-  // The user associated with this provider profile.
-  user: User! (references: [userId]);
-  // Services offered by this provider.
-  services: [Service] (references: [id]);
-  // Reviews received by this provider.
-  reviews: [Review] (references: [providerId]);
+  id: UUID! primary key
+  userId: UUID!
+  name: String!
+  specialty: String!
+  avatarUrl: String!
+  dataAiHint: String
+  rating: Float!
+  reviewCount: Int!
+  isFeatured: Boolean
+  isFavourite: Boolean
+  bio: String!
+  location: String!
+  playlist: String!
+  // Establishes the relationship back to the User table.
+  user: User! on userId = user.id
+  // A provider can offer many services.
+  services: [Service] on services.provider.id = id
+  // A provider can have many reviews.
+  reviews: [Review] on reviews.booking.providerId = id
 }
 
-// Represents a Service offered by a provider.
+// The Service table stores information about a single service offered by a provider.
 table Service {
-  id: UUID! (primary_key);
-  categoryId: UUID!;
-  name: String!;
-  description: String!;
-  price: Float!;
-  duration: Int!;
-  // The category this service belongs to.
-  category: ServiceCategory! (references: [categoryId]);
-  // The providers who offer this service.
-  provider: [ServiceProvider] (references: [id]);
+  id: UUID! primary key
+  categoryId: UUID!
+  name: String!
+  description: String!
+  price: Float!
+  duration: Int!
+  // Establishes the relationship back to the provider.
+  // Note: The schema supports multiple providers for a service, though our app logic uses one.
+  provider: [ServiceProvider!]! on id = provider.services.id
 }
 
-// Represents a category for services.
-table ServiceCategory {
-  id: UUID! (primary_key);
-  name: String! (unique);
-  // The services within this category.
-  services: [Service] (references: [categoryId]);
-}
-
-// Represents a review left by a user for a provider.
-table Review {
-  id: UUID! (primary_key);
-  bookingId: UUID!;
-  author: String!;
-  avatarUrl: String;
-  dataAiHint: String;
-  rating: Int!;
-  comment: String!;
-  title: String;
-  // The booking this review is for.
-  booking: Booking! (references: [bookingId]);
-  // The provider being reviewed.
-  provider: ServiceProvider! (references: [id]);
-}
-
-// Represents a booking of a service.
+// The Booking table stores information about a specific appointment.
 table Booking {
-  id: UUID! (primary_key);
-  providerId: UUID!;
-  providerName: String!;
-  serviceIds: String[];
-  date: Timestamp!;
-  status: String!;
-  clientName: String;
-  isPaid: Boolean!;
-  reviewId: String;
-  // The provider for this booking.
-  provider: ServiceProvider! (references: [providerId]);
+  id: UUID! primary key
+  providerId: UUID!
+  providerName: String!
+  serviceIds: [String!]!
+  date: Timestamp!
+  status: String!
+  clientName: String
+  isPaid: Boolean!
+  reviewId: String
+  // Establishes the relationship to the provider for this booking.
+  provider: ServiceProvider on providerId = provider.id
 }
 
-// --- QUERIES and MUTATIONS ---
-
-// Query to fetch all services, along with their providers.
-query listServices(p: listServicesRequest!): listServicesResponse {
-  "sql": "SELECT * FROM Service"
+// The Review table stores a client's feedback for a completed booking.
+table Review {
+  id: UUID! primary key
+  bookingId: UUID!
+  author: String!
+  avatarUrl: String
+  dataAiHint: String
+  rating: Int!
+  comment: String!
+  title: String
+  // Establishes the relationship back to the booking this review is for.
+  booking: Booking! on bookingId = booking.id
 }
 
-// Query to fetch all users
-query listUsers(p: listUsersRequest!): listUsersResponse {
-  "sql": "SELECT * FROM Users"
-}
-
-// Mutation to insert a new user
-mutation insertUser(p: insertUserRequest!): insertUserResponse {
-  "sql": "INSERT INTO Users (id, name, email, role) VALUES (p.id, p.name, p.email, p.role) RETURNING *"
+// The ServiceCategory table is used to group services (e.g., Hair, Nails).
+table ServiceCategory {
+  id: UUID! primary key
+  name: String!
+  // A category can contain many services.
+  services: [Service] on id = services.categoryId
 }
