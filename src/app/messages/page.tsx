@@ -1,253 +1,41 @@
+'use server';
 
-'use client';
+import { Suspense } from "react";
+import { getConversations, getMessagesForConversation, getProviderConversations, getProviderMessagesForConversation } from "@/lib/data";
+import { MessagesPageClient } from "@/components/messages-page-client";
+import type { Conversation } from "@/lib/types";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Send, User } from "lucide-react";
-import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data";
-import { useState, useEffect, useRef, Suspense } from "react";
-import type { Conversation, Message } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
-import { UserMessage, ProviderMessage, AiMessage } from "@/components/message-bubbles";
-import { useUserStore } from "@/hooks/use-user-store";
-
-// Simple loading component
 function Loading() {
   return <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex items-center justify-center"><p>Loading chats...</p></div>;
 }
 
-function MessagesContent() {
-  const { role: userRole } = useUserStore();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeConversation, setActiveConversation] = useState<Conversation | undefined>();
-  const [isMounted, setIsMounted] = useState(false);
-  const [messageText, setMessageText] = useState("");
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const fetchConversations = () => {
-     const isProviderView = userRole === 'provider';
-     return isProviderView ? getProviderConversations() : getConversations();
-  }
+export default async function MessagesPage() {
+  // Pre-fetch all data on the server
+  const clientConversations = getConversations();
+  const providerConversations = getProviderConversations();
   
-  const fetchMessages = (convoId: number) => {
-    const isProviderView = userRole === 'provider';
-    return isProviderView ? getProviderMessagesForConversation(convoId) : getMessagesForConversation(convoId);
-  }
+  // Pre-fetch messages for the first conversation in each list as an initial view
+  const initialClientMessages = clientConversations.length > 0 
+    ? getMessagesForConversation(clientConversations[0].id)
+    : [];
 
-  useEffect(() => {
-    if (!isMounted || userRole === 'guest') return;
-
-    const convos = fetchConversations();
-    setConversations(convos);
-
-    let initialConvo: Conversation | undefined = undefined;
-    const providerIdToChat = searchParams.get('providerId');
-    const clientIdToChat = searchParams.get('clientId');
-
-    if (userRole === 'client' && providerIdToChat) {
-        const existingConvo = convos.find(c => c.providerId === providerIdToChat);
-        if (existingConvo) {
-            initialConvo = existingConvo;
-        } else {
-            const newConvo = startConversationWithProvider(providerIdToChat);
-            if (newConvo) {
-                setConversations(prev => [newConvo, ...prev]);
-                initialConvo = newConvo;
-            }
-        }
-        router.replace('/messages', {scroll: false}); // Clean up URL params after handling
-    } else if (userRole === 'provider' && clientIdToChat) {
-        initialConvo = convos.find(c => c.clientId === clientIdToChat);
-        router.replace('/messages', {scroll: false}); // Clean up URL params after handling
-    }
+  const initialProviderMessages = providerConversations.length > 0
+    ? getProviderMessagesForConversation(providerConversations[0].id)
+    : [];
     
-    if (!initialConvo && convos.length > 0) {
-      initialConvo = convos[0];
-    }
-    
-    setActiveConversation(initialConvo);
+  const initialActiveClientConvo = clientConversations.length > 0 ? clientConversations[0] : undefined;
+  const initialActiveProviderConvo = providerConversations.length > 0 ? providerConversations[0] : undefined;
 
-  }, [userRole, isMounted]); // Removed searchParams and router from deps to avoid re-triggering
-
-  const handleConversationSelect = (convo: Conversation) => {
-    setActiveConversation(convo);
-    if (userRole !== 'guest' && convo.unread > 0) {
-      markAllMessagesAsRead(convo.id, userRole);
-      setConversations(fetchConversations());
-    }
-  }
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!messageText.trim() || !activeConversation || userRole === 'guest') return;
-
-    const sender = userRole === 'client' ? 'user' : 'provider';
-    addMessage(activeConversation.id, sender, messageText, userRole);
-
-
-    setMessageText("");
-    // Re-fetch immediately to show the new message
-    setConversations(fetchConversations()); 
-  }
-
-  const activeMessages = activeConversation && userRole !== 'guest' ? fetchMessages(activeConversation.id) : [];
-  
-  useEffect(() => {
-    // This effect ensures messages scroll to the bottom when a new one arrives.
-    // It should ONLY handle scrolling.
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }, [activeMessages]); // Rerun only when messages data changes
-
-
-  if (!isMounted) {
-    return <Loading />;
-  }
-
-  if (userRole === 'guest') {
-     return (
-        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
-             <p className="text-muted-foreground">You must be logged in to view messages.</p>
-             <Button asChild><Link href="/auth">Log In / Sign Up</Link></Button>
-        </div>
-    )
-  }
-
-  if (conversations.length === 0) {
-    return (
-        <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)] flex flex-col items-center justify-center gap-4">
-             <p className="text-muted-foreground">No active conversations.</p>
-        </div>
-    )
-  }
-
-  if (!activeConversation) {
-    return <Loading />;
-  }
-
-  return (
-    <div className="container mx-auto py-12 px-4 h-[calc(100vh-10rem)]">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 h-full">
-
-        {/* Conversations List */}
-        <Card className="md:col-span-1 lg:col-span-1 h-full flex flex-col">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-                <CardTitle className="text-2xl font-headline">Chats</CardTitle>
-            </div>
-            <div className="relative pt-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input placeholder="Search messages..." className="pl-10" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-0 flex-grow">
-            <ScrollArea className="h-full">
-              <div className="space-y-1">
-                {conversations.map(convo => (
-                    <button key={convo.id} onClick={() => handleConversationSelect(convo)} className={cn("flex items-center gap-4 p-4 w-full text-left transition-colors", activeConversation && convo.id === activeConversation.id ? 'bg-muted' : 'hover:bg-muted/50')}>
-                        <Avatar className="w-12 h-12">
-                            <AvatarImage src={convo.avatar} alt={convo.name} data-ai-hint={convo.dataAiHint} />
-                            <AvatarFallback>{convo.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-grow overflow-hidden">
-                            <p className={cn("truncate font-semibold", convo.unread > 0 && 'font-bold text-primary')}>{convo.name}</p>
-                            <p className="text-sm text-muted-foreground truncate">{convo.lastMessage}</p>
-                        </div>
-                        <div className="flex flex-col items-end shrink-0 gap-1">
-                          <p className="text-xs text-muted-foreground">{convo.time}</p>
-                          {convo.unread > 0 && (
-                            <span className="w-5 h-5 text-xs flex items-center justify-center rounded-full bg-primary text-primary-foreground">{convo.unread}</span>
-                          )}
-                        </div>
-                    </button>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* Active Chat Window */}
-        <Card className="md:col-span-2 lg:col-span-3 h-full flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between border-b">
-                <div className="flex items-center gap-4">
-                     <Avatar className="w-10 h-10">
-                        <AvatarImage src={activeConversation.avatar} alt={activeConversation.name} data-ai-hint={activeConversation.dataAiHint} />
-                        <AvatarFallback>{activeConversation.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-bold text-lg">{activeConversation.name}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {userRole === 'client' && (
-                        <Button variant="outline" size="sm" asChild>
-                            <Link href={`/provider/${activeConversation.providerId}`}>
-                                <User className="mr-2 h-4 w-4" />
-                                View Profile
-                            </Link>
-                        </Button>
-                    )}
-                </div>
-            </CardHeader>
-            <CardContent className="flex-grow p-6 overflow-hidden">
-                 <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
-                    <div className="space-y-6">
-                        {activeMessages.map((message) => {
-                            if (message.isAi) {
-                                return <AiMessage key={message.id} message={message} activeConversation={activeConversation} view={userRole} />;
-                            }
-                            // In provider view, 'user' is the client. In client view, 'user' is the client.
-                            if (message.sender === 'user') {
-                                return userRole === 'provider' 
-                                    ? <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} /> 
-                                    : <UserMessage key={message.id} message={message} view={userRole} />;
-                            }
-                            // 'provider' sender
-                             if (message.sender === 'provider') {
-                                return userRole === 'client' 
-                                    ? <ProviderMessage key={message.id} message={message} activeConversation={activeConversation} />
-                                    : <UserMessage key={message.id} message={message} view={userRole} />;
-                            }
-                            return null;
-                        })}
-                    </div>
-                </ScrollArea>
-            </CardContent>
-            <div className="p-4 border-t bg-background">
-                <form className="flex w-full items-center space-x-4" onSubmit={handleSendMessage}>
-                    <Input placeholder="Type your message..." className="flex-grow" value={messageText} onChange={(e) => setMessageText(e.target.value)} />
-                    <Button type="submit" size="icon">
-                        <Send className="h-5 w-5" />
-                        <span className="sr-only">Send message</span>
-                    </Button>
-                </form>
-            </div>
-        </Card>
-
-      </div>
-    </div>
-  );
-}
-
-export default function MessagesPage() {
   return (
     <Suspense fallback={<Loading />}>
-      <MessagesContent />
+      <MessagesPageClient
+        initialClientConversations={clientConversations}
+        initialProviderConversations={providerConversations}
+        initialClientMessages={initialClientMessages}
+        initialProviderMessages={initialProviderMessages}
+        initialActiveClientConvo={initialActiveClientConvo}
+        initialActiveProviderConvo={initialActiveProviderConvo}
+      />
     </Suspense>
   );
 }
