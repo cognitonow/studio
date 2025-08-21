@@ -2,7 +2,6 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useUserStore } from '@/hooks/use-user-store';
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,9 +17,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getProviderBookings, updateBookingStatus, getServicesByIds, providers as allProviders, getActiveBookings, getProviderByUserId, saveProviderProfile } from '@/lib/data';
-import type { Booking, Provider, Service } from '@/lib/types';
-import { format, startOfDay, formatDistanceToNowStrict } from 'date-fns';
+import { getServicesByIds, updateBookingStatus, saveProviderProfile } from '@/lib/data';
+import type { Booking, Provider, Service, ProviderDashboardData } from '@/lib/types';
+import { format, startOfDay } from 'date-fns';
 import Link from 'next/link';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,16 +30,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { BadgeProgress } from '@/components/badge-progress';
 import { ServiceManagementCard } from '@/components/service-management-card';
 import { StatusBadge } from '@/components/status-badge';
-import { Skeleton } from '../ui/skeleton';
 import { allBadges } from '@/lib/badges';
 
-export default function ProviderDashboard() {
-  const { user } = useUserStore();
+
+interface ProviderDashboardProps {
+    data: ProviderDashboardData | null;
+}
+
+export default function ProviderDashboard({ data }: ProviderDashboardProps) {
   const { toast } = useToast();
-  const [provider, setProvider] = useState<Provider | undefined>(undefined);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [provider, setProvider] = useState<Provider | undefined>(data?.provider);
+  const [bookings, setBookings] = useState<Booking[]>(data?.bookings || []);
   const [featuredImages, setFeaturedImages] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(true);
 
   // State for the editable profile fields
   const [shopName, setShopName] = useState('');
@@ -50,38 +51,25 @@ export default function ProviderDashboard() {
 
 
   useEffect(() => {
-    if (user) {
-      const currentProvider = getProviderByUserId(user.id);
-      if (currentProvider) {
-        setProvider(currentProvider);
-        setFeaturedImages(new Set(currentProvider.portfolio.slice(0, 3).map(p => p.id)));
-        setBookings(getProviderBookings(currentProvider.id));
-        // Initialize form state
-        setShopName(currentProvider.name);
-        setSpecialty(currentProvider.specialty);
-        setLocation(currentProvider.location);
-        setBio(currentProvider.bio);
-      }
-      setIsLoading(false);
+    if (data?.provider) {
+      setProvider(data.provider);
+      setBookings(data.bookings);
+      setFeaturedImages(new Set(data.provider.portfolio.slice(0, 3).map(p => p.id)));
+      setShopName(data.provider.name);
+      setSpecialty(data.provider.specialty);
+      setLocation(data.provider.location);
+      setBio(data.provider.bio);
     }
-  }, [user]);
+  }, [data]);
   
-  useEffect(() => {
-    if (!provider) return;
-    
-    const fetchBookings = () => {
-      setBookings(getProviderBookings(provider.id));
-    };
-    
-    fetchBookings();
-    
-    // Re-fetch data on window focus to keep it fresh
-    window.addEventListener('focus', fetchBookings);
-
-    return () => {
-      window.removeEventListener('focus', fetchBookings);
-    };
-  }, [provider]);
+  if (!provider) {
+    return (
+        <div className="container mx-auto py-12 px-4 text-center">
+            <h2 className="text-2xl font-bold">Provider Profile Not Found</h2>
+            <p className="text-muted-foreground mt-2">We couldn't find a provider profile associated with your account.</p>
+        </div>
+    );
+  }
 
   const handleProfileSave = () => {
     if (!provider) return;
@@ -96,21 +84,11 @@ export default function ProviderDashboard() {
       description: "Your public profile has been updated.",
     });
   };
-  
-  if (!provider) {
-    return (
-        <div className="container mx-auto py-12 px-4 text-center">
-            <h2 className="text-2xl font-bold">Provider Profile Not Found</h2>
-            <p className="text-muted-foreground mt-2">We couldn't find a provider profile associated with your account.</p>
-        </div>
-    );
-  }
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status, 'provider');
-    if (provider) {
-      setBookings(getProviderBookings(provider.id));
-    }
+    // Re-setting from the server-fetched data for simplicity, in real app you might refetch
+    setBookings(data?.bookings || []);
   };
   
   const handleFeaturedImageSelect = (imageId: string) => {
@@ -199,9 +177,7 @@ export default function ProviderDashboard() {
 
         <TabsContent value="shop-management">
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Left Column */}
             <div className="space-y-8">
-                {/* Shop Profile Card */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><User className="w-5 h-5"/>Shop Profile</CardTitle>
@@ -242,14 +218,9 @@ export default function ProviderDashboard() {
                         </Button>
                     </CardContent>
                 </Card>
-
-                {/* Badge Suggester Card */}
                 <BadgeProgress />
-
             </div>
-            {/* Right Column */}
             <div className="space-y-8">
-                {/* Availability Settings */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" />Availability Settings</CardTitle>
@@ -270,8 +241,6 @@ export default function ProviderDashboard() {
                         <Button>Save Availability</Button>
                     </CardContent>
                 </Card>
-
-                {/* Portfolio Management */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><GalleryHorizontal className="w-5 h-5" />Portfolio & Featured Images</CardTitle>
@@ -309,8 +278,6 @@ export default function ProviderDashboard() {
                         </div>
                     </CardContent>
                 </Card>
-                
-                 {/* Service Management */}
                 <ServiceManagementCard providerId={provider.id} />
             </div>
           </div>
@@ -413,8 +380,8 @@ export default function ProviderDashboard() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                <div className="text-2xl font-bold">${data?.stats.totalRevenue.toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">+{data?.stats.revenueChange}% from last month</p>
               </CardContent>
             </Card>
             <Card>
@@ -423,8 +390,8 @@ export default function ProviderDashboard() {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+235</div>
-                <p className="text-xs text-muted-foreground">+10.5% from last month</p>
+                <div className="text-2xl font-bold">+{data?.stats.totalBookings}</div>
+                <p className="text-xs text-muted-foreground">+{data?.stats.bookingsChange}% from last month</p>
               </CardContent>
             </Card>
             <Card>
@@ -433,8 +400,8 @@ export default function ProviderDashboard() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+72</div>
-                <p className="text-xs text-muted-foreground">+5 since last week</p>
+                <div className="text-2xl font-bold">+{data?.stats.newClients}</div>
+                <p className="text-xs text-muted-foreground">+{data?.stats.clientsChange} since last week</p>
               </CardContent>
             </Card>
             <Card>
@@ -443,8 +410,8 @@ export default function ProviderDashboard() {
                 <Award className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4.9</div>
-                <p className="text-xs text-muted-foreground">Based on 212 reviews</p>
+                <div className="text-2xl font-bold">{data?.provider.rating.toFixed(1)}</div>
+                <p className="text-xs text-muted-foreground">Based on {data?.provider.reviewCount} reviews</p>
               </CardContent>
             </Card>
           </div>

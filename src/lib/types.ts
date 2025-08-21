@@ -120,3 +120,24 @@ export type Message = {
   isAi?: boolean;
   bookingId?: string;
 };
+
+export interface ClientDashboardData {
+    totalBookings: number;
+    averageSpend: number;
+    previousBookings: Booking[];
+    favoriteProvider?: Provider;
+    activeBookings: (Booking & { services: Service[] })[];
+}
+
+export interface ProviderDashboardData {
+    provider: Provider;
+    bookings: Booking[];
+    stats: {
+        totalRevenue: number;
+        revenueChange: number;
+        totalBookings: number;
+        bookingsChange: number;
+        newClients: number;
+        clientsChange: number;
+    };
+}
