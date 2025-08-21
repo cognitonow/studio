@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -17,7 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { MonthlyEarningsChart } from "@/components/monthly-earnings-chart"
 import { Button } from "@/components/ui/button"
-import { getServicesByIds, updateBookingStatus, saveProviderProfile } from '@/lib/data';
+import { getServicesByIds, updateBookingStatus, saveProviderProfile, getProviderDashboardData } from '@/lib/data';
 import type { Booking, Provider, Service, ProviderDashboardData } from '@/lib/types';
 import { format, startOfDay } from 'date-fns';
 import Link from 'next/link';
@@ -61,6 +62,14 @@ export default function ProviderDashboard({ data }: ProviderDashboardProps) {
       setBio(data.provider.bio);
     }
   }, [data]);
+
+  const refreshDashboardData = () => {
+    if (!provider) return;
+    const freshData = getProviderDashboardData(provider.id);
+    if(freshData) {
+        setBookings(freshData.bookings);
+    }
+  };
   
   if (!provider) {
     return (
@@ -87,8 +96,7 @@ export default function ProviderDashboard({ data }: ProviderDashboardProps) {
 
   const handleStatusChange = (bookingId: string, status: Booking['status']) => {
     updateBookingStatus(bookingId, status, 'provider');
-    // Re-setting from the server-fetched data for simplicity, in real app you might refetch
-    setBookings(data?.bookings || []);
+    refreshDashboardData();
   };
   
   const handleFeaturedImageSelect = (imageId: string) => {

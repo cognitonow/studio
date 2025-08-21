@@ -1,7 +1,7 @@
 
 
 import './firebase';
-import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge, User } from './types';
+import type { Provider, Service, Review, Playlist, ServiceCategory, DublinDistrict, Booking, Notification, Conversation, Message, UserRole, ProviderBadge, User, ProviderDashboardData } from './types';
 import { format, formatDistanceToNow, isFuture, startOfDay } from 'date-fns';
 import { draftBookingConfirmation } from '@/ai/flows/draft-booking-confirmation';
 import { draftPostBookingMessage } from '@/ai/flows/draft-post-booking-message';
@@ -822,6 +822,30 @@ export const getClientHistoryByName = (clientName: string) => {
         totalBookings,
         averageSpend,
         previousBookings,
+    };
+};
+
+export const getProviderDashboardData = (providerId: string): ProviderDashboardData | null => {
+    const provider = getProviderById(providerId);
+    if (!provider) {
+        return null;
+    }
+
+    const providerBookings = getProviderBookings(providerId);
+
+    const stats = {
+        totalRevenue: 5231.89,
+        revenueChange: 20.1,
+        totalBookings: 125,
+        bookingsChange: 15,
+        newClients: 12,
+        clientsChange: 5,
+    };
+
+    return {
+        provider,
+        bookings: providerBookings,
+        stats,
     };
 };
 
