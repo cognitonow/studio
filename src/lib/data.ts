@@ -341,9 +341,58 @@ let providerNotifications: Notification[] = [
     }
 ];
 
+// =================================================================
+// DATA ACCESSOR & MUTATION FUNCTIONS
+// =================================================================
 
-export const getServiceCategories = () => serviceCategories;
-export const getAllServices = () => services;
+// -----------------------------------------------------------------
+// Provider & Service Functions
+// -----------------------------------------------------------------
+
+export const getProviders = () => providers;
+export const getProviderById = (id: string) => providers.find(p => p.id === id);
+export const getProviderByUserId = (userId: string) => providers.find(p => p.userId === userId);
+export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
+export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
+export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
+
+export const saveProviderProfile = (providerId: string, profileData: Partial<Provider>) => {
+  const providerIndex = providers.findIndex(p => p.id === providerId);
+  if (providerIndex !== -1) {
+    providers[providerIndex] = { ...providers[providerIndex], ...profileData };
+  }
+};
+
+export const saveProviderServices = (providerId: string, updatedServices: Service[]) => {
+    console.log(`[data.ts] saveProviderServices called for providerId: ${providerId}`);
+    console.log('[data.ts] Received updatedServices:', updatedServices);
+
+    // Add any new custom services to the main services list to make them "real"
+    updatedServices.forEach(service => {
+        if (service.id.startsWith('custom-') && !services.find(s => s.id === service.id)) {
+            console.log(`[data.ts] Adding new custom service to global list:`, service);
+            services.push(service);
+        }
+    });
+
+    // Update the provider's list of services in the main providers array
+    const providerIndex = providers.findIndex(p => p.id === providerId);
+    if (providerIndex !== -1) {
+        console.log(`[data.ts] Found provider ${providers[providerIndex].name} at index ${providerIndex}.`);
+        console.log(`[data.ts] Services before update:`, providers[providerIndex].services);
+        providers[providerIndex].services = updatedServices;
+        console.log(`[data.ts] Services after update:`, providers[providerIndex].services);
+    } else {
+        console.error(`[data.ts] Provider with ID ${providerId} not found.`);
+    }
+     console.log('[data.ts] Final global services list:', services);
+};
+
+
+// -----------------------------------------------------------------
+// Booking Functions
+// -----------------------------------------------------------------
+
 export const getBookings = () => {
     const today = startOfDay(new Date());
     const upcoming = bookings
@@ -357,115 +406,118 @@ export const getBookings = () => {
     return { upcoming, past };
 };
 
+export const getBookingById = (id: string) => bookings.find(b => b.id === id);
+
 export const getProviderBookings = (providerId: string) => {
     return [...bookings]
         .filter(b => b.providerId === providerId)
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-const addNotification = (recipient: UserRole, notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
-    const newNotification: Notification = {
-        id: Math.random(), // Use a more robust ID in a real app
-        time: formatDistanceToNow(new Date(), { addSuffix: true }),
-        read: false,
-        ...notification
+export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
+    const newBooking: Booking = {
+        id: String(bookings.length + 1),
+        status: 'Pending',
+        ...booking,
     };
-    if (recipient === 'provider') {
-        providerNotifications.unshift(newNotification);
-    } else {
-        clientNotifications.unshift(newNotification);
-    }
-};
+    bookings.unshift(newBooking);
 
-export const addMessage = (
-    conversationId: number, 
-    sender: 'user' | 'provider', 
-    text: string, 
-    view: 'client' | 'provider',
-    isAi: boolean = false,
-    bookingId?: string,
-) => {
-    const isProviderView = view === 'provider';
-    const conversationList = isProviderView ? providerConversations : conversations;
-    const messageList = isProviderView ? providerMessages : messages;
-
-    const conversation = conversationList.find(c => c.id === conversationId);
-    if (!conversation) return;
-
-    // Add the message
-    messageList.push({
-        id: messageList.length + 1,
-        conversationId,
-        sender,
-        text,
-        isAi,
-        bookingId
+    addNotification('provider', {
+        icon: 'new-booking',
+        title: 'New Booking Request!',
+        description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
+        bookingId: newBooking.id
     });
 
-    // Update conversation metadata
-    conversation.lastMessage = text;
-    conversation.time = 'Just now';
-    if (!isAi) { // Don't increment unread for AI messages
-        conversation.unread = (conversation.unread || 0) + 1;
-    }
-
-    // Determine who the recipient is for the notification
-    const recipientRole = isProviderView ? 'client' : 'provider';
-
-    // Get the correct name for the notification title
-    const senderName = isProviderView 
-        ? getProviderById(conversation.providerId)?.name // If provider sends, it's their name
-        : conversation.name; // If client sends, it's the provider's name (which is the convo name)
+    addNotification('client', {
+        icon: 'confirmation',
+        title: 'Booking Request Sent!',
+        description: `Your request has been sent to ${newBooking.providerName}. We'll notify you of any updates.`,
+        bookingId: newBooking.id
+    });
     
-    // Trigger a notification for the recipient
-    if (sender === 'provider') { // Provider sends message
-        addNotification('client', {
-            icon: 'message',
-            title: `New Message from ${senderName}`,
-            description: text,
-        });
-    } else { // Client ('user') sends message
-         addNotification('provider', {
-            icon: 'message',
-            title: `New Message from ${conversation.name}`,
-            description: text,
-        });
+    let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName && c.providerId === newBooking.providerId);
+    if (!providerConvo) {
+        providerConvo = {
+            id: providerConversations.length + 1,
+            providerId: newBooking.providerId,
+            clientId: newBooking.clientName,
+            name: newBooking.clientName || 'New Client',
+            avatar: "https://placehold.co/100x100.png",
+            dataAiHint: "person face",
+            lastMessage: "Booking request created.",
+            time: "Just now",
+            unread: 1,
+        };
+        providerConversations.unshift(providerConvo);
     }
+    
+    // Add the initial message from the client to the provider's message list
+    const serviceNames = getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', ');
+    const clientMessage = `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`;
+
+    addMessage(providerConvo.id, 'user', clientMessage, 'provider');
+    
+    // Send an AI message to the provider AND client
+    const payload = {
+      clientName: newBooking.clientName || 'Valued Client',
+      providerName: newBooking.providerName,
+      serviceName: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
+      bookingDate: format(new Date(newBooking.date), "PPP p"),
+      id: newBooking.id,
+      providerId: newBooking.providerId,
+    };
+    await sendAutomatedMessage(payload, draftNewBookingRequest, 'both');
 };
 
-const sendAutomatedMessage = async (
-    data: any,
-    messageGenerator: (input: any) => Promise<{ message: string }>,
-    recipient: 'client' | 'provider' | 'both' = 'client'
-) => {
-    const sendMessage = async (to: 'client' | 'provider') => {
-        try {
-            const payload = { ...data, recipient: to };
-            const response = await messageGenerator(payload);
-            const providerId = data.providerId;
-            const clientName = data.clientName || data.author;
-
-            if (to === 'client') {
-                const conversation = conversations.find(c => c.providerId === providerId);
-                if (conversation) {
-                    addMessage(conversation.id, 'provider', response.message, 'client', true, data.id);
-                }
-            } else { // to provider
-                const providerConversation = providerConversations.find(pc => pc.clientId === clientName && pc.providerId === providerId);
-                 if (providerConversation) {
-                    addMessage(providerConversation.id, 'provider', response.message, 'provider', true, data.id);
-                }
-            }
-        } catch (e) {
-            console.error(`Failed to draft automated message for ${to}:`, e);
+export const updateBooking = async (bookingId: string, updatedDetails: Partial<Booking>, originalBooking: Booking) => {
+    const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+    if (bookingIndex !== -1) {
+        
+        const updatedFields: string[] = [];
+        if (updatedDetails.date && new Date(originalBooking.date).toISOString() !== new Date(updatedDetails.date).toISOString()) {
+            updatedFields.push('date');
         }
-    };
+        if (updatedDetails.serviceIds && originalBooking.serviceIds.join(',') !== updatedDetails.serviceIds.join(',')) {
+            updatedFields.push('services');
+        }
+        
+        bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
+        const newBooking = bookings[bookingIndex];
 
-    if (recipient === 'client' || recipient === 'both') {
-        await sendMessage('client');
-    }
-    if (recipient === 'provider' || recipient === 'both') {
-        await sendMessage('provider');
+        // If payment was made and status changes from Review to Confirmed
+        if (updatedDetails.isPaid && originalBooking.status === 'Review Order and Pay') {
+            updateBookingStatus(bookingId, 'Confirmed');
+        }
+
+        if (updatedFields.length > 0) {
+             const payload = {
+                clientName: newBooking.clientName || 'Valued Client',
+                providerName: newBooking.providerName,
+                updatedFields,
+                newDate: format(new Date(newBooking.date), "PPP p"),
+                newServices: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
+                id: newBooking.id,
+                providerId: newBooking.providerId,
+            };
+            // Notify client of the update
+            addNotification('client', {
+                icon: 'confirmation',
+                title: 'Your Booking Was Updated',
+                description: `${newBooking.providerName} has updated the details for your upcoming appointment.`,
+                bookingId: newBooking.id
+            });
+            // Notify provider of the update (confirmation of their own action)
+            addNotification('provider', {
+                icon: 'confirmation',
+                title: 'Booking Updated Successfully',
+                description: `You have successfully updated the booking for ${newBooking.clientName}.`,
+                bookingId: newBooking.id
+            });
+
+            // Send AI messages to both client and provider
+            await sendAutomatedMessage(payload, draftBookingUpdate, 'both');
+        }
     }
 };
 
@@ -562,325 +614,9 @@ export const updateBookingStatus = async (bookingId: string, status: Booking['st
     }
 };
 
-export const updateBooking = async (bookingId: string, updatedDetails: Partial<Booking>, originalBooking: Booking) => {
-    const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-    if (bookingIndex !== -1) {
-        
-        const updatedFields: string[] = [];
-        if (updatedDetails.date && new Date(originalBooking.date).toISOString() !== new Date(updatedDetails.date).toISOString()) {
-            updatedFields.push('date');
-        }
-        if (updatedDetails.serviceIds && originalBooking.serviceIds.join(',') !== updatedDetails.serviceIds.join(',')) {
-            updatedFields.push('services');
-        }
-        
-        bookings[bookingIndex] = { ...bookings[bookingIndex], ...updatedDetails };
-        const newBooking = bookings[bookingIndex];
-
-        // If payment was made and status changes from Review to Confirmed
-        if (updatedDetails.isPaid && originalBooking.status === 'Review Order and Pay') {
-            updateBookingStatus(bookingId, 'Confirmed');
-        }
-
-        if (updatedFields.length > 0) {
-             const payload = {
-                clientName: newBooking.clientName || 'Valued Client',
-                providerName: newBooking.providerName,
-                updatedFields,
-                newDate: format(new Date(newBooking.date), "PPP p"),
-                newServices: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
-                id: newBooking.id,
-                providerId: newBooking.providerId,
-            };
-            // Notify client of the update
-            addNotification('client', {
-                icon: 'confirmation',
-                title: 'Your Booking Was Updated',
-                description: `${newBooking.providerName} has updated the details for your upcoming appointment.`,
-                bookingId: newBooking.id
-            });
-            // Notify provider of the update (confirmation of their own action)
-            addNotification('provider', {
-                icon: 'confirmation',
-                title: 'Booking Updated Successfully',
-                description: `You have successfully updated the booking for ${newBooking.clientName}.`,
-                bookingId: newBooking.id
-            });
-
-            // Send AI messages to both client and provider
-            await sendAutomatedMessage(payload, draftBookingUpdate, 'both');
-        }
-    }
-};
-
-export const addBooking = async (booking: Omit<Booking, 'id' | 'status'>) => {
-    const newBooking: Booking = {
-        id: String(bookings.length + 1),
-        status: 'Pending',
-        ...booking,
-    };
-    bookings.unshift(newBooking);
-
-    addNotification('provider', {
-        icon: 'new-booking',
-        title: 'New Booking Request!',
-        description: `${newBooking.clientName} has requested a booking for ${new Date(newBooking.date).toLocaleDateString()}.`,
-        bookingId: newBooking.id
-    });
-
-    addNotification('client', {
-        icon: 'confirmation',
-        title: 'Booking Request Sent!',
-        description: `Your request has been sent to ${newBooking.providerName}. We'll notify you of any updates.`,
-        bookingId: newBooking.id
-    });
-    
-    let providerConvo = providerConversations.find(c => c.clientId === newBooking.clientName && c.providerId === newBooking.providerId);
-    if (!providerConvo) {
-        providerConvo = {
-            id: providerConversations.length + 1,
-            providerId: newBooking.providerId,
-            clientId: newBooking.clientName,
-            name: newBooking.clientName || 'New Client',
-            avatar: "https://placehold.co/100x100.png",
-            dataAiHint: "person face",
-            lastMessage: "Booking request created.",
-            time: "Just now",
-            unread: 1,
-        };
-        providerConversations.unshift(providerConvo);
-    }
-    
-    // Add the initial message from the client to the provider's message list
-    const serviceNames = getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', ');
-    const clientMessage = `Hi! I've sent a booking request for ${serviceNames} for ${format(new Date(newBooking.date), "PPP")}.`;
-
-    addMessage(providerConvo.id, 'user', clientMessage, 'provider');
-    
-    // Send an AI message to the provider AND client
-    const payload = {
-      clientName: newBooking.clientName || 'Valued Client',
-      providerName: newBooking.providerName,
-      serviceName: getServicesByIds(newBooking.serviceIds).map(s => s.name).join(', '),
-      bookingDate: format(new Date(newBooking.date), "PPP p"),
-      id: newBooking.id,
-      providerId: newBooking.providerId,
-    };
-    await sendAutomatedMessage(payload, draftNewBookingRequest, 'both');
-};
-
-
-export const getNotifications = (role: UserRole) => {
-    const list = role === 'provider' ? providerNotifications : clientNotifications;
-    // Return a new array to ensure React state updates trigger re-renders
-    return [...list].sort((a,b) => b.id - a.id);
-}
-
-export const markNotificationAsRead = (id: number, role: UserRole) => {
-    const list = role === 'provider' ? providerNotifications : clientNotifications;
-    const notification = list.find(n => n.id === id);
-    if (notification) {
-        notification.read = true;
-    }
-}
-
-export const markAllNotificationsAsRead = (role: UserRole) => {
-    const list = role === 'provider' ? providerNotifications : clientNotifications;
-    list.forEach(n => n.read = true);
-}
-
-export const getConversations = () => [...conversations].sort((a, b) => b.id - a.id);
-export const getMessagesForConversation = (conversationId: number) => {
-    return [...messages].filter(m => m.conversationId === conversationId);
-}
-
-export const getProviderConversations = () => [...providerConversations].sort((a,b) => b.id - a.id);
-export const getProviderMessagesForConversation = (conversationId: number) => {
-    return [...providerMessages].filter(m => m.conversationId === conversationId);
-}
-
-
-export const getUnreadMessageCount = (role: UserRole) => {
-    const conversationList = role === 'provider' ? providerConversations : conversations;
-    return conversationList.reduce((count, convo) => count + (convo.unread || 0), 0);
-};
-
-export const markAllMessagesAsRead = (conversationId?: number, view?: 'client' | 'provider') => {
-    const conversationList = view === 'provider' ? providerConversations : conversations;
-    const markAsRead = (convo: Conversation) => {
-        if (convo.id === conversationId) {
-            convo.unread = 0;
-        }
-    };
-
-    if (conversationId) {
-        conversationList.forEach(markAsRead);
-    } else {
-        conversationList.forEach(convo => convo.unread = 0);
-    }
-};
-
-export const startConversationWithProvider = (providerId: string): Conversation | undefined => {
-    const provider = getProviderById(providerId);
-    if (!provider) return undefined;
-    
-    let convo = conversations.find(c => c.providerId === providerId);
-    if (convo) return convo;
-
-    const newConvo: Conversation = {
-        id: conversations.length + 1,
-        providerId: provider.id,
-        name: provider.name,
-        avatar: provider.avatarUrl,
-        dataAiHint: provider.dataAiHint,
-        lastMessage: "Start a new conversation!",
-        time: "Just now",
-        unread: 0,
-    };
-    conversations.unshift(newConvo);
-    return newConvo;
-}
-
-export const getBookedTimes = (providerId: string, date: Date): string[] => {
-    const day = startOfDay(date);
-    return bookings
-        .filter(b => b.providerId === providerId && startOfDay(new Date(b.date)).getTime() === day.getTime() && b.status !== 'Cancelled')
-        .map(b => format(new Date(b.date), 'HH:mm'));
-};
-
-export const getActiveBookings = (): (Booking & { services: Service[] })[] => {
-    const allActiveBookings = bookings
-        .filter(b => 
-            (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && 
-            new Date(b.date) >= startOfDay(new Date())
-        )
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    // Prioritize bookings that require payment by moving them to the front
-    const needsPayment = allActiveBookings.filter(b => b.status === 'Review Order and Pay');
-    const others = allActiveBookings.filter(b => b.status !== 'Review Order and Pay');
-    
-    const sortedBookings = [...needsPayment, ...others];
-
-    return sortedBookings.map(booking => ({
-        ...booking,
-        services: getServicesByIds(booking.serviceIds),
-    }));
-};
-
-
-export const getClientDashboardData = () => {
-    const completedBookings = bookings.filter(b => b.status === 'Completed');
-    const totalSpend = completedBookings.reduce((acc, booking) => {
-        const bookingServices = getServicesByIds(booking.serviceIds);
-        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
-        return acc + bookingTotal;
-    }, 0);
-    
-    const totalBookings = bookings.length;
-    const averageSpend = totalBookings > 0 ? totalSpend / completedBookings.length : 0;
-
-    const previousBookings = bookings
-        .filter(b => b.status === 'Completed' || b.status === 'Cancelled')
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    // Mock logic for favorite and suggested providers
-    const favoriteProvider = providers.find(p => p.isFavourite);
-    const suggestedProvider = providers[1];
-    const activeBookings = getActiveBookings();
-
-    return {
-        totalBookings,
-        averageSpend,
-        previousBookings,
-        favoriteProvider,
-        suggestedProvider,
-        activeBookings,
-    };
-}
-
-export const getClientHistoryByName = (clientName: string) => {
-    const clientBookings = bookings.filter(b => b.clientName === clientName);
-    const completedBookings = clientBookings.filter(b => b.status === 'Completed');
-
-    const totalSpend = completedBookings.reduce((acc, booking) => {
-        const bookingServices = getServicesByIds(booking.serviceIds);
-        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
-        return acc + bookingTotal;
-    }, 0);
-
-    const totalBookings = clientBookings.length;
-    const averageSpend = completedBookings.length > 0 ? totalSpend / completedBookings.length : 0;
-
-    const previousBookings = completedBookings
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 3);
-    
-    // The rating is mocked as we don't have a client-specific rating system yet
-    return {
-        rating: 4.8, 
-        totalBookings,
-        averageSpend,
-        previousBookings,
-    };
-};
-
-export const getProviderDashboardData = (providerId: string): ProviderDashboardData | null => {
-    const provider = getProviderById(providerId);
-    if (!provider) {
-        return null;
-    }
-
-    const providerBookings = getProviderBookings(providerId);
-
-    const stats = {
-        totalRevenue: 5231.89,
-        revenueChange: 20.1,
-        totalBookings: 125,
-        bookingsChange: 15,
-        newClients: 12,
-        clientsChange: 5,
-    };
-
-    return {
-        provider,
-        bookings: providerBookings,
-        stats,
-    };
-};
-
-export const saveProviderServices = (providerId: string, updatedServices: Service[]) => {
-    console.log(`[data.ts] saveProviderServices called for providerId: ${providerId}`);
-    console.log('[data.ts] Received updatedServices:', updatedServices);
-
-    // Add any new custom services to the main services list to make them "real"
-    updatedServices.forEach(service => {
-        if (service.id.startsWith('custom-') && !services.find(s => s.id === service.id)) {
-            console.log(`[data.ts] Adding new custom service to global list:`, service);
-            services.push(service);
-        }
-    });
-
-    // Update the provider's list of services in the main providers array
-    const providerIndex = providers.findIndex(p => p.id === providerId);
-    if (providerIndex !== -1) {
-        console.log(`[data.ts] Found provider ${providers[providerIndex].name} at index ${providerIndex}.`);
-        console.log(`[data.ts] Services before update:`, providers[providerIndex].services);
-        providers[providerIndex].services = updatedServices;
-        console.log(`[data.ts] Services after update:`, providers[providerIndex].services);
-    } else {
-        console.error(`[data.ts] Provider with ID ${providerId} not found.`);
-    }
-     console.log('[data.ts] Final global services list:', services);
-};
-
-export const saveProviderProfile = (providerId: string, profileData: Partial<Provider>) => {
-  const providerIndex = providers.findIndex(p => p.id === providerId);
-  if (providerIndex !== -1) {
-    providers[providerIndex] = { ...providers[providerIndex], ...profileData };
-  }
-};
-
+// -----------------------------------------------------------------
+// Review & Notification Functions
+// -----------------------------------------------------------------
 
 export const addReview = async (bookingId: string, rating: number, comment: string) => {
   const booking = getBookingById(bookingId);
@@ -940,14 +676,253 @@ export const addReview = async (bookingId: string, rating: number, comment: stri
   await sendAutomatedMessage(payload, draftNewReviewMessage, 'both');
 };
 
-export const getProviderById = (id: string) => providers.find(p => p.id === id);
-export const getProviderByUserId = (userId: string) => providers.find(p => p.userId === userId);
-export const getBookingById = (id: string) => bookings.find(b => b.id === id);
-export const getProvidersByPlaylist = (playlistId: string) => providers.filter(p => p.playlist === playlistId);
-export const getFeaturedProviders = () => providers.filter(p => p.isFeatured);
-export const getServicesByIds = (ids: string[]) => services.filter(s => ids.includes(s.id));
+const sendAutomatedMessage = async (
+    data: any,
+    messageGenerator: (input: any) => Promise<{ message: string }>,
+    recipient: 'client' | 'provider' | 'both' = 'client'
+) => {
+    const sendMessage = async (to: 'client' | 'provider') => {
+        try {
+            const payload = { ...data, recipient: to };
+            const response = await messageGenerator(payload);
+            const providerId = data.providerId;
+            const clientName = data.clientName || data.author;
+
+            if (to === 'client') {
+                const conversation = conversations.find(c => c.providerId === providerId);
+                if (conversation) {
+                    addMessage(conversation.id, 'provider', response.message, 'client', true, data.id);
+                }
+            } else { // to provider
+                const providerConversation = providerConversations.find(pc => pc.clientId === clientName && pc.providerId === providerId);
+                 if (providerConversation) {
+                    addMessage(providerConversation.id, 'provider', response.message, 'provider', true, data.id);
+                }
+            }
+        } catch (e) {
+            console.error(`Failed to draft automated message for ${to}:`, e);
+        }
+    };
+
+    if (recipient === 'client' || recipient === 'both') {
+        await sendMessage('client');
+    }
+    if (recipient === 'provider' || recipient === 'both') {
+        await sendMessage('provider');
+    }
+};
+
+const addNotification = (recipient: UserRole, notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
+    const newNotification: Notification = {
+        id: Math.random(), // Use a more robust ID in a real app
+        time: formatDistanceToNow(new Date(), { addSuffix: true }),
+        read: false,
+        ...notification
+    };
+    if (recipient === 'provider') {
+        providerNotifications.unshift(newNotification);
+    } else {
+        clientNotifications.unshift(newNotification);
+    }
+};
+
+export const getNotifications = (role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
+    // Return a new array to ensure React state updates trigger re-renders
+    return [...list].sort((a,b) => b.id - a.id);
+}
+
+export const markNotificationAsRead = (id: number, role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
+    const notification = list.find(n => n.id === id);
+    if (notification) {
+        notification.read = true;
+    }
+}
+
+export const markAllNotificationsAsRead = (role: UserRole) => {
+    const list = role === 'provider' ? providerNotifications : clientNotifications;
+    list.forEach(n => n.read = true);
+}
+
+
+// -----------------------------------------------------------------
+// Messaging Functions
+// -----------------------------------------------------------------
+
+export const getConversations = (role: UserRole = 'client') => {
+    const list = role === 'provider' ? providerConversations : conversations;
+    return [...list].sort((a, b) => b.id - a.id);
+};
+
+export const getMessagesForConversation = (conversationId: number, role: UserRole = 'client') => {
+    const list = role === 'provider' ? providerMessages : messages;
+    return [...list].filter(m => m.conversationId === conversationId);
+}
+
+export const addMessage = (
+    conversationId: number, 
+    sender: 'user' | 'provider', 
+    text: string, 
+    view: 'client' | 'provider',
+    isAi: boolean = false,
+    bookingId?: string,
+) => {
+    const isProviderView = view === 'provider';
+    const conversationList = isProviderView ? providerConversations : conversations;
+    const messageList = isProviderView ? providerMessages : messages;
+
+    const conversation = conversationList.find(c => c.id === conversationId);
+    if (!conversation) return;
+
+    // Add the message
+    messageList.push({
+        id: messageList.length + 1,
+        conversationId,
+        sender,
+        text,
+        isAi,
+        bookingId
+    });
+
+    // Update conversation metadata
+    conversation.lastMessage = text;
+    conversation.time = 'Just now';
+    if (!isAi) { // Don't increment unread for AI messages
+        conversation.unread = (conversation.unread || 0) + 1;
+    }
+
+    // Determine who the recipient is for the notification
+    const recipientRole = isProviderView ? 'client' : 'provider';
+
+    // Get the correct name for the notification title
+    const senderName = isProviderView 
+        ? getProviderById(conversation.providerId)?.name // If provider sends, it's their name
+        : conversation.name; // If client sends, it's the provider's name (which is the convo name)
+    
+    // Trigger a notification for the recipient
+    if (sender === 'provider') { // Provider sends message
+        addNotification('client', {
+            icon: 'message',
+            title: `New Message from ${senderName}`,
+            description: text,
+        });
+    } else { // Client ('user') sends message
+         addNotification('provider', {
+            icon: 'message',
+            title: `New Message from ${conversation.name}`,
+            description: text,
+        });
+    }
+};
+
+export const getUnreadMessageCount = (role: UserRole) => {
+    const conversationList = role === 'provider' ? providerConversations : conversations;
+    return conversationList.reduce((count, convo) => count + (convo.unread || 0), 0);
+};
+
+// -----------------------------------------------------------------
+// Miscellaneous Functions
+// -----------------------------------------------------------------
+
+export const getBookedTimes = (providerId: string, date: Date): string[] => {
+    const day = startOfDay(date);
+    return bookings
+        .filter(b => b.providerId === providerId && startOfDay(new Date(b.date)).getTime() === day.getTime() && b.status !== 'Cancelled')
+        .map(b => format(new Date(b.date), 'HH:mm'));
+};
+
 export const getExploreQueueProviders = () => providers.slice(3, 5); // Mock: return providers 4 and 5
 export const getFavouriteProviders = () => providers.filter(p => p.isFavourite);
+
 export const getBookingHistoryForProvider = (providerId: string) => {
     return bookings.filter(b => b.providerId === providerId && (b.status === 'Completed' || b.status === 'Cancelled'));
 }
+
+export const getClientHistoryByName = (clientName: string) => {
+    const clientBookings = bookings.filter(b => b.clientName === clientName);
+    const completedBookings = clientBookings.filter(b => b.status === 'Completed');
+
+    const totalSpend = completedBookings.reduce((acc, booking) => {
+        const bookingServices = getServicesByIds(booking.serviceIds);
+        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
+        return acc + bookingTotal;
+    }, 0);
+
+    const totalBookings = clientBookings.length;
+    const averageSpend = completedBookings.length > 0 ? totalSpend / completedBookings.length : 0;
+
+    const previousBookings = completedBookings
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3);
+    
+    // The rating is mocked as we don't have a client-specific rating system yet
+    return {
+        rating: 4.8, 
+        totalBookings,
+        averageSpend,
+        previousBookings,
+    };
+};
+
+export const getClientDashboardData = () => {
+    const completedBookings = bookings.filter(b => b.status === 'Completed');
+    const totalSpend = completedBookings.reduce((acc, booking) => {
+        const bookingServices = getServicesByIds(booking.serviceIds);
+        const bookingTotal = bookingServices.reduce((total, service) => total + service.price, 0);
+        return acc + bookingTotal;
+    }, 0);
+    
+    const totalBookings = bookings.length;
+    const averageSpend = totalBookings > 0 ? totalSpend / completedBookings.length : 0;
+
+    const previousBookings = bookings
+        .filter(b => b.status === 'Completed' || b.status === 'Cancelled')
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // Mock logic for favorite and suggested providers
+    const favoriteProvider = providers.find(p => p.isFavourite);
+    
+    const activeBookings = bookings
+        .filter(b => 
+            (b.status === 'Pending' || b.status === 'Confirmed' || b.status === 'Review Order and Pay') && 
+            new Date(b.date) >= startOfDay(new Date())
+        )
+        .sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime())
+        .map(booking => ({
+            ...booking,
+            services: getServicesByIds(booking.serviceIds),
+        }));
+
+    return {
+        totalBookings,
+        averageSpend,
+        previousBookings,
+        favoriteProvider,
+        activeBookings,
+    };
+}
+
+export const getProviderDashboardData = (providerId: string): ProviderDashboardData | null => {
+    const provider = getProviderById(providerId);
+    if (!provider) {
+        return null;
+    }
+
+    const providerBookings = getProviderBookings(providerId);
+
+    const stats = {
+        totalRevenue: 5231.89,
+        revenueChange: 20.1,
+        totalBookings: 125,
+        bookingsChange: 15,
+        newClients: 12,
+        clientsChange: 5,
+    };
+
+    return {
+        provider,
+        bookings: providerBookings,
+        stats,
+    };
+};
