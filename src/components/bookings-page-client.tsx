@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getBookings, getServicesByIds, addReview } from "@/lib/data"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import type { Booking } from "@/lib/types"
 import { CreditCard, Star, Send } from "lucide-react"
 import { StatusBadge } from "@/components/status-badge"
@@ -112,21 +112,21 @@ interface BookingsPageClientProps {
 export function BookingsPageClient({ initialBookings }: BookingsPageClientProps) {
   const [bookings, setBookings] = useState(initialBookings);
 
-  const fetchBookings = () => {
+  // This function is now memoized with useCallback
+  const fetchBookings = useCallback(() => {
     // getBookings is a client-side function that reads from the mock data source.
     // In a real app, you'd re-fetch from an API route.
     const allBookings = getBookings();
     setBookings(allBookings);
-  };
+  }, []);
   
   useEffect(() => {
-    // Re-fetch when the window gets focus to catch updates from other tabs
+    // This effect now only runs the function passed to it, which is memoized.
     window.addEventListener('focus', fetchBookings);
-
     return () => {
         window.removeEventListener('focus', fetchBookings);
     };
-  }, []);
+  }, [fetchBookings]);
 
   const renderServices = (serviceIds: string[]) => {
     const services = getServicesByIds(serviceIds);

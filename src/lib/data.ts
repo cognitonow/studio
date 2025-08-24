@@ -467,7 +467,7 @@ export const addBooking = (booking: Omit<Booking, 'id' | 'status'>) => {
       id: newBooking.id,
       providerId: newBooking.providerId,
     };
-    // Do not await this - let it run in the background
+    
     sendAutomatedMessage(payload, draftNewBookingRequest, 'both');
 };
 
@@ -517,7 +517,6 @@ export const updateBooking = (bookingId: string, updatedDetails: Partial<Booking
             });
 
             // Send AI messages to both client and provider
-            // Do not await this - let it run in the background
             sendAutomatedMessage(payload, draftBookingUpdate, 'both');
         }
     }
@@ -618,7 +617,6 @@ export const updateBookingStatus = (bookingId: string, status: Booking['status']
             }
 
             if (aiFlow) {
-                // Do not await this - let it run in the background
                 sendAutomatedMessage(aiPayload, aiFlow, 'both');
             }
         }
@@ -684,7 +682,6 @@ export const addReview = (bookingId: string, rating: number, comment: string) =>
       providerId: provider.id,
   });
 
-  // Do not await this - let it run in the background
   sendAutomatedMessage(payload, draftNewReviewMessage, 'both');
 };
 
@@ -693,10 +690,10 @@ const sendAutomatedMessage = async (
     messageGenerator: (input: any) => Promise<{ message: string }>,
     recipient: 'client' | 'provider' | 'both' = 'client'
 ) => {
-    const sendMessage = async (to: 'client' | 'provider') => {
-        try {
-            const payload = { ...data, recipient: to };
-            const response = await messageGenerator(payload);
+    const sendMessage = (to: 'client' | 'provider') => {
+        const payload = { ...data, recipient: to };
+        // Do not await the promise here
+        messageGenerator(payload).then(response => {
             const providerId = data.providerId;
             const clientName = data.clientName || data.author;
 
@@ -711,9 +708,9 @@ const sendAutomatedMessage = async (
                     addMessage(providerConversation.id, 'provider', response.message, 'provider', true, data.id);
                 }
             }
-        } catch (e) {
-            console.error(`Failed to draft automated message for ${to}:`, e);
-        }
+        }).catch(e => {
+             console.error(`Failed to draft automated message for ${to}:`, e);
+        });
     };
 
     if (recipient === 'client' || recipient === 'both') {
@@ -838,9 +835,10 @@ export const addMessage = (
     // Update conversation metadata
     conversation.lastMessage = text;
     conversation.time = 'Just now';
-    if (!isAi) { // Don't increment unread for AI messages
+    if (!isAi) {
         const recipientRole = view === 'client' ? 'provider' : 'client';
-        const recipientConversation = (recipientRole === 'provider' ? providerConversations : conversations).find(c => c.id === conversationId);
+        const recipientConversationList = recipientRole === 'provider' ? providerConversations : conversations;
+        const recipientConversation = recipientConversationList.find(c => c.id === conversationId || (c.providerId === conversation.providerId && c.clientId === conversation.clientId));
         if (recipientConversation) {
             recipientConversation.unread = (recipientConversation.unread || 0) + 1;
         }
@@ -969,5 +967,3 @@ export const getProviderDashboardData = (providerId: string): ProviderDashboardD
         stats,
     };
 };
-
-    

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Send, User } from "lucide-react";
 import { getConversations, getMessagesForConversation, markAllMessagesAsRead, startConversationWithProvider, getProviderConversations, getProviderMessagesForConversation, addMessage } from "@/lib/data";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { Conversation, Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -58,6 +58,19 @@ export function MessagesPageClient({
     }
   }
 
+  // This logic is now wrapped in a useCallback to prevent re-creation on every render
+  const memoizedFetchData = useCallback(() => {
+    if (userRole === 'guest') return;
+    setConversations(userRole === 'provider' ? fetchProviderConversations() : fetchClientConversations());
+    if (activeConversation) {
+        const newMessages = userRole === 'provider' 
+            ? getProviderMessagesForConversation(activeConversation.id)
+            : getMessagesForConversation(activeConversation.id);
+        setActiveMessages(newMessages);
+    }
+  }, [userRole, activeConversation]);
+
+
   useEffect(() => {
     if (userRole === 'guest') {
       setActiveConversation(undefined);
@@ -102,21 +115,11 @@ export function MessagesPageClient({
         setActiveMessages(initialMessages);
     }
     
-    // Add focus listener for live updates
-    const fetchData = () => {
-        if (userRole === 'guest') return;
-        setConversations(userRole === 'provider' ? fetchProviderConversations() : fetchClientConversations());
-        if (activeConversation) {
-             const newMessages = userRole === 'provider' 
-                ? getProviderMessagesForConversation(activeConversation.id)
-                : getMessagesForConversation(activeConversation.id);
-            setActiveMessages(newMessages);
-        }
-    };
-    window.addEventListener('focus', fetchData);
-    return () => window.removeEventListener('focus', fetchData);
+    // The focus listener now calls the memoized function
+    window.addEventListener('focus', memoizedFetchData);
+    return () => window.removeEventListener('focus', memoizedFetchData);
 
-  }, [userRole, initialClientConversations, initialProviderConversations, initialClientMessages, initialProviderMessages, initialActiveClientConvo, initialActiveProviderConvo]);
+  }, [userRole, initialClientConversations, initialProviderConversations, initialClientMessages, initialProviderMessages, initialActiveClientConvo, initialActiveProviderConvo, router, searchParams, memoizedFetchData]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
